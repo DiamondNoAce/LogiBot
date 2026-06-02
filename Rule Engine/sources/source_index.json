@@ -1,0 +1,31 @@
+{
+  "source_files": [
+    {
+      "file": "sources/user_account_sources.json",
+      "module": "user_account"
+    },
+    {
+      "file": "sources/eduroam_sources.json",
+      "module": "eduroam"
+    },
+    {
+      "file": "sources/mfa_sources.json",
+      "module": "mfa"
+    },
+    {
+      "file": "sources/vpn_sources.json",
+      "module": "vpn"
+    }
+  ],
+  "source_id_usage": {
+    "description": "source_refs in rules und step_packages verweisen auf id-Werte aus diesen Dateien. Jeder source-Eintrag hat nun eine url; keine reinen lokalen Dateinamen mehr.",
+    "example": {
+      "step_package_id": "steps.vpn.pc_connect_with_mobile_2fa",
+      "source_refs": [
+        "kim.vpn",
+        "kim_pdf.mfa_android",
+        "kim_pdf.mfa_ios"
+      ]
+    }
+  }
+}
