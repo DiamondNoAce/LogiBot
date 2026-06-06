@@ -1,0 +1,17 @@
+{
+  "eduroam": {
+    "cat_url": "https://cat.eduroam.org",
+    "organization": "Universität Hohenheim",
+    "username_format": "benutzername@uni-hohenheim.de"
+  },
+  "vpn": {
+    "client": "Cisco Secure Client",
+    "server": "vpn.uni-hohenheim.de",
+    "group": "UHOH-2FA"
+  },
+  "mfa": {
+    "edumfa_url": "https://edumfa.uni-hohenheim.de",
+    "recommended_mobile_app": "2FAS",
+    "recommended_pc_app": "KeePassXC"
+  }
+}

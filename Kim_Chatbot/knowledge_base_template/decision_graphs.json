@@ -1,0 +1,107 @@
+{
+  "graphs": [
+    {
+      "id": "shared_username_branching",
+      "name": "Gemeinsamer Benutzername-Start mit Verzweigung",
+      "description": "Demo-Entscheidungsnetz: Mehrere Anleitungen starten mit einem gemeinsamen Benutzername-/Login-Knoten und verzweigen danach zu eduroam, VPN oder Drucker.",
+      "active": true,
+      "start_node_id": "start",
+      "nodes": [
+        {
+          "id": "start",
+          "type": "start",
+          "label": "Start",
+          "position": {"x": 0, "y": 0}
+        },
+        {
+          "id": "common_username",
+          "type": "question",
+          "label": "Benutzername / Login prüfen",
+          "question": "Geht es um Benutzername, Passwort oder Login?",
+          "fact_key": "username_format_correct",
+          "position": {"x": 220, "y": 0}
+        },
+        {
+          "id": "service_branch",
+          "type": "condition",
+          "label": "Zu welchem Dienst gehört das Problem?",
+          "position": {"x": 520, "y": 0}
+        },
+        {
+          "id": "eduroam_windows_login",
+          "type": "step",
+          "label": "eduroam · Windows · Login-Schritt",
+          "service_key": "eduroam",
+          "system_key": "windows",
+          "step_number": 7,
+          "position": {"x": 850, "y": -180}
+        },
+        {
+          "id": "eduroam_mac_login",
+          "type": "step",
+          "label": "eduroam · macOS · Login-Schritt",
+          "service_key": "eduroam",
+          "system_key": "mac",
+          "step_number": 8,
+          "position": {"x": 850, "y": -60}
+        },
+        {
+          "id": "vpn_login_hint",
+          "type": "solution",
+          "label": "VPN-Login prüfen",
+          "solution_text": "Für VPN würde hier eine eigene VPN-Anleitung verknüpft. Prüfe Benutzername, Passwort und MFA. Danach kann der Pfad zu VPN-spezifischen Schritten weitergeführt werden.",
+          "position": {"x": 850, "y": 80}
+        },
+        {
+          "id": "printer_login_hint",
+          "type": "solution",
+          "label": "Drucker / Printserver-Anmeldung prüfen",
+          "solution_text": "Für Drucker würde hier die Drucker-Anleitung verknüpft. Prüfe, ob Uni-Netz/VPN aktiv ist und ob der Benutzername korrekt verwendet wird.",
+          "position": {"x": 850, "y": 210}
+        },
+        {
+          "id": "need_service_info",
+          "type": "question",
+          "label": "Dienst unklar",
+          "question": "Geht es um eduroam, VPN oder Drucker?",
+          "position": {"x": 850, "y": 360}
+        }
+      ],
+      "edges": [
+        {"id": "start_to_username", "source": "start", "target": "common_username", "label": "weiter", "priority": 1, "condition": {}},
+        {"id": "username_to_branch", "source": "common_username", "target": "service_branch", "label": "Dienst bestimmen", "priority": 1, "condition": {}},
+        {"id": "branch_to_eduroam_windows", "source": "service_branch", "target": "eduroam_windows_login", "label": "eduroam + Windows", "priority": 10, "condition": {"all": [{"fact": "topic", "operator": "equals", "value": "eduroam"}, {"fact": "os", "operator": "equals", "value": "windows"}]}},
+        {"id": "branch_to_eduroam_mac", "source": "service_branch", "target": "eduroam_mac_login", "label": "eduroam + macOS", "priority": 20, "condition": {"all": [{"fact": "topic", "operator": "equals", "value": "eduroam"}, {"fact": "os", "operator": "in", "value": ["mac", "macos"]}]}},
+        {"id": "branch_to_vpn", "source": "service_branch", "target": "vpn_login_hint", "label": "VPN", "priority": 30, "condition": {"fact": "topic", "operator": "equals", "value": "vpn"}},
+        {"id": "branch_to_printer", "source": "service_branch", "target": "printer_login_hint", "label": "Drucker", "priority": 40, "condition": {"fact": "topic", "operator": "equals", "value": "drucker"}},
+        {"id": "branch_to_unknown", "source": "service_branch", "target": "need_service_info", "label": "unklar", "priority": 999, "condition": {}}
+      ]
+    },
+    {
+      "id": "eduroam_windows_quickcheck",
+      "name": "eduroam Windows Quickcheck",
+      "description": "Kleiner Entscheidungsbaum für typische eduroam-Windows-Probleme.",
+      "active": true,
+      "start_node_id": "start",
+      "nodes": [
+        {"id": "start", "type": "start", "label": "Start eduroam Windows", "position": {"x": 0, "y": 0}},
+        {"id": "check_internet", "type": "condition", "label": "Internet vorhanden?", "position": {"x": 260, "y": 0}},
+        {"id": "internet_problem", "type": "step", "label": "Schritt 1 · Internet prüfen", "service_key": "eduroam", "system_key": "windows", "step_number": 1, "position": {"x": 590, "y": -120}},
+        {"id": "check_intent", "type": "condition", "label": "Wo hängt es?", "position": {"x": 590, "y": 60}},
+        {"id": "organisation_problem", "type": "step", "label": "Schritt 3 · Organisation", "service_key": "eduroam", "system_key": "windows", "step_number": 3, "position": {"x": 920, "y": -80}},
+        {"id": "login_problem", "type": "step", "label": "Schritt 7 · Login", "service_key": "eduroam", "system_key": "windows", "step_number": 7, "position": {"x": 920, "y": 60}},
+        {"id": "connection_problem", "type": "step", "label": "Schritt 10 · Verbindung", "service_key": "eduroam", "system_key": "windows", "step_number": 10, "position": {"x": 920, "y": 200}},
+        {"id": "need_more_info", "type": "question", "label": "Mehr Infos nötig", "question": "Bei welchem Schritt der eduroam-Installation hängst du?", "position": {"x": 920, "y": 340}}
+      ],
+      "edges": [
+        {"id": "start_to_internet", "source": "start", "target": "check_internet", "label": "weiter", "priority": 1, "condition": {}},
+        {"id": "internet_false", "source": "check_internet", "target": "internet_problem", "label": "kein Internet", "priority": 10, "condition": {"fact": "internet_available", "operator": "is_false"}},
+        {"id": "internet_ok", "source": "check_internet", "target": "check_intent", "label": "Internet ok/unklar", "priority": 20, "condition": {}},
+        {"id": "intent_org", "source": "check_intent", "target": "organisation_problem", "label": "Organisation", "priority": 10, "condition": {"any": [{"fact": "intent", "operator": "equals", "value": "organisation"}, {"fact": "problem_area", "operator": "equals", "value": "organisation"}]}},
+        {"id": "intent_login", "source": "check_intent", "target": "login_problem", "label": "Login", "priority": 20, "condition": {"fact": "intent", "operator": "equals", "value": "login"}},
+        {"id": "intent_connect", "source": "check_intent", "target": "connection_problem", "label": "Verbindung", "priority": 30, "condition": {"any": [{"fact": "intent", "operator": "equals", "value": "troubleshooting"}, {"fact": "eduroam_connected", "operator": "is_false"}]}},
+        {"id": "intent_unknown", "source": "check_intent", "target": "need_more_info", "label": "unklar", "priority": 999, "condition": {}}
+      ]
+    }
+  ]
+}

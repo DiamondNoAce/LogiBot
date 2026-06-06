@@ -1,0 +1,62 @@
+[
+  {
+    "id": "steps.account.explain_identifiers",
+    "title": "Kürzel, E-Mail-Adresse und Login-Formate unterscheiden",
+    "steps": [
+      "Das Kürzel bzw. die Hohenheimer Benutzerkennung ist der eigentliche Benutzername, z. B. mmuster.",
+      "Die persönliche Hohenheimer E-Mail-Adresse hat typischerweise das Format vorname.nachname@uni-hohenheim.de.",
+      "Für VPN und MFA wird das Kürzel verwendet, nicht die E-Mail-Adresse und nicht kuerzel@uni-hohenheim.de.",
+      "Für eduroam wird das Format kuerzel@uni-hohenheim.de verwendet. Das ist hier die technische eduroam-Identität und nicht die persönliche Mailadresse.",
+      "Wenn ein Dienst nicht funktioniert, prüfe zuerst, ob das jeweils richtige Format verwendet wurde."
+    ],
+    "source_refs": [
+      "kim.user_account",
+      "kim.eduroam",
+      "kim.vpn"
+    ]
+  },
+  {
+    "id": "steps.account.activate_student_account",
+    "title": "Hohenheimer Benutzerkonto aktivieren",
+    "steps": [
+      "Öffne die IDM-Aktivierungsseite.",
+      "Gib die geforderten persönlichen Daten exakt so ein, wie sie in der Einschreibung oder im Antrag angegeben wurden.",
+      "Verwende den Aktivierungscode aus dem HohCampus-Bewerbungsportal oder aus dem Benutzerkonto-Antrag.",
+      "Notiere dir den neu angezeigten Hohenheimer Benutzernamen. Das ist deine Benutzerkennung bzw. dein Kürzel, nicht deine E-Mail-Adresse.",
+      "Lege ein Passwort fest.",
+      "Rufe später regelmäßig deine Hohenheimer E-Mail-Adresse ab."
+    ],
+    "source_refs": [
+      "kim.user_account",
+      "kim.user_account_faq"
+    ]
+  },
+  {
+    "id": "steps.account.reset_password_self_service",
+    "title": "Passwort per Self-Service zurücksetzen",
+    "steps": [
+      "Öffne die Passwort-vergessen-Seite im IDM.",
+      "Nutze die zuvor hinterlegte externe E-Mail-Adresse.",
+      "Verifiziere dich mit deiner hinterlegten PIN.",
+      "Vergib ein neues Passwort.",
+      "Aktualisiere gespeicherte Passwörter in E-Mail-Programm, eduroam, Browsern und Netzlaufwerken."
+    ],
+    "source_refs": [
+      "kim.user_account_faq",
+      "kim.change_password"
+    ]
+  },
+  {
+    "id": "steps.account.contact_service_desk_for_password",
+    "title": "Passwort über IT-Service-Desk zurücksetzen lassen",
+    "steps": [
+      "Wende dich an den IT-Service-Desk des KIM.",
+      "Bringe einen amtlichen Ausweis mit.",
+      "Lasse das Passwort vor Ort neu setzen."
+    ],
+    "source_refs": [
+      "kim.user_account_faq",
+      "kim.change_password"
+    ]
+  }
+]

@@ -1,0 +1,149 @@
+[
+  {
+    "id": "steps.vpn.connect_common",
+    "title": "VPN-Verbindung herstellen",
+    "steps": [
+      "Öffne Cisco Secure Client.",
+      "Trage vpn.uni-hohenheim.de als Server ein.",
+      "Klicke auf Verbinden.",
+      "Wähle, falls vorhanden, die Gruppe UHOH-2FA.",
+      "Gib als Benutzername dein Kürzel bzw. deine Hohenheimer Benutzerkennung ein, z. B. mmuster.",
+      "Verwende hier nicht deine persönliche E-Mail-Adresse und auch nicht kuerzel@uni-hohenheim.de.",
+      "Gib das Passwort des Hohenheimer Benutzerkontos ein.",
+      "Gib den zweiten Faktor als zweites Kennwort bzw. 2FA-Token ein.",
+      "Der zweite Faktor kann z. B. aus 2FAS auf dem Smartphone, KeePassXC am PC oder einem Hardware-Token kommen.",
+      "Bestätige die Verbindung und akzeptiere den VPN-Hinweis."
+    ],
+    "source_refs": [
+      "kim.vpn",
+      "kim_pdf.vpn_windows",
+      "kim_pdf.vpn_macos",
+      "kim_pdf.vpn_linux",
+      "kim_pdf.vpn_android",
+      "kim_pdf.vpn_ios"
+    ]
+  },
+  {
+    "id": "steps.vpn.pc_connect_with_mobile_2fa",
+    "title": "VPN am PC mit mobiler 2FA-App verwenden",
+    "steps": [
+      "Öffne Cisco Secure Client am PC oder Laptop.",
+      "Trage vpn.uni-hohenheim.de als Server ein.",
+      "Wähle die Gruppe UHOH-2FA.",
+      "Gib als Benutzername dein Kürzel bzw. deine Hohenheimer Benutzerkennung ein.",
+      "Gib dein Hohenheimer Passwort ein.",
+      "Öffne 2FAS auf deinem Smartphone oder Tablet.",
+      "Lies den aktuellen Token-Code ab.",
+      "Gib diesen Code im Feld Zweites Kennwort bzw. 2FA Token im Cisco Secure Client ein.",
+      "Bestätige mit OK."
+    ],
+    "source_refs": [
+      "kim.vpn",
+      "kim_pdf.mfa_android",
+      "kim_pdf.mfa_ios"
+    ]
+  },
+  {
+    "id": "steps.vpn.windows_install",
+    "title": "Cisco Secure Client unter Windows installieren",
+    "steps": [
+      "Öffne die KIM-Webseite zum VPN-Client.",
+      "Lade den Windows-Client herunter.",
+      "Starte die MSI-Datei.",
+      "Akzeptiere die Lizenzbedingungen und installiere den Client.",
+      "Starte den Computer neu, falls dies erforderlich ist.",
+      "Öffne Cisco Secure Client.",
+      "Verbinde dich mit vpn.uni-hohenheim.de."
+    ],
+    "source_refs": [
+      "kim.vpn_client",
+      "kim_pdf.vpn_windows"
+    ]
+  },
+  {
+    "id": "steps.vpn.macos_install",
+    "title": "Cisco Secure Client unter macOS installieren",
+    "steps": [
+      "Öffne die KIM-Webseite zum VPN-Client.",
+      "Lade den macOS-Client herunter.",
+      "Öffne die heruntergeladene PKG-Datei.",
+      "Folge dem Installationsassistenten.",
+      "Aktiviere Cisco Secure Client AnyConnect VPN Service und ggf. Cisco Secure Client Socket Filter in den macOS-Systemeinstellungen.",
+      "Öffne Cisco Secure Client und verbinde dich mit vpn.uni-hohenheim.de."
+    ],
+    "source_refs": [
+      "kim.vpn_client",
+      "kim_pdf.vpn_macos"
+    ]
+  },
+  {
+    "id": "steps.vpn.linux_install",
+    "title": "Cisco Secure Client unter Linux installieren",
+    "steps": [
+      "Öffne die KIM-Webseite zum VPN-Client.",
+      "Lade das passende Linux-Paket herunter.",
+      "Öffne ein Terminal und wechsle in den Downloads-Ordner.",
+      "Entpacke das Paket und wechsle in den vpn-Ordner.",
+      "Führe das Installationsskript mit sudo aus.",
+      "Akzeptiere die Lizenzbedingungen.",
+      "Starte Cisco Secure Client und verbinde dich mit vpn.uni-hohenheim.de."
+    ],
+    "source_refs": [
+      "kim.vpn_client",
+      "kim_pdf.vpn_linux"
+    ]
+  },
+  {
+    "id": "steps.vpn.android_setup",
+    "title": "Cisco Secure Client unter Android einrichten",
+    "steps": [
+      "Installiere Cisco Secure Client aus dem Google Play Store.",
+      "Öffne die App und akzeptiere die Lizenzvereinbarung.",
+      "Füge eine neue Verbindung hinzu.",
+      "Trage als Beschreibung z. B. VPN Uni Hohenheim ein.",
+      "Trage als Serveradresse vpn.uni-hohenheim.de ein.",
+      "Speichere die Verbindung.",
+      "Aktiviere den VPN-Schalter.",
+      "Melde dich mit Kürzel, Passwort und zweitem Faktor an."
+    ],
+    "source_refs": [
+      "kim_pdf.vpn_android",
+      "kim.vpn"
+    ]
+  },
+  {
+    "id": "steps.vpn.ios_setup",
+    "title": "Cisco Secure Client unter iOS/iPadOS einrichten",
+    "steps": [
+      "Installiere Cisco Secure Client aus dem App Store.",
+      "Öffne die App und füge eine neue VPN-Verbindung hinzu.",
+      "Trage als Beschreibung z. B. Hohenheim ein.",
+      "Trage als Serveradresse vpn.uni-hohenheim.de ein.",
+      "Speichere die Verbindung und erlaube die VPN-Konfiguration.",
+      "Aktiviere den VPN-Schalter.",
+      "Melde dich mit Kürzel, Passwort und zweitem Faktor an."
+    ],
+    "source_refs": [
+      "kim_pdf.vpn_ios",
+      "kim.vpn"
+    ]
+  },
+  {
+    "id": "steps.vpn.linux_certificate_fix",
+    "title": "Linux-Zertifikatsfehler im Cisco Secure Client beheben",
+    "steps": [
+      "Öffne ein Terminal.",
+      "Wechsle in das Cisco-Zertifikatsverzeichnis.",
+      "Lege einen symbolischen Link auf das T-TeleSec GlobalRoot Class 2 SSL-Stammzertifikat an.",
+      "Starte Cisco Secure Client erneut.",
+      "Versuche die Verbindung zu vpn.uni-hohenheim.de erneut."
+    ],
+    "commands": [
+      "cd /opt/.cisco/certificates/ca",
+      "ln -s /etc/ssl/certs/T-TeleSec_GlobalRoot_Class_2.pem"
+    ],
+    "source_refs": [
+      "kim.vpn_problem_linux_certificate"
+    ]
+  }
+]
