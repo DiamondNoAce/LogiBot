@@ -1,0 +1,79 @@
+{
+  "id": "kim_student_support_rule_engine",
+  "version": "2.2.0",
+  "language": "de",
+  "description": "Modulare Rule Engine für KIM-Support: Benutzerkonto, eduroam, MFA und VPN. Erweiterung: technische Eduroam-Condition-Matrix mit Pre-/Trigger-/Post-Conditions. Erweiterung: Wissensmodell v2 mit genauerem gemeinsamen Kern und Service-Namespaces.",
+  "rule_order": [
+    "global_blocks",
+    "eduroam_technical",
+    "knowledge_model_cross_service",
+    "knowledge_model_v2_cross_service",
+    "core_router",
+    "user_account",
+    "eduroam",
+    "mfa",
+    "vpn",
+    "cross_module",
+    "goal_state",
+    "fallback"
+  ],
+  "condition_logic": "all = alle Bedingungen müssen passen; any = mindestens eine Bedingung muss passen; not = Bedingung darf nicht passen; conditions unterstützen Operator-Aliase aus der technischen Excel-Sicht.",
+  "action_types": [
+    "ask",
+    "answer",
+    "recommend",
+    "show_steps",
+    "set_fact",
+    "redirect_topic",
+    "support_contact"
+  ],
+  "goal_state": {
+    "fact": "user_request_answered",
+    "allowed_values": [
+      true,
+      false,
+      "unknown"
+    ],
+    "rule": "user_request_answered darf erst true werden, wenn user_problem_resolved true ist.",
+    "confirmation_required": true
+  },
+  "global_blocks": {
+    "description": "Globale Bausteine sind dienstübergreifende Prüfungen/Fakten, die von Diensten über required_global_blocks wiederverwendet werden.",
+    "file": "global/global_blocks.json",
+    "evaluation_order": "global block rules -> fehlende globale Pflichtfakten -> dienstspezifische Regeln"
+  },
+  "supported_operators": [
+    "equals",
+    "not_equals",
+    "in",
+    "not_in",
+    "contains",
+    "contains_any",
+    "contains_all",
+    "starts_with",
+    "ends_with",
+    "regex",
+    "is_unknown",
+    "is_known",
+    "is_true",
+    "is_false",
+    "greater_than",
+    "less_than",
+    "greater_or_equal",
+    "less_or_equal"
+  ],
+  "technical_condition_model": {
+    "source": "Eduroam_Regeln_technische_Sicht.xlsx",
+    "folder": "technical/",
+    "rule_file": "rules/eduroam_technical_rules.json",
+    "description": "Excel-Regelübersicht wurde in technische Inferenzregeln und referenzierbare JSON-Artefakte übersetzt."
+  },
+  "knowledge_model_v2": {
+    "source_images": [
+      "knowledge_model/evidence/wissensmodell_fachliche_sicht_v2.jpeg",
+      "knowledge_model/evidence/wissensmodell_technische_sicht_v2.jpeg"
+    ],
+    "rule_file": "rules/knowledge_model_v2_cross_service_rules.json",
+    "description": "Aktualisierte fachliche und technische Sicht mit core.*, service.mfa.*, service.vpn.*, service.eduroam.* und service.support.*."
+  }
+}

@@ -1,0 +1,171 @@
+[
+  {
+    "id": "account.info.required_for_services",
+    "active": true,
+    "description": "Allgemeine Erklärung zum Hohenheimer Benutzerkonto.",
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "user_account"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "information"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Das Hohenheimer Benutzerkonto ist die zentrale Voraussetzung für viele digitale Dienste wie E-Mail, ILIAS, HohCampus, Bibliothekskonto, eduroam, MFA und VPN."
+      },
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.account.explain_identifiers"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "account.identifier.explain",
+    "active": true,
+    "description": "Kürzel, persönliche E-Mail und kuerzel@uni-hohenheim.de erklären.",
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "user_account"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "login"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.account.explain_identifiers"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "account.setup.student_not_activated",
+    "active": true,
+    "description": "Studierender hat Konto noch nicht aktiviert.",
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "user_account"
+        },
+        {
+          "fact": "role",
+          "operator": "equals",
+          "value": "student"
+        },
+        {
+          "fact": "account_activated",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Dein Hohenheimer Benutzerkonto wurde im Rahmen der Einschreibung vorbereitet und muss im IDM aktiviert werden."
+      },
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.account.activate_student_account"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "account.password.forgotten.self_service_possible",
+    "active": true,
+    "description": "Passwort vergessen; externe Mail und PIN sind hinterlegt.",
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "user_account"
+        },
+        {
+          "fact": "password_forgotten",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "external_email_registered",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "pin_registered",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.account.reset_password_self_service"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "account.password.forgotten.service_desk_required",
+    "active": true,
+    "description": "Passwort vergessen; Self-Service nicht vorbereitet.",
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "user_account"
+        },
+        {
+          "fact": "password_forgotten",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "external_email_registered",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "pin_registered",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Ohne vorher hinterlegte externe E-Mail-Adresse und PIN kann das Passwort nicht selbst zurückgesetzt werden."
+      },
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.account.contact_service_desk_for_password"
+      }
+    ],
+    "stop_after_match": true
+  }
+]
