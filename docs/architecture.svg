@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1400" height="900" viewBox="0 0 1400 900">
+<defs>
+<style>
+  .mermaid-node { font-family: Arial, sans-serif; font-size: 12px; }
+  .mermaid-text { text-anchor: middle; dominant-baseline: middle; }
+  .mermaid-edge { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+  .mermaid-label { font-size: 11px; fill: #333; }
+  .subgraph-title { font-size: 14px; font-weight: bold; fill: #333; }
+  .infra-node { fill: #f3f4f6; stroke: #999; stroke-width: 1px; }
+  .core-node { fill: #e3f2fd; stroke: #1976d2; stroke-width: 2px; }
+  .ui-node { fill: #fff3e0; stroke: #f57c00; stroke-width: 2px; }
+  .storage-node { fill: #f3e5f5; stroke: #7b1fa2; stroke-width: 2px; }
+  .llm-node { fill: #e8f5e9; stroke: #388e3c; stroke-width: 2px; }
+</style>
+<marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+  <polygon points="0 0, 10 3, 0 6" fill="#333" />
+</marker>
+</defs>
+
+<!-- Main browser node -->
+<rect x="50" y="50" width="120" height="60" rx="5" class="ui-node" />
+<text x="110" y="85" class="mermaid-text">Browser (User)</text>
+
+<!-- Arrow to Streamlit -->
+<path d="M 170 80 L 250 80" class="mermaid-edge" />
+
+<!-- Streamlit App Container -->
+<rect x="250" y="20" width="850" height="780" rx="5" stroke="#333" stroke-width="2" fill="none" stroke-dasharray="5,5" />
+<text x="270" y="40" class="subgraph-title">Streamlit App</text>
+
+<!-- UI Layer -->
+<rect x="270" y="70" width="100" height="50" rx="3" class="ui-node" />
+<text x="320" y="97" class="mermaid-text">UI</text>
+<text x="320" y="110" class="mermaid-label">(ui/*.py)</text>
+
+<!-- Dialog Manager -->
+<rect x="400" y="70" width="120" height="50" rx="3" class="core-node" />
+<text x="460" y="97" class="mermaid-text">Dialog Manager</text>
+<text x="460" y="110" class="mermaid-label">(dialog_manager.py)</text>
+
+<!-- Inference Engine -->
+<rect x="570" y="70" width="130" height="50" rx="3" class="core-node" />
+<text x="635" y="97" class="mermaid-text">Inference Engine</text>
+<text x="635" y="110" class="mermaid-label">(inference_engine.py)</text>
+
+<!-- LLM Adapter -->
+<rect x="750" y="70" width="110" height="50" rx="3" class="llm-node" />
+<text x="805" y="97" class="mermaid-text">LLM Adapter</text>
+<text x="805" y="110" class="mermaid-label">(ollama_client.py)</text>
+
+<!-- Fact Extraction -->
+<rect x="400" y="160" width="120" height="50" rx="3" class="llm-node" />
+<text x="460" y="187" class="mermaid-text">Fact Extraction</text>
+<text x="460" y="200" class="mermaid-label">(fact_extraction.py)</text>
+
+<!-- Response Generation -->
+<rect x="570" y="160" width="130" height="50" rx="3" class="llm-node" />
+<text x="635" y="187" class="mermaid-text">Response Generation</text>
+<text x="635" y="200" class="mermaid-label">(response_generation.py)</text>
+
+<!-- Rule Engine Executor -->
+<rect x="270" y="160" width="110" height="50" rx="3" class="core-node" />
+<text x="325" y="187" class="mermaid-text">Rule Engine</text>
+<text x="325" y="200" class="mermaid-label">(rule_engine.py)</text>
+
+<!-- Decision Graph Engine -->
+<rect x="750" y="160" width="130" height="50" rx="3" class="core-node" />
+<text x="815" y="187" class="mermaid-text">Decision Graph</text>
+<text x="815" y="200" class="mermaid-label">(decision_graph_engine.py)</text>
+
+<!-- Storage Layer -->
+<rect x="270" y="250" width="150" height="50" rx="3" class="storage-node" />
+<text x="345" y="277" class="mermaid-text">Storage Layer</text>
+<text x="345" y="290" class="mermaid-label">(kb_loader/writer/validator/backups)</text>
+
+<!-- Rule Engine JSON -->
+<rect x="470" y="250" width="120" height="50" rx="3" class="storage-node" />
+<text x="530" y="277" class="mermaid-text">Rule Engine JSON</text>
+<text x="530" y="290" class="mermaid-label">(Rule Engine/)</text>
+
+<!-- Connections within Streamlit App -->
+<!-- UI to Dialog Manager -->
+<path d="M 370 95 L 400 95" class="mermaid-edge" />
+
+<!-- Dialog Manager to Fact Extraction -->
+<path d="M 460 120 L 460 160" class="mermaid-edge" />
+
+<!-- Dialog Manager to Inference Engine -->
+<path d="M 520 95 L 570 95" class="mermaid-edge" />
+
+<!-- Dialog Manager to LLM Adapter -->
+<path d="M 520 95 L 750 95" class="mermaid-edge" />
+
+<!-- Dialog Manager to Storage -->
+<path d="M 460 120 L 345 250" class="mermaid-edge" />
+
+<!-- Inference Engine to Rule Engine Executor -->
+<path d="M 570 95 L 380 180" class="mermaid-edge" />
+
+<!-- Inference Engine to Decision Graph -->
+<path d="M 700 95 L 750 180" class="mermaid-edge" />
+
+<!-- LLM to Response Generation -->
+<path d="M 805 120 L 635 160" class="mermaid-edge" />
+
+<!-- Storage to Rule Engine JSON -->
+<path d="M 420 275 L 470 275" class="mermaid-edge" />
+
+<!-- Streamlit to Infrastructure -->
+<path d="M 830 800 L 830 850" class="mermaid-edge" stroke-dasharray="3,3" />
+<text x="860" y="825" class="mermaid-label">Optional: HTTP</text>
+
+<!-- Infrastructure Container -->
+<rect x="50" y="850" width="1300" height="40" rx="5" class="infra-node" />
+<text x="70" y="870" class="subgraph-title">Infrastruktur: nginx (Proxy) | Docker/K8s (Host) | S3 (Backups) | Prometheus/Grafana (Monitoring) | Logging (Audit)</text>
+
+<!-- Optional API Service (outside main app) -->
+<rect x="1150" y="70" width="130" height="50" rx="3" stroke="#999" stroke-width="1" fill="#fff9e6" stroke-dasharray="2,2" />
+<text x="1215" y="97" class="mermaid-text">Optional API</text>
+<text x="1215" y="110" class="mermaid-label">(FastAPI)</text>
+
+<!-- Arrow from Streamlit to Optional API -->
+<path d="M 1100 95 L 1150 95" class="mermaid-edge" stroke-dasharray="3,3" />
+
+<!-- Arrow from API to Dialog Manager -->
+<path d="M 1150 120 L 520 140" class="mermaid-edge" stroke-dasharray="3,3" />
+
+<!-- Optional Ollama & Remote LLM -->
+<rect x="900" y="160" width="100" height="50" rx="3" class="llm-node" />
+<text x="950" y="187" class="mermaid-text">Ollama (local)</text>
+<text x="950" y="200" class="mermaid-label">(optional)</text>
+
+<rect x="1050" y="160" width="100" height="50" rx="3" class="llm-node" />
+<text x="1100" y="187" class="mermaid-text">Remote LLM</text>
+<text x="1100" y="200" class="mermaid-label">(optional)</text>
+
+<!-- Arrow from LLM Adapter to Ollama & Remote -->
+<path d="M 860 120 L 950 160" class="mermaid-edge" stroke-dasharray="2,2" />
+<text x="885" y="135" class="mermaid-label">local</text>
+
+<path d="M 860 120 L 1100 160" class="mermaid-edge" stroke-dasharray="2,2" />
+<text x="960" y="135" class="mermaid-label">remote</text>
+
+<!-- Legend -->
+<text x="70" y="920" class="mermaid-label"><tspan font-weight="bold">Legende:</tspan></text>
+<rect x="70" y="930" width="15" height="15" class="ui-node" />
+<text x="95" y="937" class="mermaid-label">UI-Komponenten</text>
+
+<rect x="230" y="930" width="15" height="15" class="core-node" />
+<text x="255" y="937" class="mermaid-label">Core-Logik</text>
+
+<rect x="400" y="930" width="15" height="15" class="storage-node" />
+<text x="425" y="937" class="mermaid-label">Storage/KB</text>
+
+<rect x="550" y="930" width="15" height="15" class="llm-node" />
+<text x="575" y="937" class="mermaid-label">LLM-Integration</text>
+
+<rect x="700" y="930" width="15" height="15" class="infra-node" />
+<text x="725" y="937" class="mermaid-label">Infrastruktur</text>
+</svg>
