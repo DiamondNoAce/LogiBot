@@ -1,0 +1,280 @@
+{
+  "source": "Eduroam_Regeln_technische_Sicht.xlsx",
+  "items": [
+    {
+      "Prio": 5,
+      "Regel-ID": "eduroam_certificate_warning",
+      "Regeltyp": "safety_rule",
+      "Pre-Conditions": "service=eduroam",
+      "Trigger-Conditions": "certificate_warning_shown=true oder problem_type=certificate_warning",
+      "Action / Funktion": "eduroam_troubleshoot_certificate_warning",
+      "Post-Conditions": "certificate_checked=true; ggf. eduroam_profile_configured=false",
+      "Next": "eduroam_profile_router oder eduroam_escalate_to_support",
+      "Risiko / Notiz": "Sehr hoch: sicherheitskritisch, muss vor allgemeinen Regeln greifen"
+    },
+    {
+      "Prio": 10,
+      "Regel-ID": "eduroam_check_account_exists",
+      "Regeltyp": "precondition_rule",
+      "Pre-Conditions": "service=eduroam",
+      "Trigger-Conditions": "account_exists=false oder account_exists=unknown",
+      "Action / Funktion": "eduroam_account_check",
+      "Post-Conditions": "bei Erfolg: account_exists=true; sonst: needs_human_support=true oder route_to_user_account_module=true",
+      "Next": "eduroam_check_username oder eduroam_escalate_to_support",
+      "Risiko / Notiz": "Blocker: ohne Account kein Setup"
+    },
+    {
+      "Prio": 20,
+      "Regel-ID": "eduroam_check_username",
+      "Regeltyp": "precondition_rule",
+      "Pre-Conditions": "service=eduroam; account_exists=true",
+      "Trigger-Conditions": "username_known=false oder username_known=unknown",
+      "Action / Funktion": "eduroam_username_help",
+      "Post-Conditions": "username_known=true",
+      "Next": "eduroam_check_password",
+      "Risiko / Notiz": "Verhindert Setup ohne Zugangsdaten"
+    },
+    {
+      "Prio": 30,
+      "Regel-ID": "eduroam_check_password",
+      "Regeltyp": "precondition_rule",
+      "Pre-Conditions": "service=eduroam; account_exists=true; username_known=true",
+      "Trigger-Conditions": "password_known=false oder password_known=unknown",
+      "Action / Funktion": "eduroam_password_reset_help",
+      "Post-Conditions": "password_known=true; ggf. password_recently_changed=true",
+      "Next": "eduroam_after_password_change oder eduroam_check_wifi_available",
+      "Risiko / Notiz": "Nach Passwort-Reset alte Profile prüfen"
+    },
+    {
+      "Prio": 35,
+      "Regel-ID": "eduroam_after_password_change",
+      "Regeltyp": "troubleshooting_rule",
+      "Pre-Conditions": "service=eduroam; account_exists=true; username_known=true; password_known=true",
+      "Trigger-Conditions": "password_recently_changed=true",
+      "Action / Funktion": "eduroam_troubleshoot_after_password_change",
+      "Post-Conditions": "saved_old_credentials=false; eduroam_profile_configured=false; connection_attempt_status=not_tested",
+      "Next": "eduroam_profile_router",
+      "Risiko / Notiz": "Spezifische Fehlerregel, vor allgemeinem Troubleshooting"
+    },
+    {
+      "Prio": 40,
+      "Regel-ID": "eduroam_check_wifi_available",
+      "Regeltyp": "precondition_rule",
+      "Pre-Conditions": "service=eduroam",
+      "Trigger-Conditions": "wifi_available=false oder wifi_available=unknown",
+      "Action / Funktion": "eduroam_wifi_hardware_check",
+      "Post-Conditions": "bei Erfolg: wifi_available=true; sonst needs_human_support=true",
+      "Next": "eduroam_check_wifi_enabled oder eduroam_escalate_to_support",
+      "Risiko / Notiz": "Blocker: Gerät braucht WLAN"
+    },
+    {
+      "Prio": 45,
+      "Regel-ID": "eduroam_check_wifi_enabled",
+      "Regeltyp": "precondition_rule",
+      "Pre-Conditions": "service=eduroam; wifi_available=true",
+      "Trigger-Conditions": "wifi_enabled=false oder wifi_enabled=unknown",
+      "Action / Funktion": "eduroam_enable_wifi",
+      "Post-Conditions": "wifi_enabled=true",
+      "Next": "eduroam_check_visible_network",
+      "Risiko / Notiz": "Vor Netzwerksuche ausführen"
+    },
+    {
+      "Prio": 50,
+      "Regel-ID": "eduroam_check_visible_network",
+      "Regeltyp": "precondition_rule",
+      "Pre-Conditions": "service=eduroam; wifi_available=true; wifi_enabled=true",
+      "Trigger-Conditions": "eduroam_visible=false oder eduroam_visible=unknown",
+      "Action / Funktion": "eduroam_troubleshoot_not_visible",
+      "Post-Conditions": "bei Erfolg: eduroam_visible=true; sonst needs_human_support=true",
+      "Next": "eduroam_profile_router oder eduroam_escalate_to_support",
+      "Risiko / Notiz": "Vor Setup prüfen; Netzwerk muss sichtbar sein"
+    },
+    {
+      "Prio": 60,
+      "Regel-ID": "eduroam_profile_router",
+      "Regeltyp": "router_rule",
+      "Pre-Conditions": "service=eduroam; wifi_available=true; wifi_enabled=true; eduroam_visible=true",
+      "Trigger-Conditions": "eduroam_profile_configured=false oder eduroam_profile_configured=unknown",
+      "Action / Funktion": "eduroam_setup_router",
+      "Post-Conditions": "operating_system wird abgefragt oder bestätigt",
+      "Next": "OS-spezifische Setup-Regel",
+      "Risiko / Notiz": "Router, darf spezifische OS-Regeln nicht überschreiben"
+    },
+    {
+      "Prio": 61,
+      "Regel-ID": "eduroam_setup_windows",
+      "Regeltyp": "setup_rule",
+      "Pre-Conditions": "service=eduroam; account_exists=true; username_known=true; password_known=true; wifi_enabled=true; eduroam_visible=true; operating_system=windows",
+      "Trigger-Conditions": "eduroam_profile_configured=false oder unknown",
+      "Action / Funktion": "eduroam_setup_windows",
+      "Post-Conditions": "eduroam_profile_configured=true; connection_test_required=true; connection_attempt_status=not_tested",
+      "Next": "eduroam_connection_attempt",
+      "Risiko / Notiz": "Spezifisch"
+    },
+    {
+      "Prio": 62,
+      "Regel-ID": "eduroam_setup_macos",
+      "Regeltyp": "setup_rule",
+      "Pre-Conditions": "service=eduroam; account_exists=true; username_known=true; password_known=true; wifi_enabled=true; eduroam_visible=true; operating_system=macos",
+      "Trigger-Conditions": "eduroam_profile_configured=false oder unknown",
+      "Action / Funktion": "eduroam_setup_macos",
+      "Post-Conditions": "eduroam_profile_configured=true; connection_test_required=true; connection_attempt_status=not_tested",
+      "Next": "eduroam_connection_attempt",
+      "Risiko / Notiz": "Spezifisch"
+    },
+    {
+      "Prio": 63,
+      "Regel-ID": "eduroam_setup_ios",
+      "Regeltyp": "setup_rule",
+      "Pre-Conditions": "service=eduroam; account_exists=true; username_known=true; password_known=true; wifi_enabled=true; eduroam_visible=true; operating_system=ios",
+      "Trigger-Conditions": "eduroam_profile_configured=false oder unknown",
+      "Action / Funktion": "eduroam_setup_ios",
+      "Post-Conditions": "eduroam_profile_configured=true; connection_test_required=true; connection_attempt_status=not_tested",
+      "Next": "eduroam_connection_attempt",
+      "Risiko / Notiz": "Spezifisch"
+    },
+    {
+      "Prio": 64,
+      "Regel-ID": "eduroam_setup_android",
+      "Regeltyp": "setup_rule",
+      "Pre-Conditions": "service=eduroam; account_exists=true; username_known=true; password_known=true; wifi_enabled=true; eduroam_visible=true; operating_system=android",
+      "Trigger-Conditions": "eduroam_profile_configured=false oder unknown",
+      "Action / Funktion": "eduroam_setup_android",
+      "Post-Conditions": "eduroam_profile_configured=true; connection_test_required=true; connection_attempt_status=not_tested",
+      "Next": "eduroam_connection_attempt",
+      "Risiko / Notiz": "Spezifisch"
+    },
+    {
+      "Prio": 65,
+      "Regel-ID": "eduroam_setup_linux",
+      "Regeltyp": "setup_rule",
+      "Pre-Conditions": "service=eduroam; account_exists=true; username_known=true; password_known=true; wifi_enabled=true; eduroam_visible=true; operating_system=linux",
+      "Trigger-Conditions": "eduroam_profile_configured=false oder unknown",
+      "Action / Funktion": "eduroam_setup_linux",
+      "Post-Conditions": "eduroam_profile_configured=true; connection_test_required=true; connection_attempt_status=not_tested",
+      "Next": "eduroam_connection_attempt",
+      "Risiko / Notiz": "Spezifisch"
+    },
+    {
+      "Prio": 70,
+      "Regel-ID": "eduroam_check_2fa",
+      "Regeltyp": "precondition_rule",
+      "Pre-Conditions": "service=eduroam; account_exists=true; two_fa_required=true",
+      "Trigger-Conditions": "two_fa_ready=false oder two_fa_ready=unknown",
+      "Action / Funktion": "eduroam_2fa_setup_help",
+      "Post-Conditions": "two_fa_ready=true",
+      "Next": "eduroam_connection_attempt",
+      "Risiko / Notiz": "Nur aktivieren, wenn 2FA für Eduroam-Kontext wirklich erforderlich ist"
+    },
+    {
+      "Prio": 80,
+      "Regel-ID": "eduroam_connection_attempt",
+      "Regeltyp": "connection_rule",
+      "Pre-Conditions": "service=eduroam; account_exists=true; username_known=true; password_known=true; wifi_enabled=true; eduroam_visible=true; eduroam_profile_configured=true; two_fa_ready=true oder not_required",
+      "Trigger-Conditions": "connection_attempt_status=not_tested oder connection_test_required=true",
+      "Action / Funktion": "eduroam_try_connect",
+      "Post-Conditions": "bei Erfolg: connection_attempt_status=success; sonst failed",
+      "Next": "eduroam_check_solution oder eduroam_connection_failed",
+      "Risiko / Notiz": "Zentraler Übergang zu Abschluss/Troubleshooting"
+    },
+    {
+      "Prio": 90,
+      "Regel-ID": "eduroam_connection_failed",
+      "Regeltyp": "troubleshooting_rule",
+      "Pre-Conditions": "service=eduroam; eduroam_profile_configured=true; connection_attempt_status=failed",
+      "Trigger-Conditions": "problem_type=cannot_connect oder authentication_failed oder unknown",
+      "Action / Funktion": "eduroam_troubleshoot_cannot_connect",
+      "Post-Conditions": "credentials_checked=true; ggf. profile_recreation_required=true",
+      "Next": "eduroam_delete_and_recreate_profile oder eduroam_escalate_to_support",
+      "Risiko / Notiz": "Spezifischer als Troubleshooting-Router"
+    },
+    {
+      "Prio": 95,
+      "Regel-ID": "eduroam_delete_and_recreate_profile",
+      "Regeltyp": "repair_rule",
+      "Pre-Conditions": "service=eduroam; credentials_checked=true; connection_attempt_status=failed",
+      "Trigger-Conditions": "profile_recreation_required=true",
+      "Action / Funktion": "eduroam_delete_profile_router",
+      "Post-Conditions": "eduroam_profile_configured=false; connection_attempt_status=not_tested",
+      "Next": "eduroam_profile_router",
+      "Risiko / Notiz": "Verknüpft Troubleshooting zurück zum Setup"
+    },
+    {
+      "Prio": 100,
+      "Regel-ID": "eduroam_no_internet_after_connection",
+      "Regeltyp": "troubleshooting_rule",
+      "Pre-Conditions": "service=eduroam; connection_attempt_status=success",
+      "Trigger-Conditions": "internet_access_available=false oder problem_type=no_internet",
+      "Action / Funktion": "eduroam_troubleshoot_no_internet",
+      "Post-Conditions": "bei Erfolg: internet_access_available=true; sonst needs_human_support=true",
+      "Next": "eduroam_check_solution oder eduroam_escalate_to_support",
+      "Risiko / Notiz": "Nur nach erfolgreicher WLAN-Verbindung prüfen"
+    },
+    {
+      "Prio": 110,
+      "Regel-ID": "eduroam_connection_drops",
+      "Regeltyp": "troubleshooting_rule",
+      "Pre-Conditions": "service=eduroam; eduroam_profile_configured=true",
+      "Trigger-Conditions": "problem_type=connection_drops",
+      "Action / Funktion": "eduroam_troubleshoot_connection_drops",
+      "Post-Conditions": "connection_attempt_status=not_tested",
+      "Next": "eduroam_connection_attempt",
+      "Risiko / Notiz": "Neustart/Standort/Profil erneuern als mögliche Schritte"
+    },
+    {
+      "Prio": 120,
+      "Regel-ID": "eduroam_restart_device_hint",
+      "Regeltyp": "repair_rule",
+      "Pre-Conditions": "service=eduroam; user_problem_resolved=false",
+      "Trigger-Conditions": "vorherige Lösung ohne Erfolg",
+      "Action / Funktion": "eduroam_restart_device",
+      "Post-Conditions": "connection_attempt_status=not_tested",
+      "Next": "eduroam_connection_attempt",
+      "Risiko / Notiz": "Allgemeiner Reparaturschritt, nicht zu früh ausführen"
+    },
+    {
+      "Prio": 130,
+      "Regel-ID": "eduroam_check_solution",
+      "Regeltyp": "completion_rule",
+      "Pre-Conditions": "service=eduroam; connection_attempt_status=success",
+      "Trigger-Conditions": "internet_access_available=true oder connection_successful=true",
+      "Action / Funktion": "eduroam_check_solution",
+      "Post-Conditions": "user_problem_resolved=true",
+      "Next": "eduroam_finish_resolved",
+      "Risiko / Notiz": "Abschlussprüfung"
+    },
+    {
+      "Prio": 140,
+      "Regel-ID": "eduroam_escalate_to_support",
+      "Regeltyp": "escalation_rule",
+      "Pre-Conditions": "service=eduroam; mehrere Lösungsversuche fehlgeschlagen",
+      "Trigger-Conditions": "user_problem_resolved=false",
+      "Action / Funktion": "eduroam_escalate_to_support",
+      "Post-Conditions": "needs_human_support=true",
+      "Next": "eduroam_finish_escalated",
+      "Risiko / Notiz": "Darf abschließen, wenn Supportweg ausgegeben wurde"
+    },
+    {
+      "Prio": 150,
+      "Regel-ID": "eduroam_finish_resolved",
+      "Regeltyp": "completion_rule",
+      "Pre-Conditions": "service=eduroam; user_problem_resolved=true",
+      "Trigger-Conditions": "Abschluss möglich",
+      "Action / Funktion": "eduroam_finish_resolved",
+      "Post-Conditions": "user_request_answered=true",
+      "Next": "Ende",
+      "Risiko / Notiz": "Finaler Zielzustand"
+    },
+    {
+      "Prio": 999,
+      "Regel-ID": "eduroam_fallback",
+      "Regeltyp": "fallback_rule",
+      "Pre-Conditions": "service=eduroam",
+      "Trigger-Conditions": "keine spezifischere Regel passt",
+      "Action / Funktion": "eduroam_clarify_request",
+      "Post-Conditions": "fehlende Facts werden abgefragt",
+      "Next": "passende Regel nach Klärung",
+      "Risiko / Notiz": "Ganz unten, sonst Überschattung"
+    }
+  ]
+}
