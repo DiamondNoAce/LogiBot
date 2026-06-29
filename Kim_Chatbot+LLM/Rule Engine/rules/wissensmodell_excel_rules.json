@@ -1,0 +1,5882 @@
+[
+  {
+    "id": "excel.security_eduroam_certificate_warning",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "safety_rule",
+    "description": "Sicherheitskritisch; nur Eduroam, keine Verbindung zum VPN-Zertifikat",
+    "priority": 5,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_certificate_warning_shown",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "certificate_warning"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_troubleshoot_certificate_warning"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: eduroam_troubleshoot_certificate_warning"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_certificate_checked",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "security_eduroam_certificate_warning",
+      "rule_type": "safety_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_certificate_warning_shown",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "certificate_warning"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_certificate_checked",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_profile_configured_ggf_false",
+          "operator": "is_known",
+          "value": true,
+          "raw": "eduroam_profile_configured ggf. false"
+        }
+      ],
+      "action_function": "eduroam_troubleshoot_certificate_warning",
+      "next_success": "eduroam_profile_router",
+      "risk_note": "Sicherheitskritisch; nur Eduroam, keine Verbindung zum VPN-Zertifikat",
+      "translation_rows": [
+        {
+          "Regel-ID": "security_eduroam_certificate_warning",
+          "Priorität": 5,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_troubleshoot_certificate_warning",
+          "Next Success": "eduroam_profile_router",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "security_eduroam_certificate_warning",
+          "Priorität": 5,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "eduroam_certificate_warning_shown",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_troubleshoot_certificate_warning",
+          "Next Success": "eduroam_profile_router",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "security_eduroam_certificate_warning",
+          "Priorität": 5,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "problem_type",
+          "Operator": null,
+          "Wert": "certificate_warning",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_troubleshoot_certificate_warning",
+          "Next Success": "eduroam_profile_router",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "security_eduroam_certificate_warning",
+          "Priorität": 5,
+          "Block": "Post-Condition",
+          "Fact / Condition": "eduroam_certificate_checked",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_troubleshoot_certificate_warning",
+          "Next Success": "eduroam_profile_router",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "security_eduroam_certificate_warning",
+          "Priorität": 5,
+          "Block": "Post-Condition",
+          "Fact / Condition": "eduroam_profile_configured",
+          "Operator": null,
+          "Wert": "false",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_troubleshoot_certificate_warning",
+          "Next Success": "eduroam_profile_router",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.core_route_topic",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "router_rule",
+    "description": "Muss vor service-spezifischen Regeln laufen",
+    "priority": 10,
+    "when": {
+      "all": [],
+      "any": [
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa",
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "core_route_to_service"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: core_route_to_service"
+      },
+      {
+        "type": "set_fact",
+        "fact": "service",
+        "value": "eduroam/vpn/mfa"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "core_route_topic",
+      "rule_type": "router_rule",
+      "pre_conditions": [],
+      "trigger_conditions": [
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa",
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam/vpn/mfa"
+        }
+      ],
+      "action_function": "core_route_to_service",
+      "next_success": "service_specific_chain",
+      "risk_note": "Muss vor service-spezifischen Regeln laufen",
+      "translation_rows": [
+        {
+          "Regel-ID": "core_route_topic",
+          "Priorität": 10,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam, vpn, mfa, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "core_route_to_service",
+          "Next Success": "service_specific_chain",
+          "Next Failure / Alternative": "core_clarify_topic"
+        },
+        {
+          "Regel-ID": "core_route_topic",
+          "Priorität": 10,
+          "Block": "Post-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam/vpn/mfa",
+          "Pflicht?": "Nein",
+          "Action Target": "core_route_to_service",
+          "Next Success": "service_specific_chain",
+          "Next Failure / Alternative": "core_clarify_topic"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.core_check_guest_access",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "Gäste ohne Zugang nicht in normale Account-/Setup-Kette schicken",
+    "priority": 12,
+    "when": {
+      "all": [
+        {
+          "fact": "user_role",
+          "operator": "equals",
+          "value": "guest"
+        }
+      ],
+      "any": [
+        {
+          "fact": "guest_access_exists",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "core_guest_access_help"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: core_guest_access_help"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "core_check_guest_access",
+      "rule_type": "precondition_rule",
+      "pre_conditions": [
+        {
+          "fact": "user_role",
+          "operator": "equals",
+          "value": "guest"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "guest_access_exists",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "needs_human_support_ggf_true",
+          "operator": "is_known",
+          "value": true,
+          "raw": "needs_human_support ggf. true"
+        }
+      ],
+      "action_function": "core_guest_access_help",
+      "next_success": "core_check_account_exists",
+      "risk_note": "Gäste ohne Zugang nicht in normale Account-/Setup-Kette schicken",
+      "translation_rows": [
+        {
+          "Regel-ID": "core_check_guest_access",
+          "Priorität": 12,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "user_role",
+          "Operator": null,
+          "Wert": "guest",
+          "Pflicht?": "Ja",
+          "Action Target": "core_guest_access_help",
+          "Next Success": "core_check_account_exists",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "core_check_guest_access",
+          "Priorität": 12,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "guest_access_exists",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "core_guest_access_help",
+          "Next Success": "core_check_account_exists",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "core_check_guest_access",
+          "Priorität": 12,
+          "Block": "Post-Condition",
+          "Fact / Condition": "needs_human_support",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "core_guest_access_help",
+          "Next Success": "core_check_account_exists",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.core_check_account_exists",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "Blocker: ohne Account keine normale Nutzung",
+    "priority": 15,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa"
+          ]
+        }
+      ],
+      "any": [
+        {
+          "fact": "account_exists",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "core_account_check"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: core_account_check"
+      },
+      {
+        "type": "set_fact",
+        "fact": "account_exists",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "core_check_account_exists",
+      "rule_type": "precondition_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa"
+          ]
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "account_exists",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support_bei_fehlschlag_true",
+          "operator": "is_known",
+          "value": true,
+          "raw": "needs_human_support bei Fehlschlag true"
+        }
+      ],
+      "action_function": "core_account_check",
+      "next_success": "core_check_credentials",
+      "risk_note": "Blocker: ohne Account keine normale Nutzung",
+      "translation_rows": [
+        {
+          "Regel-ID": "core_check_account_exists",
+          "Priorität": 15,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam, vpn, mfa",
+          "Pflicht?": "Ja",
+          "Action Target": "core_account_check",
+          "Next Success": "core_check_credentials",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "core_check_account_exists",
+          "Priorität": 15,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "account_exists",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "core_account_check",
+          "Next Success": "core_check_credentials",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "core_check_account_exists",
+          "Priorität": 15,
+          "Block": "Post-Condition",
+          "Fact / Condition": "account_exists",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "core_account_check",
+          "Next Success": "core_check_credentials",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "core_check_account_exists",
+          "Priorität": 15,
+          "Block": "Post-Condition",
+          "Fact / Condition": "needs_human_support",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "core_account_check",
+          "Next Success": "core_check_credentials",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.core_check_credentials",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "Zugangsdaten müssen vor Login-/Setup-Regeln geklärt sein",
+    "priority": 20,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa"
+          ]
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "username_known",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        },
+        {
+          "fact": "password_known",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "core_credentials_help"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: core_credentials_help"
+      },
+      {
+        "type": "set_fact",
+        "fact": "username_known",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "password_known",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "core_check_credentials",
+      "rule_type": "precondition_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa"
+          ]
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "username_known",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        },
+        {
+          "fact": "password_known",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "core_credentials_help",
+      "next_success": "service_specific_chain",
+      "risk_note": "Zugangsdaten müssen vor Login-/Setup-Regeln geklärt sein",
+      "translation_rows": [
+        {
+          "Regel-ID": "core_check_credentials",
+          "Priorität": 20,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam, vpn, mfa",
+          "Pflicht?": "Ja",
+          "Action Target": "core_credentials_help",
+          "Next Success": "service_specific_chain",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "core_check_credentials",
+          "Priorität": 20,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "account_exists",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "core_credentials_help",
+          "Next Success": "service_specific_chain",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "core_check_credentials",
+          "Priorität": 20,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "username_known",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "core_credentials_help",
+          "Next Success": "service_specific_chain",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "core_check_credentials",
+          "Priorität": 20,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "password_known",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "core_credentials_help",
+          "Next Success": "service_specific_chain",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "core_check_credentials",
+          "Priorität": 20,
+          "Block": "Post-Condition",
+          "Fact / Condition": "username_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "core_credentials_help",
+          "Next Success": "service_specific_chain",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "core_check_credentials",
+          "Priorität": 20,
+          "Block": "Post-Condition",
+          "Fact / Condition": "password_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "core_credentials_help",
+          "Next Success": "service_specific_chain",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.core_password_changed_router",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "troubleshooting_rule",
+    "description": "Passwortänderung kann Eduroam und VPN beeinflussen",
+    "priority": 25,
+    "when": {
+      "all": [
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "password_recently_changed",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "core_password_change_router"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: core_password_change_router"
+      },
+      {
+        "type": "set_fact",
+        "fact": "stored_credentials_may_be_invalid",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "core_password_changed_router",
+      "rule_type": "troubleshooting_rule",
+      "pre_conditions": [
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "password_recently_changed",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "stored_credentials_may_be_invalid",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "core_password_change_router",
+      "next_success": "eduroam_profile_router oder vpn_auth_problem",
+      "risk_note": "Passwortänderung kann Eduroam und VPN beeinflussen",
+      "translation_rows": [
+        {
+          "Regel-ID": "core_password_changed_router",
+          "Priorität": 25,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "account_exists",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "core_password_change_router",
+          "Next Success": "eduroam_profile_router oder vpn_auth_problem",
+          "Next Failure / Alternative": null
+        },
+        {
+          "Regel-ID": "core_password_changed_router",
+          "Priorität": 25,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "username_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "core_password_change_router",
+          "Next Success": "eduroam_profile_router oder vpn_auth_problem",
+          "Next Failure / Alternative": null
+        },
+        {
+          "Regel-ID": "core_password_changed_router",
+          "Priorität": 25,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "password_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "core_password_change_router",
+          "Next Success": "eduroam_profile_router oder vpn_auth_problem",
+          "Next Failure / Alternative": null
+        },
+        {
+          "Regel-ID": "core_password_changed_router",
+          "Priorität": 25,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "password_recently_changed",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "core_password_change_router",
+          "Next Success": "eduroam_profile_router oder vpn_auth_problem",
+          "Next Failure / Alternative": null
+        },
+        {
+          "Regel-ID": "core_password_changed_router",
+          "Priorität": 25,
+          "Block": "Post-Condition",
+          "Fact / Condition": "stored_credentials_may_be_invalid",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "core_password_change_router",
+          "Next Success": "eduroam_profile_router oder vpn_auth_problem",
+          "Next Failure / Alternative": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.mfa_vpn_requirement",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "MFA ist für VPN immer notwendig",
+    "priority": 30,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        }
+      ],
+      "any": [
+        {
+          "fact": "mfa_required_for_vpn",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "mfa_requirement_info"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: mfa_requirement_info"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_mfa_required",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "mfa_vpn_requirement",
+      "rule_type": "precondition_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "mfa_required_for_vpn",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_mfa_required",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "mfa_requirement_info",
+      "next_success": "mfa_check_enrollment",
+      "risk_note": "MFA ist für VPN immer notwendig",
+      "translation_rows": [
+        {
+          "Regel-ID": "mfa_vpn_requirement",
+          "Priorität": 30,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "vpn",
+          "Pflicht?": "Ja",
+          "Action Target": "mfa_requirement_info",
+          "Next Success": "mfa_check_enrollment",
+          "Next Failure / Alternative": null
+        },
+        {
+          "Regel-ID": "mfa_vpn_requirement",
+          "Priorität": 30,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "mfa_required_for_vpn",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "mfa_requirement_info",
+          "Next Success": "mfa_check_enrollment",
+          "Next Failure / Alternative": null
+        },
+        {
+          "Regel-ID": "mfa_vpn_requirement",
+          "Priorität": 30,
+          "Block": "Post-Condition",
+          "Fact / Condition": "vpn_mfa_required",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "mfa_requirement_info",
+          "Next Success": "mfa_check_enrollment",
+          "Next Failure / Alternative": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.mfa_check_enrollment",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "MFA-Erstinstallation benötigt Account und Zugangsdaten",
+    "priority": 35,
+    "when": {
+      "all": [
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "mfa_enrolled",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "mfa_setup_authenticator"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: mfa_setup_authenticator"
+      },
+      {
+        "type": "set_fact",
+        "fact": "mfa_enrolled",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "mfa_totp_available",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "mfa_check_enrollment",
+      "rule_type": "precondition_rule",
+      "pre_conditions": [
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "mfa_enrolled",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "mfa_enrolled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_totp_available",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "mfa_setup_authenticator",
+      "next_success": "mfa_check_totp_code",
+      "risk_note": "MFA-Erstinstallation benötigt Account und Zugangsdaten",
+      "translation_rows": [
+        {
+          "Regel-ID": "mfa_check_enrollment",
+          "Priorität": 35,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "account_exists",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "mfa_setup_authenticator",
+          "Next Success": "mfa_check_totp_code",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "mfa_check_enrollment",
+          "Priorität": 35,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "username_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "mfa_setup_authenticator",
+          "Next Success": "mfa_check_totp_code",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "mfa_check_enrollment",
+          "Priorität": 35,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "password_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "mfa_setup_authenticator",
+          "Next Success": "mfa_check_totp_code",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "mfa_check_enrollment",
+          "Priorität": 35,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "mfa_enrolled",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "mfa_setup_authenticator",
+          "Next Success": "mfa_check_totp_code",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "mfa_check_enrollment",
+          "Priorität": 35,
+          "Block": "Post-Condition",
+          "Fact / Condition": "mfa_enrolled",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "mfa_setup_authenticator",
+          "Next Success": "mfa_check_totp_code",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "mfa_check_enrollment",
+          "Priorität": 35,
+          "Block": "Post-Condition",
+          "Fact / Condition": "mfa_totp_available",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "mfa_setup_authenticator",
+          "Next Success": "mfa_check_totp_code",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.mfa_check_totp_code",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "auth_rule",
+    "description": "Kein Push; App-Code läuft alle 30 Sekunden ab",
+    "priority": 38,
+    "when": {
+      "all": [
+        {
+          "fact": "mfa_enrolled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_totp_available",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "mfa_code_status",
+          "operator": "in",
+          "value": [
+            "not_tested",
+            "invalid",
+            "expired"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "mfa_validate_totp_code"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: mfa_validate_totp_code"
+      },
+      {
+        "type": "set_fact",
+        "fact": "mfa_code_status",
+        "value": "valid"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "mfa_check_totp_code",
+      "rule_type": "auth_rule",
+      "pre_conditions": [
+        {
+          "fact": "mfa_enrolled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_totp_available",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "mfa_code_status",
+          "operator": "in",
+          "value": [
+            "not_tested",
+            "invalid",
+            "expired"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "mfa_code_status",
+          "operator": "equals",
+          "value": "valid"
+        }
+      ],
+      "action_function": "mfa_validate_totp_code",
+      "next_success": "vpn_authenticate",
+      "risk_note": "Kein Push; App-Code läuft alle 30 Sekunden ab",
+      "translation_rows": [
+        {
+          "Regel-ID": "mfa_check_totp_code",
+          "Priorität": 38,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "mfa_enrolled",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "mfa_validate_totp_code",
+          "Next Success": "vpn_authenticate",
+          "Next Failure / Alternative": "mfa_troubleshoot_code"
+        },
+        {
+          "Regel-ID": "mfa_check_totp_code",
+          "Priorität": 38,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "mfa_totp_available",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "mfa_validate_totp_code",
+          "Next Success": "vpn_authenticate",
+          "Next Failure / Alternative": "mfa_troubleshoot_code"
+        },
+        {
+          "Regel-ID": "mfa_check_totp_code",
+          "Priorität": 38,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "mfa_code_status",
+          "Operator": null,
+          "Wert": "not_tested, invalid, expired",
+          "Pflicht?": "Ja",
+          "Action Target": "mfa_validate_totp_code",
+          "Next Success": "vpn_authenticate",
+          "Next Failure / Alternative": "mfa_troubleshoot_code"
+        },
+        {
+          "Regel-ID": "mfa_check_totp_code",
+          "Priorität": 38,
+          "Block": "Post-Condition",
+          "Fact / Condition": "mfa_code_status",
+          "Operator": null,
+          "Wert": "valid",
+          "Pflicht?": "Nein",
+          "Action Target": "mfa_validate_totp_code",
+          "Next Success": "vpn_authenticate",
+          "Next Failure / Alternative": "mfa_troubleshoot_code"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.eduroam_check_campus_context",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "Eduroam-Sichtbarkeit/Nutzung ist standortbezogen",
+    "priority": 40,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "any": [
+        {
+          "fact": "on_campus",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_campus_location_help"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: eduroam_campus_location_help"
+      },
+      {
+        "type": "set_fact",
+        "fact": "on_campus",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "eduroam_check_campus_context",
+      "rule_type": "precondition_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "on_campus",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "on_campus",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "eduroam_campus_location_help",
+      "next_success": "eduroam_check_wifi_available",
+      "risk_note": "Eduroam-Sichtbarkeit/Nutzung ist standortbezogen",
+      "translation_rows": [
+        {
+          "Regel-ID": "eduroam_check_campus_context",
+          "Priorität": 40,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_campus_location_help",
+          "Next Success": "eduroam_check_wifi_available",
+          "Next Failure / Alternative": "support_or_wait_until_on_campus"
+        },
+        {
+          "Regel-ID": "eduroam_check_campus_context",
+          "Priorität": 40,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "on_campus",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_campus_location_help",
+          "Next Success": "eduroam_check_wifi_available",
+          "Next Failure / Alternative": "support_or_wait_until_on_campus"
+        },
+        {
+          "Regel-ID": "eduroam_check_campus_context",
+          "Priorität": 40,
+          "Block": "Post-Condition",
+          "Fact / Condition": "on_campus",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_campus_location_help",
+          "Next Success": "eduroam_check_wifi_available",
+          "Next Failure / Alternative": "support_or_wait_until_on_campus"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.eduroam_check_wifi_available",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "Gerät braucht WLAN",
+    "priority": 42,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "on_campus",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "wifi_available",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_wifi_hardware_check"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: eduroam_wifi_hardware_check"
+      },
+      {
+        "type": "set_fact",
+        "fact": "wifi_available",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "eduroam_check_wifi_available",
+      "rule_type": "precondition_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "on_campus",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "wifi_available",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "wifi_available",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "eduroam_wifi_hardware_check",
+      "next_success": "eduroam_check_wifi_enabled",
+      "risk_note": "Gerät braucht WLAN",
+      "translation_rows": [
+        {
+          "Regel-ID": "eduroam_check_wifi_available",
+          "Priorität": 42,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_wifi_hardware_check",
+          "Next Success": "eduroam_check_wifi_enabled",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_check_wifi_available",
+          "Priorität": 42,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "on_campus",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_wifi_hardware_check",
+          "Next Success": "eduroam_check_wifi_enabled",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_check_wifi_available",
+          "Priorität": 42,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "wifi_available",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_wifi_hardware_check",
+          "Next Success": "eduroam_check_wifi_enabled",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_check_wifi_available",
+          "Priorität": 42,
+          "Block": "Post-Condition",
+          "Fact / Condition": "wifi_available",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_wifi_hardware_check",
+          "Next Success": "eduroam_check_wifi_enabled",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.eduroam_check_wifi_enabled",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "Vor SSID-Suche ausführen",
+    "priority": 45,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "wifi_available",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "wifi_enabled",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_enable_wifi"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: eduroam_enable_wifi"
+      },
+      {
+        "type": "set_fact",
+        "fact": "wifi_enabled",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "eduroam_check_wifi_enabled",
+      "rule_type": "precondition_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "wifi_available",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "wifi_enabled",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "eduroam_enable_wifi",
+      "next_success": "eduroam_check_visible_network",
+      "risk_note": "Vor SSID-Suche ausführen",
+      "translation_rows": [
+        {
+          "Regel-ID": "eduroam_check_wifi_enabled",
+          "Priorität": 45,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_enable_wifi",
+          "Next Success": "eduroam_check_visible_network",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_check_wifi_enabled",
+          "Priorität": 45,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "wifi_available",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_enable_wifi",
+          "Next Success": "eduroam_check_visible_network",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_check_wifi_enabled",
+          "Priorität": 45,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "wifi_enabled",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_enable_wifi",
+          "Next Success": "eduroam_check_visible_network",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_check_wifi_enabled",
+          "Priorität": 45,
+          "Block": "Post-Condition",
+          "Fact / Condition": "wifi_enabled",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_enable_wifi",
+          "Next Success": "eduroam_check_visible_network",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.eduroam_check_visible_network",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "Vor Profil-Setup prüfen",
+    "priority": 50,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "on_campus",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_visible",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_troubleshoot_not_visible"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: eduroam_troubleshoot_not_visible"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_visible",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "eduroam_check_visible_network",
+      "rule_type": "precondition_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "on_campus",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_visible",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support_bei_fehlschlag_true",
+          "operator": "is_known",
+          "value": true,
+          "raw": "needs_human_support bei Fehlschlag true"
+        }
+      ],
+      "action_function": "eduroam_troubleshoot_not_visible",
+      "next_success": "eduroam_profile_router",
+      "risk_note": "Vor Profil-Setup prüfen",
+      "translation_rows": [
+        {
+          "Regel-ID": "eduroam_check_visible_network",
+          "Priorität": 50,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_troubleshoot_not_visible",
+          "Next Success": "eduroam_profile_router",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_check_visible_network",
+          "Priorität": 50,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "on_campus",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_troubleshoot_not_visible",
+          "Next Success": "eduroam_profile_router",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_check_visible_network",
+          "Priorität": 50,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "wifi_enabled",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_troubleshoot_not_visible",
+          "Next Success": "eduroam_profile_router",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_check_visible_network",
+          "Priorität": 50,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "eduroam_visible",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_troubleshoot_not_visible",
+          "Next Success": "eduroam_profile_router",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_check_visible_network",
+          "Priorität": 50,
+          "Block": "Post-Condition",
+          "Fact / Condition": "eduroam_visible",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_troubleshoot_not_visible",
+          "Next Success": "eduroam_profile_router",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_check_visible_network",
+          "Priorität": 50,
+          "Block": "Post-Condition",
+          "Fact / Condition": "needs_human_support",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_troubleshoot_not_visible",
+          "Next Success": "eduroam_profile_router",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.eduroam_profile_router",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "router_rule",
+    "description": "Router darf OS-spezifische Regeln nicht überschreiben",
+    "priority": 60,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_setup_router"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: eduroam_setup_router"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "eduroam_profile_router",
+      "rule_type": "router_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "operating_system_wird_gesetzt_windows_macos_ios_android_linux",
+          "operator": "is_known",
+          "value": true,
+          "raw": "operating_system wird gesetzt windows/macos/ios/android/linux"
+        }
+      ],
+      "action_function": "eduroam_setup_router",
+      "next_success": "eduroam_setup_os_specific",
+      "risk_note": "Router darf OS-spezifische Regeln nicht überschreiben",
+      "translation_rows": [
+        {
+          "Regel-ID": "eduroam_profile_router",
+          "Priorität": 60,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_router",
+          "Next Success": "eduroam_setup_os_specific",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_profile_router",
+          "Priorität": 60,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "account_exists",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_router",
+          "Next Success": "eduroam_setup_os_specific",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_profile_router",
+          "Priorität": 60,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "username_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_router",
+          "Next Success": "eduroam_setup_os_specific",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_profile_router",
+          "Priorität": 60,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "password_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_router",
+          "Next Success": "eduroam_setup_os_specific",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_profile_router",
+          "Priorität": 60,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "eduroam_visible",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_router",
+          "Next Success": "eduroam_setup_os_specific",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_profile_router",
+          "Priorität": 60,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "eduroam_profile_configured",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_router",
+          "Next Success": "eduroam_setup_os_specific",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_profile_router",
+          "Priorität": 60,
+          "Block": "Post-Condition",
+          "Fact / Condition": "operating_system",
+          "Operator": null,
+          "Wert": "windows/macos/ios/android/linux",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_setup_router",
+          "Next Success": "eduroam_setup_os_specific",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.eduroam_setup_windows",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "setup_rule",
+    "description": "Spezifische Setup-Regel",
+    "priority": 61,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "windows"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_setup_windows"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: eduroam_setup_windows"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_profile_configured",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_connection_status",
+        "value": "not_tested"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "eduroam_setup_windows",
+      "rule_type": "setup_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "windows"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "action_function": "eduroam_setup_windows",
+      "next_success": "eduroam_connection_attempt",
+      "risk_note": "Spezifische Setup-Regel",
+      "translation_rows": [
+        {
+          "Regel-ID": "eduroam_setup_windows",
+          "Priorität": 61,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_windows",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_windows",
+          "Priorität": 61,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "account_exists",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_windows",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_windows",
+          "Priorität": 61,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "username_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_windows",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_windows",
+          "Priorität": 61,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "password_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_windows",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_windows",
+          "Priorität": 61,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "eduroam_visible",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_windows",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_windows",
+          "Priorität": 61,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "operating_system",
+          "Operator": null,
+          "Wert": "windows",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_windows",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_windows",
+          "Priorität": 61,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "eduroam_profile_configured",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_windows",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_windows",
+          "Priorität": 61,
+          "Block": "Post-Condition",
+          "Fact / Condition": "eduroam_profile_configured",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_setup_windows",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_windows",
+          "Priorität": 61,
+          "Block": "Post-Condition",
+          "Fact / Condition": "eduroam_connection_status",
+          "Operator": null,
+          "Wert": "not_tested",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_setup_windows",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.eduroam_setup_macos",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "setup_rule",
+    "description": "Spezifische Setup-Regel",
+    "priority": 62,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "macos"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_setup_macos"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: eduroam_setup_macos"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_profile_configured",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_connection_status",
+        "value": "not_tested"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "eduroam_setup_macos",
+      "rule_type": "setup_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "macos"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "action_function": "eduroam_setup_macos",
+      "next_success": "eduroam_connection_attempt",
+      "risk_note": "Spezifische Setup-Regel",
+      "translation_rows": [
+        {
+          "Regel-ID": "eduroam_setup_macos",
+          "Priorität": 62,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_macos",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_macos",
+          "Priorität": 62,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "account_exists",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_macos",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_macos",
+          "Priorität": 62,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "username_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_macos",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_macos",
+          "Priorität": 62,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "password_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_macos",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_macos",
+          "Priorität": 62,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "eduroam_visible",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_macos",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_macos",
+          "Priorität": 62,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "operating_system",
+          "Operator": null,
+          "Wert": "macos",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_macos",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_macos",
+          "Priorität": 62,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "eduroam_profile_configured",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_macos",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_macos",
+          "Priorität": 62,
+          "Block": "Post-Condition",
+          "Fact / Condition": "eduroam_profile_configured",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_setup_macos",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_macos",
+          "Priorität": 62,
+          "Block": "Post-Condition",
+          "Fact / Condition": "eduroam_connection_status",
+          "Operator": null,
+          "Wert": "not_tested",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_setup_macos",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.eduroam_setup_ios",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "setup_rule",
+    "description": "Spezifische Setup-Regel",
+    "priority": 63,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "ios"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_setup_ios"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: eduroam_setup_ios"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_profile_configured",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_connection_status",
+        "value": "not_tested"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "eduroam_setup_ios",
+      "rule_type": "setup_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "ios"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "action_function": "eduroam_setup_ios",
+      "next_success": "eduroam_connection_attempt",
+      "risk_note": "Spezifische Setup-Regel",
+      "translation_rows": [
+        {
+          "Regel-ID": "eduroam_setup_ios",
+          "Priorität": 63,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_ios",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_ios",
+          "Priorität": 63,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "account_exists",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_ios",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_ios",
+          "Priorität": 63,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "username_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_ios",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_ios",
+          "Priorität": 63,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "password_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_ios",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_ios",
+          "Priorität": 63,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "eduroam_visible",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_ios",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_ios",
+          "Priorität": 63,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "operating_system",
+          "Operator": null,
+          "Wert": "ios",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_ios",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_ios",
+          "Priorität": 63,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "eduroam_profile_configured",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_ios",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_ios",
+          "Priorität": 63,
+          "Block": "Post-Condition",
+          "Fact / Condition": "eduroam_profile_configured",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_setup_ios",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_ios",
+          "Priorität": 63,
+          "Block": "Post-Condition",
+          "Fact / Condition": "eduroam_connection_status",
+          "Operator": null,
+          "Wert": "not_tested",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_setup_ios",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.eduroam_setup_android",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "setup_rule",
+    "description": "Spezifische Setup-Regel",
+    "priority": 64,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "android"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_setup_android"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: eduroam_setup_android"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_profile_configured",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_connection_status",
+        "value": "not_tested"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "eduroam_setup_android",
+      "rule_type": "setup_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "android"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "action_function": "eduroam_setup_android",
+      "next_success": "eduroam_connection_attempt",
+      "risk_note": "Spezifische Setup-Regel",
+      "translation_rows": [
+        {
+          "Regel-ID": "eduroam_setup_android",
+          "Priorität": 64,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_android",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_android",
+          "Priorität": 64,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "account_exists",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_android",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_android",
+          "Priorität": 64,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "username_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_android",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_android",
+          "Priorität": 64,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "password_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_android",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_android",
+          "Priorität": 64,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "eduroam_visible",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_android",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_android",
+          "Priorität": 64,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "operating_system",
+          "Operator": null,
+          "Wert": "android",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_android",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_android",
+          "Priorität": 64,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "eduroam_profile_configured",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_android",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_android",
+          "Priorität": 64,
+          "Block": "Post-Condition",
+          "Fact / Condition": "eduroam_profile_configured",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_setup_android",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_android",
+          "Priorität": 64,
+          "Block": "Post-Condition",
+          "Fact / Condition": "eduroam_connection_status",
+          "Operator": null,
+          "Wert": "not_tested",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_setup_android",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.eduroam_setup_linux",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "setup_rule",
+    "description": "Spezifische Setup-Regel",
+    "priority": 65,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "linux"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_setup_linux"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: eduroam_setup_linux"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_profile_configured",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_connection_status",
+        "value": "not_tested"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "eduroam_setup_linux",
+      "rule_type": "setup_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "linux"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "action_function": "eduroam_setup_linux",
+      "next_success": "eduroam_connection_attempt",
+      "risk_note": "Spezifische Setup-Regel",
+      "translation_rows": [
+        {
+          "Regel-ID": "eduroam_setup_linux",
+          "Priorität": 65,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_linux",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_linux",
+          "Priorität": 65,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "account_exists",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_linux",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_linux",
+          "Priorität": 65,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "username_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_linux",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_linux",
+          "Priorität": 65,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "password_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_linux",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_linux",
+          "Priorität": 65,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "eduroam_visible",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_linux",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_linux",
+          "Priorität": 65,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "operating_system",
+          "Operator": null,
+          "Wert": "linux",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_linux",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_linux",
+          "Priorität": 65,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "eduroam_profile_configured",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_setup_linux",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_linux",
+          "Priorität": 65,
+          "Block": "Post-Condition",
+          "Fact / Condition": "eduroam_profile_configured",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_setup_linux",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_setup_linux",
+          "Priorität": 65,
+          "Block": "Post-Condition",
+          "Fact / Condition": "eduroam_connection_status",
+          "Operator": null,
+          "Wert": "not_tested",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_setup_linux",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.eduroam_connection_attempt",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "connection_rule",
+    "description": "Setup endet nie ohne Verbindungstest",
+    "priority": 80,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "in",
+          "value": [
+            "not_tested",
+            "failed"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_try_connect"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: eduroam_try_connect"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_connection_status",
+        "value": "connected oder failed"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "eduroam_connection_attempt",
+      "rule_type": "connection_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "in",
+          "value": [
+            "not_tested",
+            "failed"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "connected oder failed"
+        }
+      ],
+      "action_function": "eduroam_try_connect",
+      "next_success": "eduroam_check_internet",
+      "risk_note": "Setup endet nie ohne Verbindungstest",
+      "translation_rows": [
+        {
+          "Regel-ID": "eduroam_connection_attempt",
+          "Priorität": 80,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_try_connect",
+          "Next Success": "eduroam_check_internet",
+          "Next Failure / Alternative": "eduroam_connection_failed"
+        },
+        {
+          "Regel-ID": "eduroam_connection_attempt",
+          "Priorität": 80,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "eduroam_profile_configured",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_try_connect",
+          "Next Success": "eduroam_check_internet",
+          "Next Failure / Alternative": "eduroam_connection_failed"
+        },
+        {
+          "Regel-ID": "eduroam_connection_attempt",
+          "Priorität": 80,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "username_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_try_connect",
+          "Next Success": "eduroam_check_internet",
+          "Next Failure / Alternative": "eduroam_connection_failed"
+        },
+        {
+          "Regel-ID": "eduroam_connection_attempt",
+          "Priorität": 80,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "password_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_try_connect",
+          "Next Success": "eduroam_check_internet",
+          "Next Failure / Alternative": "eduroam_connection_failed"
+        },
+        {
+          "Regel-ID": "eduroam_connection_attempt",
+          "Priorität": 80,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "eduroam_connection_status",
+          "Operator": null,
+          "Wert": "not_tested, failed",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_try_connect",
+          "Next Success": "eduroam_check_internet",
+          "Next Failure / Alternative": "eduroam_connection_failed"
+        },
+        {
+          "Regel-ID": "eduroam_connection_attempt",
+          "Priorität": 80,
+          "Block": "Post-Condition",
+          "Fact / Condition": "eduroam_connection_status",
+          "Operator": null,
+          "Wert": "connected oder failed",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_try_connect",
+          "Next Success": "eduroam_check_internet",
+          "Next Failure / Alternative": "eduroam_connection_failed"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.eduroam_connection_failed",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "troubleshooting_rule",
+    "description": "Prüft Zugangsdaten/Profile",
+    "priority": 90,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "any": [
+        {
+          "fact": "problem_type",
+          "operator": "in",
+          "value": [
+            "auth_failed",
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_troubleshoot_auth_or_password"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: eduroam_troubleshoot_auth_or_password"
+      },
+      {
+        "type": "set_fact",
+        "fact": "credentials_checked",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "eduroam_connection_failed",
+      "rule_type": "troubleshooting_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "problem_type",
+          "operator": "in",
+          "value": [
+            "auth_failed",
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "credentials_checked",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "profile_recreation_required_ggf_true",
+          "operator": "is_known",
+          "value": true,
+          "raw": "profile_recreation_required ggf. true"
+        }
+      ],
+      "action_function": "eduroam_troubleshoot_auth_or_password",
+      "next_success": "eduroam_recreate_profile_or_retry",
+      "risk_note": "Prüft Zugangsdaten/Profile",
+      "translation_rows": [
+        {
+          "Regel-ID": "eduroam_connection_failed",
+          "Priorität": 90,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_troubleshoot_auth_or_password",
+          "Next Success": "eduroam_recreate_profile_or_retry",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_connection_failed",
+          "Priorität": 90,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "eduroam_profile_configured",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_troubleshoot_auth_or_password",
+          "Next Success": "eduroam_recreate_profile_or_retry",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_connection_failed",
+          "Priorität": 90,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "eduroam_connection_status",
+          "Operator": null,
+          "Wert": "failed",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_troubleshoot_auth_or_password",
+          "Next Success": "eduroam_recreate_profile_or_retry",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_connection_failed",
+          "Priorität": 90,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "problem_type",
+          "Operator": null,
+          "Wert": "auth_failed, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_troubleshoot_auth_or_password",
+          "Next Success": "eduroam_recreate_profile_or_retry",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_connection_failed",
+          "Priorität": 90,
+          "Block": "Post-Condition",
+          "Fact / Condition": "credentials_checked",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_troubleshoot_auth_or_password",
+          "Next Success": "eduroam_recreate_profile_or_retry",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_connection_failed",
+          "Priorität": 90,
+          "Block": "Post-Condition",
+          "Fact / Condition": "profile_recreation_required",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_troubleshoot_auth_or_password",
+          "Next Success": "eduroam_recreate_profile_or_retry",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.eduroam_check_internet",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "connection_rule",
+    "description": "No-Internet nicht mit Loginfehler vermischen",
+    "priority": 100,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "connected"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_internet_access",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_troubleshoot_no_internet"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: eduroam_troubleshoot_no_internet"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_internet_access",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "eduroam_check_internet",
+      "rule_type": "connection_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "connected"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_internet_access",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_internet_access",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support_bei_fehlschlag_true",
+          "operator": "is_known",
+          "value": true,
+          "raw": "needs_human_support bei Fehlschlag true"
+        }
+      ],
+      "action_function": "eduroam_troubleshoot_no_internet",
+      "next_success": "finish_resolved",
+      "risk_note": "No-Internet nicht mit Loginfehler vermischen",
+      "translation_rows": [
+        {
+          "Regel-ID": "eduroam_check_internet",
+          "Priorität": 100,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_troubleshoot_no_internet",
+          "Next Success": "finish_resolved",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_check_internet",
+          "Priorität": 100,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "eduroam_connection_status",
+          "Operator": null,
+          "Wert": "connected",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_troubleshoot_no_internet",
+          "Next Success": "finish_resolved",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_check_internet",
+          "Priorität": 100,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "eduroam_internet_access",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_troubleshoot_no_internet",
+          "Next Success": "finish_resolved",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_check_internet",
+          "Priorität": 100,
+          "Block": "Post-Condition",
+          "Fact / Condition": "eduroam_internet_access",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_troubleshoot_no_internet",
+          "Next Success": "finish_resolved",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_check_internet",
+          "Priorität": 100,
+          "Block": "Post-Condition",
+          "Fact / Condition": "needs_human_support",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_troubleshoot_no_internet",
+          "Next Success": "finish_resolved",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.eduroam_connection_drops",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "troubleshooting_rule",
+    "description": "Standort/Neustart/Profil erneuern",
+    "priority": 110,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "connection_drops"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_troubleshoot_connection_drops"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: eduroam_troubleshoot_connection_drops"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_connection_status",
+        "value": "not_tested"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "eduroam_connection_drops",
+      "rule_type": "troubleshooting_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "connection_drops"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "action_function": "eduroam_troubleshoot_connection_drops",
+      "next_success": "eduroam_connection_attempt",
+      "risk_note": "Standort/Neustart/Profil erneuern",
+      "translation_rows": [
+        {
+          "Regel-ID": "eduroam_connection_drops",
+          "Priorität": 110,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_troubleshoot_connection_drops",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_connection_drops",
+          "Priorität": 110,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "eduroam_profile_configured",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_troubleshoot_connection_drops",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_connection_drops",
+          "Priorität": 110,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "problem_type",
+          "Operator": null,
+          "Wert": "connection_drops",
+          "Pflicht?": "Ja",
+          "Action Target": "eduroam_troubleshoot_connection_drops",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "eduroam_connection_drops",
+          "Priorität": 110,
+          "Block": "Post-Condition",
+          "Fact / Condition": "eduroam_connection_status",
+          "Operator": null,
+          "Wert": "not_tested",
+          "Pflicht?": "Nein",
+          "Action Target": "eduroam_troubleshoot_connection_drops",
+          "Next Success": "eduroam_connection_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.vpn_check_installation_campus_network",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "VPN-Erstinstallation am Campus über Eduroam-WLAN oder LAN",
+    "priority": 120,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "any": [
+        {
+          "fact": "on_campus",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        },
+        {
+          "fact": "campus_wifi_available",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "campus_lan_available",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_campus_network_help"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: vpn_campus_network_help"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_installation_allowed",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "vpn_check_installation_campus_network",
+      "rule_type": "precondition_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "on_campus",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        },
+        {
+          "fact": "campus_wifi_available",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "campus_lan_available",
+          "operator": "equals",
+          "value": false
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_installation_allowed",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "vpn_campus_network_help",
+      "next_success": "vpn_install_client",
+      "risk_note": "VPN-Erstinstallation am Campus über Eduroam-WLAN oder LAN",
+      "translation_rows": [
+        {
+          "Regel-ID": "vpn_check_installation_campus_network",
+          "Priorität": 120,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "vpn",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_campus_network_help",
+          "Next Success": "vpn_install_client",
+          "Next Failure / Alternative": "support_or_wait_until_on_campus"
+        },
+        {
+          "Regel-ID": "vpn_check_installation_campus_network",
+          "Priorität": 120,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "vpn_client_installed",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_campus_network_help",
+          "Next Success": "vpn_install_client",
+          "Next Failure / Alternative": "support_or_wait_until_on_campus"
+        },
+        {
+          "Regel-ID": "vpn_check_installation_campus_network",
+          "Priorität": 120,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "on_campus",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_campus_network_help",
+          "Next Success": "vpn_install_client",
+          "Next Failure / Alternative": "support_or_wait_until_on_campus"
+        },
+        {
+          "Regel-ID": "vpn_check_installation_campus_network",
+          "Priorität": 120,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "campus_wifi_available",
+          "Operator": null,
+          "Wert": "false",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_campus_network_help",
+          "Next Success": "vpn_install_client",
+          "Next Failure / Alternative": "support_or_wait_until_on_campus"
+        },
+        {
+          "Regel-ID": "vpn_check_installation_campus_network",
+          "Priorität": 120,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "campus_lan_available",
+          "Operator": null,
+          "Wert": "false",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_campus_network_help",
+          "Next Success": "vpn_install_client",
+          "Next Failure / Alternative": "support_or_wait_until_on_campus"
+        },
+        {
+          "Regel-ID": "vpn_check_installation_campus_network",
+          "Priorität": 120,
+          "Block": "Post-Condition",
+          "Fact / Condition": "vpn_installation_allowed",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_campus_network_help",
+          "Next Success": "vpn_install_client",
+          "Next Failure / Alternative": "support_or_wait_until_on_campus"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.vpn_install_client",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "setup_rule",
+    "description": "OS-spezifische VPN-Installation",
+    "priority": 125,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "on_campus",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "vpn_client_installed",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_install_client_os_specific"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: vpn_install_client_os_specific"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_client_installed",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_installation_status",
+        "value": "installed"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "vpn_install_client",
+      "rule_type": "setup_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "on_campus",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "vpn_client_installed",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_client_installed",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "vpn_installation_status",
+          "operator": "equals",
+          "value": "installed"
+        }
+      ],
+      "action_function": "vpn_install_client_os_specific",
+      "next_success": "vpn_check_client_healthy",
+      "risk_note": "OS-spezifische VPN-Installation",
+      "translation_rows": [
+        {
+          "Regel-ID": "vpn_install_client",
+          "Priorität": 125,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "vpn",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_install_client_os_specific",
+          "Next Success": "vpn_check_client_healthy",
+          "Next Failure / Alternative": "vpn_troubleshoot_installation"
+        },
+        {
+          "Regel-ID": "vpn_install_client",
+          "Priorität": 125,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "account_exists",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_install_client_os_specific",
+          "Next Success": "vpn_check_client_healthy",
+          "Next Failure / Alternative": "vpn_troubleshoot_installation"
+        },
+        {
+          "Regel-ID": "vpn_install_client",
+          "Priorität": 125,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "username_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_install_client_os_specific",
+          "Next Success": "vpn_check_client_healthy",
+          "Next Failure / Alternative": "vpn_troubleshoot_installation"
+        },
+        {
+          "Regel-ID": "vpn_install_client",
+          "Priorität": 125,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "password_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_install_client_os_specific",
+          "Next Success": "vpn_check_client_healthy",
+          "Next Failure / Alternative": "vpn_troubleshoot_installation"
+        },
+        {
+          "Regel-ID": "vpn_install_client",
+          "Priorität": 125,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "on_campus",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_install_client_os_specific",
+          "Next Success": "vpn_check_client_healthy",
+          "Next Failure / Alternative": "vpn_troubleshoot_installation"
+        },
+        {
+          "Regel-ID": "vpn_install_client",
+          "Priorität": 125,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "vpn_client_installed",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_install_client_os_specific",
+          "Next Success": "vpn_check_client_healthy",
+          "Next Failure / Alternative": "vpn_troubleshoot_installation"
+        },
+        {
+          "Regel-ID": "vpn_install_client",
+          "Priorität": 125,
+          "Block": "Post-Condition",
+          "Fact / Condition": "vpn_client_installed",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_install_client_os_specific",
+          "Next Success": "vpn_check_client_healthy",
+          "Next Failure / Alternative": "vpn_troubleshoot_installation"
+        },
+        {
+          "Regel-ID": "vpn_install_client",
+          "Priorität": 125,
+          "Block": "Post-Condition",
+          "Fact / Condition": "vpn_installation_status",
+          "Operator": null,
+          "Wert": "installed",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_install_client_os_specific",
+          "Next Success": "vpn_check_client_healthy",
+          "Next Failure / Alternative": "vpn_troubleshoot_installation"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.vpn_check_client_healthy",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "Nach Installation können trotzdem Client-Probleme auftreten",
+    "priority": 130,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "vpn_client_healthy",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_check_client_health"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: vpn_check_client_health"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_client_healthy",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "vpn_check_client_healthy",
+      "rule_type": "precondition_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "vpn_client_healthy",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_client_healthy",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "vpn_check_client_health",
+      "next_success": "vpn_profile_router",
+      "risk_note": "Nach Installation können trotzdem Client-Probleme auftreten",
+      "translation_rows": [
+        {
+          "Regel-ID": "vpn_check_client_healthy",
+          "Priorität": 130,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "vpn",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_check_client_health",
+          "Next Success": "vpn_profile_router",
+          "Next Failure / Alternative": "vpn_troubleshoot_client"
+        },
+        {
+          "Regel-ID": "vpn_check_client_healthy",
+          "Priorität": 130,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "vpn_client_installed",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_check_client_health",
+          "Next Success": "vpn_profile_router",
+          "Next Failure / Alternative": "vpn_troubleshoot_client"
+        },
+        {
+          "Regel-ID": "vpn_check_client_healthy",
+          "Priorität": 130,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "vpn_client_healthy",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_check_client_health",
+          "Next Success": "vpn_profile_router",
+          "Next Failure / Alternative": "vpn_troubleshoot_client"
+        },
+        {
+          "Regel-ID": "vpn_check_client_healthy",
+          "Priorität": 130,
+          "Block": "Post-Condition",
+          "Fact / Condition": "vpn_client_healthy",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_check_client_health",
+          "Next Success": "vpn_profile_router",
+          "Next Failure / Alternative": "vpn_troubleshoot_client"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.vpn_profile_router",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "router_rule",
+    "description": "Profil/Gateway vor Authentifizierung",
+    "priority": 135,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "vpn_client_healthy",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "vpn_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_configure_profile_gateway"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: vpn_configure_profile_gateway"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_profile_configured",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "vpn_profile_router",
+      "rule_type": "router_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "vpn_client_healthy",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "vpn_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_profile_configured",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "vpn_configure_profile_gateway",
+      "next_success": "mfa_vpn_requirement",
+      "risk_note": "Profil/Gateway vor Authentifizierung",
+      "translation_rows": [
+        {
+          "Regel-ID": "vpn_profile_router",
+          "Priorität": 135,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "vpn",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_configure_profile_gateway",
+          "Next Success": "mfa_vpn_requirement",
+          "Next Failure / Alternative": "vpn_troubleshoot_client"
+        },
+        {
+          "Regel-ID": "vpn_profile_router",
+          "Priorität": 135,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "vpn_client_installed",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_configure_profile_gateway",
+          "Next Success": "mfa_vpn_requirement",
+          "Next Failure / Alternative": "vpn_troubleshoot_client"
+        },
+        {
+          "Regel-ID": "vpn_profile_router",
+          "Priorität": 135,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "vpn_client_healthy",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_configure_profile_gateway",
+          "Next Success": "mfa_vpn_requirement",
+          "Next Failure / Alternative": "vpn_troubleshoot_client"
+        },
+        {
+          "Regel-ID": "vpn_profile_router",
+          "Priorität": 135,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "vpn_profile_configured",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_configure_profile_gateway",
+          "Next Success": "mfa_vpn_requirement",
+          "Next Failure / Alternative": "vpn_troubleshoot_client"
+        },
+        {
+          "Regel-ID": "vpn_profile_router",
+          "Priorität": 135,
+          "Block": "Post-Condition",
+          "Fact / Condition": "vpn_profile_configured",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_configure_profile_gateway",
+          "Next Success": "mfa_vpn_requirement",
+          "Next Failure / Alternative": "vpn_troubleshoot_client"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.vpn_authenticate",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "auth_rule",
+    "description": "VPN-Login benötigt MFA-Code",
+    "priority": 140,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_code_status",
+          "operator": "equals",
+          "value": "valid"
+        }
+      ],
+      "any": [
+        {
+          "fact": "vpn_auth_status",
+          "operator": "in",
+          "value": [
+            "not_tested",
+            "failed"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_authenticate_with_mfa"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: vpn_authenticate_with_mfa"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_auth_status",
+        "value": "success oder failed"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "vpn_authenticate",
+      "rule_type": "auth_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_code_status",
+          "operator": "equals",
+          "value": "valid"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "vpn_auth_status",
+          "operator": "in",
+          "value": [
+            "not_tested",
+            "failed"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "success oder failed"
+        }
+      ],
+      "action_function": "vpn_authenticate_with_mfa",
+      "next_success": "vpn_tunnel_attempt",
+      "risk_note": "VPN-Login benötigt MFA-Code",
+      "translation_rows": [
+        {
+          "Regel-ID": "vpn_authenticate",
+          "Priorität": 140,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "vpn",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_authenticate_with_mfa",
+          "Next Success": "vpn_tunnel_attempt",
+          "Next Failure / Alternative": "vpn_troubleshoot_auth_mfa"
+        },
+        {
+          "Regel-ID": "vpn_authenticate",
+          "Priorität": 140,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "vpn_profile_configured",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_authenticate_with_mfa",
+          "Next Success": "vpn_tunnel_attempt",
+          "Next Failure / Alternative": "vpn_troubleshoot_auth_mfa"
+        },
+        {
+          "Regel-ID": "vpn_authenticate",
+          "Priorität": 140,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "account_exists",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_authenticate_with_mfa",
+          "Next Success": "vpn_tunnel_attempt",
+          "Next Failure / Alternative": "vpn_troubleshoot_auth_mfa"
+        },
+        {
+          "Regel-ID": "vpn_authenticate",
+          "Priorität": 140,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "username_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_authenticate_with_mfa",
+          "Next Success": "vpn_tunnel_attempt",
+          "Next Failure / Alternative": "vpn_troubleshoot_auth_mfa"
+        },
+        {
+          "Regel-ID": "vpn_authenticate",
+          "Priorität": 140,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "password_known",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_authenticate_with_mfa",
+          "Next Success": "vpn_tunnel_attempt",
+          "Next Failure / Alternative": "vpn_troubleshoot_auth_mfa"
+        },
+        {
+          "Regel-ID": "vpn_authenticate",
+          "Priorität": 140,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "mfa_code_status",
+          "Operator": null,
+          "Wert": "valid",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_authenticate_with_mfa",
+          "Next Success": "vpn_tunnel_attempt",
+          "Next Failure / Alternative": "vpn_troubleshoot_auth_mfa"
+        },
+        {
+          "Regel-ID": "vpn_authenticate",
+          "Priorität": 140,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "vpn_auth_status",
+          "Operator": null,
+          "Wert": "not_tested, failed",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_authenticate_with_mfa",
+          "Next Success": "vpn_tunnel_attempt",
+          "Next Failure / Alternative": "vpn_troubleshoot_auth_mfa"
+        },
+        {
+          "Regel-ID": "vpn_authenticate",
+          "Priorität": 140,
+          "Block": "Post-Condition",
+          "Fact / Condition": "vpn_auth_status",
+          "Operator": null,
+          "Wert": "success oder failed",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_authenticate_with_mfa",
+          "Next Success": "vpn_tunnel_attempt",
+          "Next Failure / Alternative": "vpn_troubleshoot_auth_mfa"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.vpn_tunnel_attempt",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "connection_rule",
+    "description": "Tunnelstatus separat vom Auth-Status prüfen",
+    "priority": 145,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ],
+      "any": [
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "in",
+          "value": [
+            "not_tested",
+            "failed"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_connect_tunnel"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: vpn_connect_tunnel"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_tunnel_status",
+        "value": "connected oder failed"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "vpn_tunnel_attempt",
+      "rule_type": "connection_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "in",
+          "value": [
+            "not_tested",
+            "failed"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "connected oder failed"
+        }
+      ],
+      "action_function": "vpn_connect_tunnel",
+      "next_success": "vpn_check_resource_access",
+      "risk_note": "Tunnelstatus separat vom Auth-Status prüfen",
+      "translation_rows": [
+        {
+          "Regel-ID": "vpn_tunnel_attempt",
+          "Priorität": 145,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "vpn",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_connect_tunnel",
+          "Next Success": "vpn_check_resource_access",
+          "Next Failure / Alternative": "vpn_troubleshoot_tunnel_network"
+        },
+        {
+          "Regel-ID": "vpn_tunnel_attempt",
+          "Priorität": 145,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "vpn_auth_status",
+          "Operator": null,
+          "Wert": "success",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_connect_tunnel",
+          "Next Success": "vpn_check_resource_access",
+          "Next Failure / Alternative": "vpn_troubleshoot_tunnel_network"
+        },
+        {
+          "Regel-ID": "vpn_tunnel_attempt",
+          "Priorität": 145,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "vpn_tunnel_status",
+          "Operator": null,
+          "Wert": "not_tested, failed",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_connect_tunnel",
+          "Next Success": "vpn_check_resource_access",
+          "Next Failure / Alternative": "vpn_troubleshoot_tunnel_network"
+        },
+        {
+          "Regel-ID": "vpn_tunnel_attempt",
+          "Priorität": 145,
+          "Block": "Post-Condition",
+          "Fact / Condition": "vpn_tunnel_status",
+          "Operator": null,
+          "Wert": "connected oder failed",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_connect_tunnel",
+          "Next Success": "vpn_check_resource_access",
+          "Next Failure / Alternative": "vpn_troubleshoot_tunnel_network"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.vpn_check_resource_access",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "connection_rule",
+    "description": "VPN verbunden heißt nicht automatisch Ressource erreichbar",
+    "priority": 150,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "connected"
+        }
+      ],
+      "any": [
+        {
+          "fact": "vpn_resource_accessible",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_check_internal_resources"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: vpn_check_internal_resources"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_resource_accessible",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "vpn_check_resource_access",
+      "rule_type": "connection_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "connected"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "vpn_resource_accessible",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_resource_accessible",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "vpn_check_internal_resources",
+      "next_success": "finish_resolved",
+      "risk_note": "VPN verbunden heißt nicht automatisch Ressource erreichbar",
+      "translation_rows": [
+        {
+          "Regel-ID": "vpn_check_resource_access",
+          "Priorität": 150,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "vpn",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_check_internal_resources",
+          "Next Success": "finish_resolved",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "vpn_check_resource_access",
+          "Priorität": 150,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "vpn_tunnel_status",
+          "Operator": null,
+          "Wert": "connected",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_check_internal_resources",
+          "Next Success": "finish_resolved",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "vpn_check_resource_access",
+          "Priorität": 150,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "vpn_resource_accessible",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_check_internal_resources",
+          "Next Success": "finish_resolved",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "vpn_check_resource_access",
+          "Priorität": 150,
+          "Block": "Post-Condition",
+          "Fact / Condition": "vpn_resource_accessible",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_check_internal_resources",
+          "Next Success": "finish_resolved",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.vpn_troubleshoot_installation",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "troubleshooting_rule",
+    "description": "Installationsproblem getrennt von Loginproblem behandeln",
+    "priority": 155,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        }
+      ],
+      "any": [
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "install_failed"
+        },
+        {
+          "fact": "vpn_installation_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_troubleshoot_installation"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: vpn_troubleshoot_installation"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "vpn_troubleshoot_installation",
+      "rule_type": "troubleshooting_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "install_failed"
+        },
+        {
+          "fact": "vpn_installation_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_client_installed_ggf_true",
+          "operator": "is_known",
+          "value": true,
+          "raw": "vpn_client_installed ggf. true"
+        }
+      ],
+      "action_function": "vpn_troubleshoot_installation",
+      "next_success": "vpn_check_client_healthy",
+      "risk_note": "Installationsproblem getrennt von Loginproblem behandeln",
+      "translation_rows": [
+        {
+          "Regel-ID": "vpn_troubleshoot_installation",
+          "Priorität": 155,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "vpn",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_troubleshoot_installation",
+          "Next Success": "vpn_check_client_healthy",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "vpn_troubleshoot_installation",
+          "Priorität": 155,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "problem_type",
+          "Operator": null,
+          "Wert": "install_failed",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_troubleshoot_installation",
+          "Next Success": "vpn_check_client_healthy",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "vpn_troubleshoot_installation",
+          "Priorität": 155,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "vpn_installation_status",
+          "Operator": null,
+          "Wert": "failed",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_troubleshoot_installation",
+          "Next Success": "vpn_check_client_healthy",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "vpn_troubleshoot_installation",
+          "Priorität": 155,
+          "Block": "Post-Condition",
+          "Fact / Condition": "vpn_client_installed",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_troubleshoot_installation",
+          "Next Success": "vpn_check_client_healthy",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.vpn_troubleshoot_auth_mfa",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "troubleshooting_rule",
+    "description": "Trennt Zugangsdaten- und MFA-Fehler",
+    "priority": 160,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        }
+      ],
+      "any": [
+        {
+          "fact": "problem_type",
+          "operator": "in",
+          "value": [
+            "auth_failed",
+            "mfa_failed"
+          ]
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_troubleshoot_auth_mfa"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: vpn_troubleshoot_auth_mfa"
+      },
+      {
+        "type": "set_fact",
+        "fact": "credentials_checked",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "vpn_troubleshoot_auth_mfa",
+      "rule_type": "troubleshooting_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "problem_type",
+          "operator": "in",
+          "value": [
+            "auth_failed",
+            "mfa_failed"
+          ]
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "credentials_checked",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_code_status_ggf_not_tested",
+          "operator": "is_known",
+          "value": true,
+          "raw": "mfa_code_status ggf. not_tested"
+        }
+      ],
+      "action_function": "vpn_troubleshoot_auth_mfa",
+      "next_success": "mfa_check_totp_code",
+      "risk_note": "Trennt Zugangsdaten- und MFA-Fehler",
+      "translation_rows": [
+        {
+          "Regel-ID": "vpn_troubleshoot_auth_mfa",
+          "Priorität": 160,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "vpn",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_troubleshoot_auth_mfa",
+          "Next Success": "mfa_check_totp_code",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "vpn_troubleshoot_auth_mfa",
+          "Priorität": 160,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "problem_type",
+          "Operator": null,
+          "Wert": "auth_failed, mfa_failed",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_troubleshoot_auth_mfa",
+          "Next Success": "mfa_check_totp_code",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "vpn_troubleshoot_auth_mfa",
+          "Priorität": 160,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "vpn_auth_status",
+          "Operator": null,
+          "Wert": "failed",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_troubleshoot_auth_mfa",
+          "Next Success": "mfa_check_totp_code",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "vpn_troubleshoot_auth_mfa",
+          "Priorität": 160,
+          "Block": "Post-Condition",
+          "Fact / Condition": "credentials_checked",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_troubleshoot_auth_mfa",
+          "Next Success": "mfa_check_totp_code",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "vpn_troubleshoot_auth_mfa",
+          "Priorität": 160,
+          "Block": "Post-Condition",
+          "Fact / Condition": "mfa_code_status",
+          "Operator": null,
+          "Wert": "not_tested",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_troubleshoot_auth_mfa",
+          "Next Success": "mfa_check_totp_code",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.vpn_troubleshoot_tunnel_network",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "troubleshooting_rule",
+    "description": "Nach erfolgreichem Login Tunnel/Netz separat prüfen",
+    "priority": 165,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ],
+      "any": [
+        {
+          "fact": "problem_type",
+          "operator": "in",
+          "value": [
+            "timeout",
+            "client_error"
+          ]
+        },
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_troubleshoot_tunnel_network"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: vpn_troubleshoot_tunnel_network"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_tunnel_status",
+        "value": "not_tested"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "vpn_troubleshoot_tunnel_network",
+      "rule_type": "troubleshooting_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "problem_type",
+          "operator": "in",
+          "value": [
+            "timeout",
+            "client_error"
+          ]
+        },
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "action_function": "vpn_troubleshoot_tunnel_network",
+      "next_success": "vpn_tunnel_attempt",
+      "risk_note": "Nach erfolgreichem Login Tunnel/Netz separat prüfen",
+      "translation_rows": [
+        {
+          "Regel-ID": "vpn_troubleshoot_tunnel_network",
+          "Priorität": 165,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "vpn",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_troubleshoot_tunnel_network",
+          "Next Success": "vpn_tunnel_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "vpn_troubleshoot_tunnel_network",
+          "Priorität": 165,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "vpn_auth_status",
+          "Operator": null,
+          "Wert": "success",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_troubleshoot_tunnel_network",
+          "Next Success": "vpn_tunnel_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "vpn_troubleshoot_tunnel_network",
+          "Priorität": 165,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "problem_type",
+          "Operator": null,
+          "Wert": "timeout, client_error",
+          "Pflicht?": "Ja",
+          "Action Target": "vpn_troubleshoot_tunnel_network",
+          "Next Success": "vpn_tunnel_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "vpn_troubleshoot_tunnel_network",
+          "Priorität": 165,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "vpn_tunnel_status",
+          "Operator": null,
+          "Wert": "failed",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_troubleshoot_tunnel_network",
+          "Next Success": "vpn_tunnel_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "vpn_troubleshoot_tunnel_network",
+          "Priorität": 165,
+          "Block": "Post-Condition",
+          "Fact / Condition": "vpn_tunnel_status",
+          "Operator": null,
+          "Wert": "not_tested",
+          "Pflicht?": "Nein",
+          "Action Target": "vpn_troubleshoot_tunnel_network",
+          "Next Success": "vpn_tunnel_attempt",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.finish_resolved",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "completion_rule",
+    "description": "Finaler Zielzustand",
+    "priority": 180,
+    "when": {
+      "all": [
+        {
+          "fact": "user_problem_resolved",
+          "operator": "in",
+          "value": [
+            true,
+            "unknown"
+          ]
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_internet_access",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "vpn_resource_accessible",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "finish_resolved_response"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: finish_resolved_response"
+      },
+      {
+        "type": "set_fact",
+        "fact": "user_problem_resolved",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "user_request_answered",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "finish_resolved",
+      "rule_type": "completion_rule",
+      "pre_conditions": [
+        {
+          "fact": "user_problem_resolved",
+          "operator": "in",
+          "value": [
+            true,
+            "unknown"
+          ]
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_internet_access",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "vpn_resource_accessible",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_request_answered",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "finish_resolved_response",
+      "next_success": "end",
+      "risk_note": "Finaler Zielzustand",
+      "translation_rows": [
+        {
+          "Regel-ID": "finish_resolved",
+          "Priorität": 180,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "user_problem_resolved",
+          "Operator": null,
+          "Wert": "true, unknown",
+          "Pflicht?": "Nein",
+          "Action Target": "finish_resolved_response",
+          "Next Success": "end",
+          "Next Failure / Alternative": null
+        },
+        {
+          "Regel-ID": "finish_resolved",
+          "Priorität": 180,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "eduroam_internet_access",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "finish_resolved_response",
+          "Next Success": "end",
+          "Next Failure / Alternative": null
+        },
+        {
+          "Regel-ID": "finish_resolved",
+          "Priorität": 180,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "vpn_resource_accessible",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "finish_resolved_response",
+          "Next Success": "end",
+          "Next Failure / Alternative": null
+        },
+        {
+          "Regel-ID": "finish_resolved",
+          "Priorität": 180,
+          "Block": "Post-Condition",
+          "Fact / Condition": "user_problem_resolved",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "finish_resolved_response",
+          "Next Success": "end",
+          "Next Failure / Alternative": null
+        },
+        {
+          "Regel-ID": "finish_resolved",
+          "Priorität": 180,
+          "Block": "Post-Condition",
+          "Fact / Condition": "user_request_answered",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "finish_resolved_response",
+          "Next Success": "end",
+          "Next Failure / Alternative": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.support_escalate",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "escalation_rule",
+    "description": "Abschluss erlaubt, wenn Supportweg ausgegeben wurde",
+    "priority": 190,
+    "when": {
+      "all": [],
+      "any": [
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "support_escalation_response"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: support_escalation_response"
+      },
+      {
+        "type": "set_fact",
+        "fact": "user_request_answered",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "support_escalate",
+      "rule_type": "escalation_rule",
+      "pre_conditions": [],
+      "trigger_conditions": [
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "user_request_answered",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "support_escalation_response",
+      "next_success": "end",
+      "risk_note": "Abschluss erlaubt, wenn Supportweg ausgegeben wurde",
+      "translation_rows": [
+        {
+          "Regel-ID": "support_escalate",
+          "Priorität": 190,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "needs_human_support",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "support_escalation_response",
+          "Next Success": "end",
+          "Next Failure / Alternative": null
+        },
+        {
+          "Regel-ID": "support_escalate",
+          "Priorität": 190,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "user_problem_resolved",
+          "Operator": null,
+          "Wert": "false, unknown",
+          "Pflicht?": "Nein",
+          "Action Target": "support_escalation_response",
+          "Next Success": "end",
+          "Next Failure / Alternative": null
+        },
+        {
+          "Regel-ID": "support_escalate",
+          "Priorität": 190,
+          "Block": "Post-Condition",
+          "Fact / Condition": "user_request_answered",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "support_escalation_response",
+          "Next Success": "end",
+          "Next Failure / Alternative": null
+        }
+      ]
+    }
+  },
+  {
+    "id": "excel.service_fallback",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "fallback_rule",
+    "description": "Ganz unten, sonst Überschattung",
+    "priority": 999,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa",
+            "unknown"
+          ]
+        }
+      ],
+      "any": [
+        {
+          "fact": "no_specific_rule_matches",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "core_clarify_missing_facts"
+      },
+      {
+        "type": "answer",
+        "text": "Führe Funktion aus: core_clarify_missing_facts"
+      }
+    ],
+    "stop_after_match": false,
+    "technical_metadata": {
+      "source_file": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+      "original_rule_id": "service_fallback",
+      "rule_type": "fallback_rule",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa",
+            "unknown"
+          ]
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "no_specific_rule_matches",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "missing_facts_werden_abgefragt_true",
+          "operator": "is_known",
+          "value": true,
+          "raw": "missing_facts werden abgefragt true"
+        }
+      ],
+      "action_function": "core_clarify_missing_facts",
+      "next_success": "service_specific_chain",
+      "risk_note": "Ganz unten, sonst Überschattung",
+      "translation_rows": [
+        {
+          "Regel-ID": "service_fallback",
+          "Priorität": 999,
+          "Block": "Pre-Condition",
+          "Fact / Condition": "service",
+          "Operator": null,
+          "Wert": "eduroam, vpn, mfa, unknown",
+          "Pflicht?": "Ja",
+          "Action Target": "core_clarify_missing_facts",
+          "Next Success": "service_specific_chain",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "service_fallback",
+          "Priorität": 999,
+          "Block": "Trigger-Condition",
+          "Fact / Condition": "no_specific_rule_matches",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Ja",
+          "Action Target": "core_clarify_missing_facts",
+          "Next Success": "service_specific_chain",
+          "Next Failure / Alternative": "support_escalate"
+        },
+        {
+          "Regel-ID": "service_fallback",
+          "Priorität": 999,
+          "Block": "Post-Condition",
+          "Fact / Condition": "missing_facts",
+          "Operator": null,
+          "Wert": "true",
+          "Pflicht?": "Nein",
+          "Action Target": "core_clarify_missing_facts",
+          "Next Success": "service_specific_chain",
+          "Next Failure / Alternative": "support_escalate"
+        }
+      ]
+    }
+  }
+]

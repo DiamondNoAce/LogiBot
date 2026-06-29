@@ -1,0 +1,28 @@
+{
+  "sources": [
+    {
+      "Quelle": "Eduroam_Regeln_technische_Sicht.xlsx",
+      "Typ": "Vom Nutzer bereitgestellte Excel-Struktur",
+      "Genutzter Inhalt": "Blattlogik, Regelspalten, Pre-Condition-/Trigger-/Action-/Post-Condition-Struktur",
+      "Hinweis": "Struktur strikt übernommen"
+    },
+    {
+      "Quelle": "Wissensmodell ohne Namespaces.png",
+      "Typ": "Vom Nutzer bereitgestellte Grafik",
+      "Genutzter Inhalt": "Fachliches Wissensmodell: Core, Eduroam, VPN, MFA und Überschneidungen",
+      "Hinweis": "In Regeln übersetzt"
+    },
+    {
+      "Quelle": "Wissensmodell mit Namespaces.png",
+      "Typ": "Vom Nutzer bereitgestellte Grafik",
+      "Genutzter Inhalt": "Technische Namespaces und Fact-Struktur",
+      "Hinweis": "Für Fact-/Condition-Namen genutzt"
+    },
+    {
+      "Quelle": "Nutzerhinweis MFA",
+      "Typ": "Fachliche Korrektur",
+      "Genutzter Inhalt": "Keine Push-Benachrichtigung; Authenticator-Code ändert sich alle 30 Sekunden",
+      "Hinweis": "In MFA-Regeln berücksichtigt"
+    }
+  ]
+}

@@ -1,0 +1,393 @@
+[
+  {
+    "id": "km.core.account_locked_blocks_services",
+    "active": true,
+    "module": "knowledge_model_core",
+    "rule_group": "core_account",
+    "description": "Wissensmodell: Account gesperrt ist ein roter, blockierender Pfad für MFA, VPN, eduroam und Drucker.",
+    "priority": 2,
+    "when": {
+      "any": [
+        {
+          "fact": "account_status",
+          "operator": "equals",
+          "value": "locked"
+        },
+        {
+          "fact": "account_locked",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Der Account wirkt gesperrt oder blockiert. Dadurch können eduroam, VPN, MFA und Drucker-Logins nicht zuverlässig funktionieren. Bitte kläre zuerst den Account-Status mit dem KIM-IT-Service-Desk."
+      },
+      {
+        "type": "set_fact",
+        "fact": "needs_human_support",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "escalation_reason",
+        "value": "account_locked"
+      }
+    ],
+    "stop_after_match": true,
+    "knowledge_model_refs": [
+      "core.account",
+      "service.support.human"
+    ]
+  },
+  {
+    "id": "km.core.username_unknown_before_login_services",
+    "active": true,
+    "module": "knowledge_model_core",
+    "rule_group": "core_credentials",
+    "description": "Benutzerkennung nur abfragen, wenn sie noch unbekannt ist; false wird durch Guard-Regeln behandelt.",
+    "priority": 16,
+    "when": {
+      "all": [
+        {
+          "fact": "intent",
+          "operator": "in",
+          "value": [
+            "setup",
+            "login",
+            "troubleshooting"
+          ]
+        },
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa",
+            "user_account",
+            "unknown"
+          ]
+        },
+        {
+          "fact": "username_known",
+          "operator": "in",
+          "value": [
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "username_known",
+        "text": "Kennst du dein Hohenheimer Kürzel bzw. deine Hohenheimer Benutzerkennung?"
+      },
+      {
+        "type": "recommend",
+        "text": "Für VPN, eduroam und MFA brauchst du dein Hohenheimer Kürzel bzw. deine Benutzerkennung. Das ist nicht deine persönliche E-Mail-Adresse."
+      }
+    ],
+    "stop_after_match": true,
+    "knowledge_model_refs": [
+      "core.credentials"
+    ]
+  },
+  {
+    "id": "km.core.password_unknown_before_login_services",
+    "active": true,
+    "module": "knowledge_model_core",
+    "rule_group": "core_credentials",
+    "description": "Passwort nur abfragen, wenn es noch unbekannt ist; false wird durch Guard-Regeln behandelt.",
+    "priority": 17,
+    "when": {
+      "all": [
+        {
+          "fact": "intent",
+          "operator": "in",
+          "value": [
+            "setup",
+            "login",
+            "troubleshooting"
+          ]
+        },
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa",
+            "user_account",
+            "unknown"
+          ]
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "in",
+          "value": [
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "password_known",
+        "text": "Kennst du dein Hohenheimer Passwort bzw. kannst du dich damit anmelden?"
+      },
+      {
+        "type": "recommend",
+        "text": "Benutzerkennung und Passwort sind gemeinsame Voraussetzungen für eduroam, VPN und MFA. Wenn das Passwort unbekannt ist oder nicht funktioniert, muss zuerst der Account-/Passwortpfad geklärt werden."
+      }
+    ],
+    "stop_after_match": true,
+    "knowledge_model_refs": [
+      "core.credentials"
+    ]
+  },
+  {
+    "id": "km.vpn.requires_mfa_challenge",
+    "active": true,
+    "module": "knowledge_model_vpn",
+    "rule_group": "vpn_mfa",
+    "description": "Wissensmodell: VPN-Login führt über MFA-Code zum Tunnelstatus. Es wird ein zeitbasierter Code aus der Authenticator-App genutzt, keine Push-Benachrichtigung.",
+    "priority": 24,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "not_equals",
+          "value": "connected"
+        }
+      ],
+      "any": [
+        {
+          "fact": "mfa_challenge_approved",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        },
+        {
+          "fact": "two_fa_ready",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "mfa_challenge_approved",
+        "text": "Konntest du beim VPN-Login den aktuellen MFA-Code aus deiner Authenticator-App eingeben?"
+      },
+      {
+        "type": "recommend",
+        "text": "Der VPN-Pfad benötigt nach Benutzername und Passwort den zeitbasierten MFA-Code. Ohne gültigen Code kann kein VPN-Tunnel aufgebaut werden."
+      }
+    ],
+    "stop_after_match": false,
+    "knowledge_model_refs": [
+      "service.mfa.challenge",
+      "service.vpn.auth",
+      "service.vpn.tunnel"
+    ]
+  },
+  {
+    "id": "km.vpn.tunnel_ok_resource_not_accessible",
+    "active": true,
+    "module": "knowledge_model_vpn",
+    "rule_group": "vpn_resources",
+    "description": "Wissensmodell: VPN-Tunnel verbunden, aber interne Ressource nicht erreichbar -> Berechtigung/Netz/Supprt prüfen.",
+    "priority": 26,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "connected"
+        },
+        {
+          "fact": "internal_resource_accessible",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "recommend",
+        "text": "Der VPN-Tunnel scheint verbunden zu sein, aber die interne Ressource ist nicht erreichbar. Prüfe Berechtigungen, Zieladresse und ob der Dienst nur aus bestimmten Netzen erreichbar ist."
+      },
+      {
+        "type": "set_fact",
+        "fact": "needs_human_support",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "escalation_reason",
+        "value": "authorization"
+      }
+    ],
+    "stop_after_match": true,
+    "knowledge_model_refs": [
+      "service.vpn.tunnel",
+      "service.vpn.resources",
+      "service.support.human"
+    ]
+  },
+  {
+    "id": "km.mfa.lost_device_recovery_path",
+    "active": true,
+    "module": "knowledge_model_mfa",
+    "rule_group": "mfa_recovery",
+    "description": "Wissensmodell: Gerät verloren oder keine App -> Recovery/Neuregistrierung.",
+    "priority": 18,
+    "when": {
+      "any": [
+        {
+          "fact": "mfa_problem_type",
+          "operator": "equals",
+          "value": "lost_device"
+        },
+        {
+          "fact": "mfa_app_available",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "mfa_recovery_available",
+        "text": "Hast du noch einen Recovery-Code oder eine alternative 2FA-Methode?"
+      },
+      {
+        "type": "recommend",
+        "text": "Ohne Zugriff auf die MFA-App führt der Pfad über Recovery-Code oder Neuregistrierung. Falls keine Recovery-Möglichkeit vorhanden ist, muss der Support eingebunden werden."
+      }
+    ],
+    "stop_after_match": true,
+    "knowledge_model_refs": [
+      "service.mfa.problem",
+      "service.mfa.recovery"
+    ]
+  },
+  {
+    "id": "km.eduroam.profile_connection_split",
+    "active": true,
+    "module": "knowledge_model_eduroam",
+    "rule_group": "eduroam_profile_connection",
+    "description": "Wissensmodell: eduroam unterscheidet Sichtbarkeit, Profil/CAT/Zertifikat und eigentliche Verbindung.",
+    "priority": 34,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        },
+        {
+          "fact": "certificate_warning_shown",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "recommend",
+        "text": "eduroam ist sichtbar. Der nächste logische Pfad im Wissensmodell ist Profil/CAT/Zertifikat: Installiere bzw. prüfe das Profil und bestätige Zertifikatswarnungen nur, wenn Quelle und Organisation korrekt sind."
+      }
+    ],
+    "stop_after_match": false,
+    "knowledge_model_refs": [
+      "service.eduroam.available",
+      "service.eduroam.profile"
+    ]
+  },
+  {
+    "id": "km.eduroam_connected_but_no_internet",
+    "active": true,
+    "module": "knowledge_model_eduroam",
+    "rule_group": "eduroam_internet",
+    "description": "Wissensmodell: eduroam verbunden, aber kein Internet -> Verbindung/Status/Support prüfen.",
+    "priority": 35,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_connected",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "internet_access_available",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "recommend",
+        "text": "Du bist mit eduroam verbunden, hast aber keinen Internetzugriff. Prüfe IP-/Netzwerkstatus, WLAN neu verbinden und ob das Problem auch an anderen Geräten auftritt. Wenn ja, ist Support/Eskalation sinnvoll."
+      },
+      {
+        "type": "set_fact",
+        "fact": "needs_human_support",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "knowledge_model_refs": [
+      "service.eduroam.connection",
+      "service.support.human"
+    ]
+  }
+]

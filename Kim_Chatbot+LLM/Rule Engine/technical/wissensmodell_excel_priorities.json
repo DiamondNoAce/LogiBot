@@ -1,0 +1,68 @@
+{
+  "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+  "items": [
+    {
+      "Prioritätsbereich": "1–9",
+      "Regeltyp": "Sicherheitskritische Regeln",
+      "Beispiele": "security_eduroam_certificate_warning",
+      "Warum diese Reihenfolge?": "Sicherheitsrelevante Hinweise dürfen nicht von allgemeinen Regeln überdeckt werden",
+      "Debugger-Hinweis": "Warnen, wenn allgemeine Regel darüber liegt"
+    },
+    {
+      "Prioritätsbereich": "10–29",
+      "Regeltyp": "Routing, Rolle, Account, Zugangsdaten",
+      "Beispiele": "core_route_topic, core_check_account_exists",
+      "Warum diese Reihenfolge?": "Gemeinsame Blocker vor service-spezifischen Setups klären",
+      "Debugger-Hinweis": "Setup darf Account/Zugangsdaten nicht überspringen"
+    },
+    {
+      "Prioritätsbereich": "30–39",
+      "Regeltyp": "MFA-Preconditions für VPN",
+      "Beispiele": "mfa_vpn_requirement, mfa_check_enrollment",
+      "Warum diese Reihenfolge?": "MFA ist für VPN zwingend und muss vor VPN-Auth bereit sein",
+      "Debugger-Hinweis": "Push nicht modellieren; nur TOTP-Code"
+    },
+    {
+      "Prioritätsbereich": "40–59",
+      "Regeltyp": "Eduroam Campus/WLAN Preconditions",
+      "Beispiele": "eduroam_check_campus_context, eduroam_check_visible_network",
+      "Warum diese Reihenfolge?": "Eduroam muss am Standort sichtbar/nutzbar sein",
+      "Debugger-Hinweis": "Setup darf Standort/WLAN nicht überspringen"
+    },
+    {
+      "Prioritätsbereich": "60–79",
+      "Regeltyp": "Eduroam Setup/Router",
+      "Beispiele": "eduroam_profile_router, eduroam_setup_windows",
+      "Warum diese Reihenfolge?": "OS-spezifische Einrichtung vor Verbindungstest",
+      "Debugger-Hinweis": "Router darf spezifische OS-Regeln nicht überschreiben"
+    },
+    {
+      "Prioritätsbereich": "80–119",
+      "Regeltyp": "Eduroam Verbindung/Troubleshooting",
+      "Beispiele": "eduroam_connection_attempt, eduroam_check_internet",
+      "Warum diese Reihenfolge?": "Nach Einrichtung Verbindung und Internet prüfen",
+      "Debugger-Hinweis": "No-Internet von Auth-Fehler trennen"
+    },
+    {
+      "Prioritätsbereich": "120–169",
+      "Regeltyp": "VPN Installation/Auth/Tunnel/Troubleshooting",
+      "Beispiele": "vpn_install_client, vpn_authenticate, vpn_tunnel_attempt",
+      "Warum diese Reihenfolge?": "VPN-Erstinstallation, MFA-Auth, Tunnel und Ressourcen getrennt prüfen",
+      "Debugger-Hinweis": "Campusnetz für Erstinstallation berücksichtigen"
+    },
+    {
+      "Prioritätsbereich": "180–199",
+      "Regeltyp": "Abschluss/Eskalation",
+      "Beispiele": "finish_resolved, support_escalate",
+      "Warum diese Reihenfolge?": "Anfrage nur nach Lösung oder sauberer Eskalation abschließen",
+      "Debugger-Hinweis": "user_request_answered nicht zu früh setzen"
+    },
+    {
+      "Prioritätsbereich": "900+",
+      "Regeltyp": "Fallback-Regeln",
+      "Beispiele": "service_fallback",
+      "Warum diese Reihenfolge?": "Greift nur, wenn keine spezifischere Regel passt",
+      "Debugger-Hinweis": "Muss immer ganz unten stehen"
+    }
+  ]
+}

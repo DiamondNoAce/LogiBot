@@ -1,0 +1,230 @@
+{
+  "global_blocks": [
+    {
+      "id": "global_internet_check",
+      "name": "Internetverbindung prüfen",
+      "description": "Dienstübergreifender Baustein zur Prüfung, ob eine Internetverbindung vorhanden ist.",
+      "active": true,
+      "scope": "global",
+      "priority": 10,
+      "facts": [
+        {
+          "key": "internet_available",
+          "type": "boolean",
+          "question": "Hast du aktuell eine Internetverbindung?"
+        }
+      ],
+      "rules": [
+        {
+          "id": "global.internet.missing",
+          "active": true,
+          "description": "Ohne Internet kann keine Online-Anleitung bzw. kein Installer geladen werden.",
+          "priority": 10,
+          "conditions": {
+            "all": [
+              {
+                "fact": "internet_available",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Stelle zuerst eine Internetverbindung her, z. B. über LAN, Hotspot oder ein anderes WLAN."
+            },
+            {
+              "type": "set_fact",
+              "fact": "global_blocking_issue",
+              "value": "internet_missing"
+            }
+          ],
+          "stop_after_match": true
+        }
+      ]
+    },
+    {
+      "id": "global_account_check",
+      "name": "Benutzerkonto prüfen",
+      "description": "Dienstübergreifender Baustein für Dienste, die ein aktiviertes Hohenheimer Benutzerkonto benötigen.",
+      "active": true,
+      "scope": "global",
+      "priority": 20,
+      "facts": [
+        {
+          "key": "account_activated",
+          "type": "boolean",
+          "question": "Ist dein Hohenheimer Benutzerkonto bereits aktiviert?"
+        },
+        {
+          "key": "username_format_correct",
+          "type": "boolean",
+          "question": "Verwendest du den Benutzernamen im geforderten Format?"
+        }
+      ],
+      "rules": [
+        {
+          "id": "global.account.not_activated",
+          "active": true,
+          "description": "Dienst kann erst nach Aktivierung des Benutzerkontos genutzt werden.",
+          "priority": 20,
+          "conditions": {
+            "all": [
+              {
+                "fact": "account_activated",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Aktiviere zuerst dein Hohenheimer Benutzerkonto. Danach kannst du mit der Einrichtung des gewünschten Dienstes fortfahren."
+            },
+            {
+              "type": "redirect_topic",
+              "topic": "user_account",
+              "intent": "setup",
+              "text": "Wechsle zuerst zur Aktivierung des Benutzerkontos."
+            }
+          ],
+          "stop_after_match": true
+        },
+        {
+          "id": "global.username.format_wrong",
+          "active": true,
+          "description": "Falsches Benutzername-Format erkannt.",
+          "priority": 30,
+          "conditions": {
+            "all": [
+              {
+                "fact": "username_format_correct",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Prüfe das Benutzername-Format. Viele Dienste unterscheiden zwischen Kürzel, E-Mail-Adresse und dienstspezifischer Login-ID."
+            }
+          ],
+          "stop_after_match": false
+        }
+      ]
+    },
+    {
+      "id": "global_os_check",
+      "name": "Betriebssystem erkennen",
+      "description": "Dienstübergreifender Baustein zur Abfrage des Betriebssystems, wenn eine technische Einrichtung durchgeführt wird.",
+      "active": true,
+      "scope": "global",
+      "priority": 30,
+      "facts": [
+        {
+          "key": "os",
+          "type": "choice",
+          "options": [
+            "windows",
+            "macos",
+            "linux",
+            "android",
+            "ios",
+            "ipados",
+            "chromeos",
+            "unknown"
+          ],
+          "question": "Welches Betriebssystem nutzt du?"
+        }
+      ],
+      "rules": []
+    },
+    {
+      "id": "global_mfa_check",
+      "name": "MFA / 2FA prüfen",
+      "description": "Dienstübergreifender Baustein für Dienste, die Multi-Faktor-Authentisierung voraussetzen.",
+      "active": true,
+      "scope": "global",
+      "priority": 40,
+      "facts": [
+        {
+          "key": "mfa_configured",
+          "type": "boolean",
+          "question": "Ist deine MFA/2FA bereits eingerichtet?"
+        }
+      ],
+      "rules": [
+        {
+          "id": "global.mfa.missing",
+          "active": true,
+          "description": "MFA fehlt für Dienst mit MFA-Pflicht.",
+          "priority": 40,
+          "conditions": {
+            "all": [
+              {
+                "fact": "mfa_configured",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Richte zuerst MFA/2FA ein. Danach kannst du mit dem gewünschten Dienst fortfahren."
+            },
+            {
+              "type": "redirect_topic",
+              "topic": "mfa",
+              "intent": "setup",
+              "text": "Starte mit der MFA-Einrichtung."
+            }
+          ],
+          "stop_after_match": true
+        }
+      ]
+    },
+    {
+      "id": "global_campus_or_vpn_check",
+      "name": "Campusnetz oder VPN prüfen",
+      "description": "Dienstübergreifender Baustein für Dienste, die Campusnetz oder VPN benötigen.",
+      "active": true,
+      "scope": "global",
+      "priority": 50,
+      "facts": [
+        {
+          "key": "campus_network_available",
+          "type": "boolean",
+          "question": "Bist du im Campusnetz oder per VPN verbunden?"
+        }
+      ],
+      "rules": [
+        {
+          "id": "global.campus_or_vpn.missing",
+          "active": true,
+          "description": "Campusnetz/VPN fehlt.",
+          "priority": 50,
+          "conditions": {
+            "all": [
+              {
+                "fact": "campus_network_available",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Stelle zuerst eine Verbindung zum Campusnetz oder per VPN her, falls der gewünschte Dienst nur intern erreichbar ist."
+            }
+          ],
+          "stop_after_match": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1841 @@
+[
+  {
+    "id": "core.topic.unknown",
+    "module": "core",
+    "rule_group": "core_router",
+    "description": "Thema fehlt; Einstieg klären.",
+    "active": true,
+    "priority": 10001,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "unknown"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "topic",
+        "text": "Geht es um Benutzerkonto, eduroam, MFA oder VPN?"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/core_router_rules"
+  },
+  {
+    "id": "core.intent.unknown",
+    "module": "core",
+    "rule_group": "core_router",
+    "description": "Absicht fehlt; Ziel der Anfrage klären.",
+    "active": true,
+    "priority": 10002,
+    "when": {
+      "all": [
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "unknown"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "intent",
+        "text": "Möchtest du etwas einrichten, ein Login-Problem lösen, dein Passwort ändern/zurücksetzen oder nur eine allgemeine Information?"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/core_router_rules"
+  },
+  {
+    "id": "core.os.needed_for_setup",
+    "module": "core",
+    "rule_group": "core_router",
+    "description": "Für technische Einrichtung wird das Betriebssystem benötigt.",
+    "active": true,
+    "priority": 10003,
+    "when": {
+      "all": [
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "unknown"
+        }
+      ],
+      "any": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "os",
+        "text": "Welches Betriebssystem nutzt du: Windows, macOS, Linux, Android, iOS/iPadOS oder ChromeOS?"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/core_router_rules"
+  },
+  {
+    "id": "core.account.status_needed",
+    "module": "core",
+    "rule_group": "core_router",
+    "description": "Für KIM-Dienste wird meistens ein aktiviertes Benutzerkonto benötigt.",
+    "active": true,
+    "priority": 10004,
+    "when": {
+      "all": [
+        {
+          "fact": "account_activated",
+          "operator": "equals",
+          "value": "unknown"
+        }
+      ],
+      "any": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "account_activated",
+        "text": "Ist dein Hohenheimer Benutzerkonto bereits aktiviert?"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/core_router_rules"
+  },
+  {
+    "id": "account.info.required_for_services",
+    "module": "account",
+    "rule_group": "user_account",
+    "description": "Allgemeine Erklärung zum Hohenheimer Benutzerkonto.",
+    "active": true,
+    "priority": 20001,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "user_account"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "information"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Das Hohenheimer Benutzerkonto ist die zentrale Voraussetzung für viele digitale Dienste wie E-Mail, ILIAS, HohCampus, Bibliothekskonto, eduroam und VPN."
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/user_account_rules"
+  },
+  {
+    "id": "account.setup.student_not_activated",
+    "module": "account",
+    "rule_group": "user_account",
+    "description": "Studierender hat Konto noch nicht aktiviert.",
+    "active": true,
+    "priority": 20002,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "user_account"
+        },
+        {
+          "fact": "role",
+          "operator": "equals",
+          "value": "student"
+        },
+        {
+          "fact": "account_activated",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Dein Hohenheimer Benutzerkonto wurde im Rahmen der Einschreibung vorbereitet und muss im IDM aktiviert werden."
+      },
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.account.activate_student_account"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/user_account_rules"
+  },
+  {
+    "id": "account.setup.activation_code_missing",
+    "module": "account",
+    "rule_group": "user_account",
+    "description": "Aktivierungscode fehlt.",
+    "active": true,
+    "priority": 20003,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "user_account"
+        },
+        {
+          "fact": "account_activated",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "activation_code_available",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn du das Bewerbungsverfahren in HohCampus durchlaufen hast, entspricht der Aktivierungscode der Benutzerkennung aus dem HohCampus-Bewerbungsportal."
+      },
+      {
+        "type": "support_contact",
+        "topic": "account",
+        "text": "Wenn du den Code nicht findest oder der Antrag schon länger als 2–3 Werktage zurückliegt, kontaktiere kim-it-account@uni-hohenheim.de."
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/user_account_rules"
+  },
+  {
+    "id": "account.password.forgotten.self_service_possible",
+    "module": "account",
+    "rule_group": "user_account",
+    "description": "Passwort vergessen; externe Mail und PIN sind hinterlegt.",
+    "active": true,
+    "priority": 20004,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "user_account"
+        },
+        {
+          "fact": "password_forgotten",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "external_email_registered",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "pin_registered",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.account.reset_password_self_service"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/user_account_rules"
+  },
+  {
+    "id": "account.password.forgotten.service_desk_required",
+    "module": "account",
+    "rule_group": "user_account",
+    "description": "Passwort vergessen; Self-Service nicht vorbereitet.",
+    "active": true,
+    "priority": 20005,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "user_account"
+        },
+        {
+          "fact": "password_forgotten",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "external_email_registered",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "pin_registered",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Ohne vorher hinterlegte externe E-Mail-Adresse und PIN kann das Passwort nicht selbst zurückgesetzt werden."
+      },
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.account.contact_service_desk_for_password"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/user_account_rules"
+  },
+  {
+    "id": "account.password.change_requested",
+    "module": "account",
+    "rule_group": "user_account",
+    "description": "Nutzer möchte Passwort ändern.",
+    "active": true,
+    "priority": 20006,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "user_account"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "change_password"
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn du dein aktuelles Passwort kennst, kannst du es im IDM ändern. Danach müssen gespeicherte Passwörter in eduroam, E-Mail-Programmen, Browsern oder Netzlaufwerken ggf. aktualisiert werden."
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/user_account_rules"
+  },
+  {
+    "id": "account.login.all_services_failed",
+    "module": "account",
+    "rule_group": "user_account",
+    "description": "Login geht in keinem zentralen Dienst.",
+    "active": true,
+    "priority": 20007,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "user_account"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "troubleshooting"
+        },
+        {
+          "fact": "login_possible_webmail",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "login_possible_ilias",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "login_possible_hohcampus",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn der Login in mehreren Diensten nicht funktioniert, sollte zuerst das Passwort neu gesetzt werden. Falls auch das nicht möglich ist, kann das Konto abgelaufen oder gesperrt sein."
+      },
+      {
+        "type": "recommend",
+        "text": "Versuche die Passwortänderung bzw. Passwort-zurücksetzen-Funktion. Wenn das nicht klappt, kontaktiere den IT-Service-Desk."
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/user_account_rules"
+  },
+  {
+    "id": "account.profile.data_wrong",
+    "module": "account",
+    "rule_group": "user_account",
+    "description": "Profildaten sind falsch.",
+    "active": true,
+    "priority": 20008,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "user_account"
+        },
+        {
+          "fact": "profile_data_wrong",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Profildaten wie Name oder Geburtsdatum können nicht selbst im Benutzerkonto korrigiert werden."
+      },
+      {
+        "type": "recommend",
+        "text": "Studierende wenden sich an das Studierendensekretariat; Beschäftigte an die zuständige Personalverwaltung."
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/user_account_rules"
+  },
+  {
+    "id": "account.extension.external_student",
+    "module": "account",
+    "rule_group": "user_account",
+    "description": "Externe Studierende oder Gasthörer benötigen Verlängerungsantrag.",
+    "active": true,
+    "priority": 20009,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "user_account"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "extend_account"
+        }
+      ],
+      "any": [
+        {
+          "fact": "role",
+          "operator": "equals",
+          "value": "external_student"
+        },
+        {
+          "fact": "role",
+          "operator": "equals",
+          "value": "guest_auditor"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.account.extend_external_student_account"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/user_account_rules"
+  },
+  {
+    "id": "eduroam.setup.no_account",
+    "module": "eduroam",
+    "rule_group": "eduroam",
+    "description": "eduroam braucht Benutzerkonto.",
+    "active": true,
+    "priority": 30001,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_activated",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Für eduroam brauchst du zuerst ein aktiviertes Hohenheimer Benutzerkonto."
+      },
+      {
+        "type": "redirect_topic",
+        "topic": "user_account",
+        "intent": "setup",
+        "text": "Starte zuerst mit der Aktivierung des Benutzerkontos."
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/eduroam_rules"
+  },
+  {
+    "id": "eduroam.setup.no_internet",
+    "module": "eduroam",
+    "rule_group": "eduroam",
+    "description": "Für eduroam-Einrichtung fehlt Internet.",
+    "active": true,
+    "priority": 30002,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "internet_available",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Für die eduroam-Ersteinrichtung brauchst du zunächst eine Internetverbindung."
+      },
+      {
+        "type": "recommend",
+        "text": "Nutze z. B. mobile Daten, Ethernet oder im IT-Service-Desk das Konfigurationsnetz, falls verfügbar."
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/eduroam_rules"
+  },
+  {
+    "id": "eduroam.setup.windows",
+    "module": "eduroam",
+    "rule_group": "eduroam",
+    "description": "Windows eduroam einrichten.",
+    "active": true,
+    "priority": 30003,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "windows"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.eduroam.windows_cat"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/eduroam_rules"
+  },
+  {
+    "id": "eduroam.setup.android",
+    "module": "eduroam",
+    "rule_group": "eduroam",
+    "description": "Android eduroam einrichten.",
+    "active": true,
+    "priority": 30004,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "android"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.eduroam.android_geteduroam"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/eduroam_rules"
+  },
+  {
+    "id": "eduroam.setup.ios",
+    "module": "eduroam",
+    "rule_group": "eduroam",
+    "description": "iOS/iPadOS eduroam einrichten.",
+    "active": true,
+    "priority": 30005,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        }
+      ],
+      "any": [
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "ios"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "ipados"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.eduroam.ios_cat_profile"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/eduroam_rules"
+  },
+  {
+    "id": "eduroam.setup.macos",
+    "module": "eduroam",
+    "rule_group": "eduroam",
+    "description": "macOS eduroam einrichten.",
+    "active": true,
+    "priority": 30006,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "macos"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.eduroam.macos_cat_profile"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/eduroam_rules"
+  },
+  {
+    "id": "eduroam.setup.linux",
+    "module": "eduroam",
+    "rule_group": "eduroam",
+    "description": "Linux eduroam einrichten.",
+    "active": true,
+    "priority": 30007,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "linux"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.eduroam.linux_cat_script"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/eduroam_rules"
+  },
+  {
+    "id": "eduroam.setup.chromeos",
+    "module": "eduroam",
+    "rule_group": "eduroam",
+    "description": "ChromeOS eduroam einrichten.",
+    "active": true,
+    "priority": 30008,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "chromeos"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.eduroam.chromeos_onc"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/eduroam_rules"
+  },
+  {
+    "id": "eduroam.problem.email_used_as_username",
+    "module": "eduroam",
+    "rule_group": "eduroam",
+    "description": "Falsches Benutzername-Format: Mailadresse genutzt.",
+    "active": true,
+    "priority": 30009,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "login_failed",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "email_used_as_username",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Bei eduroam darf nicht die Hohenheimer E-Mail-Adresse verwendet werden. Nutze deine Benutzerkennung mit @uni-hohenheim.de, z. B. saloki22@uni-hohenheim.de."
+      },
+      {
+        "type": "set_fact",
+        "fact": "username_format_correct",
+        "value": false
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/eduroam_rules"
+  },
+  {
+    "id": "eduroam.problem.domain_requested",
+    "module": "eduroam",
+    "rule_group": "eduroam",
+    "description": "Domäne wird abgefragt.",
+    "active": true,
+    "priority": 30010,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "domain_requested",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn eine Domäne abgefragt wird, trage uni-hohenheim.de ein."
+      },
+      {
+        "type": "set_fact",
+        "fact": "domain_entered",
+        "value": "uni-hohenheim.de"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/eduroam_rules"
+  },
+  {
+    "id": "eduroam.problem.password_changed_old_credentials",
+    "module": "eduroam",
+    "rule_group": "eduroam",
+    "description": "Nach Passwortänderung nutzt eduroam alte gespeicherte Daten.",
+    "active": true,
+    "priority": 30011,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "password_recently_changed",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "login_failed",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Nach einer Passwortänderung kann eduroam noch alte gespeicherte Zugangsdaten verwenden."
+      },
+      {
+        "type": "recommend",
+        "text": "Lösche bzw. ignoriere das gespeicherte eduroam-Netzwerk oder entferne das alte Profil und richte eduroam erneut ein."
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/eduroam_rules"
+  },
+  {
+    "id": "eduroam.problem.android_forget_network",
+    "module": "eduroam",
+    "rule_group": "eduroam",
+    "description": "Android-Verbindungsproblem.",
+    "active": true,
+    "priority": 30012,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "android"
+        },
+        {
+          "fact": "login_failed",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "recommend",
+        "text": "Prüfe, ob eduroam bereits gespeichert ist. Wähle dann Netzwerk vergessen und führe die Konfiguration in geteduroam erneut durch."
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/eduroam_rules"
+  },
+  {
+    "id": "eduroam.problem.windows_restart_updates",
+    "module": "eduroam",
+    "rule_group": "eduroam",
+    "description": "Windows-Verbindungsproblem.",
+    "active": true,
+    "priority": 30013,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "windows"
+        },
+        {
+          "fact": "login_failed",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_format_correct",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "recommend",
+        "text": "Starte Windows neu und prüfe, ob alle Windows-Updates inklusive Funktionsupdates installiert sind. Dadurch können auch Netzwerktreiber aktualisiert werden."
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/eduroam_rules"
+  },
+  {
+    "id": "eduroam.problem.common_troubleshooting",
+    "module": "eduroam",
+    "rule_group": "eduroam",
+    "description": "Allgemeine eduroam-Problemlösung.",
+    "active": true,
+    "priority": 30014,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "troubleshooting"
+        },
+        {
+          "fact": "login_failed",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.eduroam.troubleshooting_common"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/eduroam_rules"
+  },
+  {
+    "id": "mfa.setup.no_account",
+    "module": "mfa",
+    "rule_group": "mfa",
+    "description": "MFA braucht Benutzerkonto.",
+    "active": true,
+    "priority": 40001,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "account_activated",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Für die MFA-Einrichtung brauchst du zuerst ein aktiviertes Hohenheimer Benutzerkonto."
+      },
+      {
+        "type": "redirect_topic",
+        "topic": "user_account",
+        "intent": "setup",
+        "text": "Bitte aktiviere zuerst dein Benutzerkonto."
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/mfa_rules"
+  },
+  {
+    "id": "mfa.setup.not_on_campus",
+    "module": "mfa",
+    "rule_group": "mfa",
+    "description": "MFA-Ersteinrichtung außerhalb Campus nicht möglich.",
+    "active": true,
+    "priority": 40002,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "campus_network_available",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Die MFA-Ersteinrichtung ist nur am Campus im Hohenheimer Netzwerk möglich, also kabelgebunden oder über eduroam. Eine VPN-Verbindung reicht dafür nicht aus."
+      },
+      {
+        "type": "recommend",
+        "text": "Verbinde dich vor Ort mit eduroam oder einem kabelgebundenen Netz und starte die Einrichtung erneut."
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/mfa_rules"
+  },
+  {
+    "id": "mfa.setup.android",
+    "module": "mfa",
+    "rule_group": "mfa",
+    "description": "MFA mit Android und 2FAS.",
+    "active": true,
+    "priority": 40003,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "campus_network_available",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "android"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.mfa.android_2fas"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/mfa_rules"
+  },
+  {
+    "id": "mfa.setup.ios",
+    "module": "mfa",
+    "rule_group": "mfa",
+    "description": "MFA mit iOS/iPadOS und 2FAS.",
+    "active": true,
+    "priority": 40004,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "campus_network_available",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "ios_version_ok_for_2fas",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "ios"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "ipados"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.mfa.ios_2fas"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/mfa_rules"
+  },
+  {
+    "id": "mfa.setup.ios_version_unknown",
+    "module": "mfa",
+    "rule_group": "mfa",
+    "description": "iOS-Version für 2FAS ist unbekannt.",
+    "active": true,
+    "priority": 40005,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "ios_version_ok_for_2fas",
+          "operator": "equals",
+          "value": "unknown"
+        }
+      ],
+      "any": [
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "ios"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "ipados"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "ios_version_ok_for_2fas",
+        "text": "Ist auf deinem iPhone oder iPad iOS/iPadOS 16.4 oder neuer installiert?"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/mfa_rules"
+  },
+  {
+    "id": "mfa.setup.ios_version_old",
+    "module": "mfa",
+    "rule_group": "mfa",
+    "description": "iOS/iPadOS zu alt für empfohlene 2FAS-Nutzung.",
+    "active": true,
+    "priority": 40006,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "ios_version_ok_for_2fas",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Für die empfohlene 2FAS-App wird iOS/iPadOS 16.4 oder neuer benötigt."
+      },
+      {
+        "type": "recommend",
+        "text": "Aktualisiere iOS/iPadOS oder nutze alternativ KeePassXC am PC."
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/mfa_rules"
+  },
+  {
+    "id": "mfa.setup.pc_keepassxc",
+    "module": "mfa",
+    "rule_group": "mfa",
+    "description": "MFA am PC mit KeePassXC.",
+    "active": true,
+    "priority": 40007,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "campus_network_available",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "device_type",
+          "operator": "equals",
+          "value": "pc"
+        },
+        {
+          "fact": "device_type",
+          "operator": "equals",
+          "value": "laptop"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.mfa.pc_keepassxc"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/mfa_rules"
+  },
+  {
+    "id": "mfa.problem.microsoft_authenticator",
+    "module": "mfa",
+    "rule_group": "mfa",
+    "description": "Microsoft Authenticator liefert keinen verwendbaren Soft-Token.",
+    "active": true,
+    "priority": 40008,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "mfa_app",
+          "operator": "equals",
+          "value": "microsoft_authenticator"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Microsoft Authenticator wird hierfür nicht empfohlen, weil er aktuell keinen verwendbaren Soft-Token liefert."
+      },
+      {
+        "type": "recommend",
+        "text": "Nutze stattdessen 2FAS auf dem Smartphone oder KeePassXC am PC."
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/mfa_rules"
+  },
+  {
+    "id": "mfa.problem.token_not_verified",
+    "module": "mfa",
+    "rule_group": "mfa",
+    "description": "Token wurde ausgerollt, aber nicht verifiziert.",
+    "active": true,
+    "priority": 40009,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "token_rollout_started",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "token_verified",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Der Token muss nach dem Ausrollen noch verifiziert werden."
+      },
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.mfa.verify_existing_token"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/mfa_rules"
+  },
+  {
+    "id": "mfa.problem.token_lost",
+    "module": "mfa",
+    "rule_group": "mfa",
+    "description": "Soft-Token verloren.",
+    "active": true,
+    "priority": 40010,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "token_lost",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Ein verlorener Soft-Token kann nutzerseitig nicht einfach selbst erneuert werden."
+      },
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.mfa.token_lost_service_desk"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/mfa_rules"
+  },
+  {
+    "id": "vpn.setup.no_account",
+    "module": "vpn",
+    "rule_group": "cross_module",
+    "description": "VPN braucht Benutzerkonto.",
+    "active": true,
+    "priority": 60001,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "account_activated",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Für VPN brauchst du zuerst ein aktiviertes Hohenheimer Benutzerkonto."
+      },
+      {
+        "type": "redirect_topic",
+        "topic": "user_account",
+        "intent": "setup",
+        "text": "Bitte aktiviere zuerst dein Benutzerkonto."
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/cross_module_rules"
+  },
+  {
+    "id": "vpn.connect.mfa_missing",
+    "module": "vpn",
+    "rule_group": "cross_module",
+    "description": "VPN benötigt MFA, aber MFA fehlt.",
+    "active": true,
+    "priority": 60002,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "mfa_configured",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Für VPN wird ein zweiter Faktor benötigt. Richte zuerst MFA ein."
+      },
+      {
+        "type": "redirect_topic",
+        "topic": "mfa",
+        "intent": "setup",
+        "text": "Starte mit der MFA-Einrichtung."
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/cross_module_rules"
+  },
+  {
+    "id": "vpn.setup.windows_install",
+    "module": "vpn",
+    "rule_group": "cross_module",
+    "description": "VPN-Client unter Windows installieren.",
+    "active": true,
+    "priority": 60003,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "windows"
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.vpn.windows_install"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/cross_module_rules"
+  },
+  {
+    "id": "vpn.setup.macos_install",
+    "module": "vpn",
+    "rule_group": "cross_module",
+    "description": "VPN-Client unter macOS installieren.",
+    "active": true,
+    "priority": 60004,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "macos"
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.vpn.macos_install"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/cross_module_rules"
+  },
+  {
+    "id": "vpn.setup.linux_install",
+    "module": "vpn",
+    "rule_group": "cross_module",
+    "description": "VPN-Client unter Linux installieren.",
+    "active": true,
+    "priority": 60005,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "linux"
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.vpn.linux_install"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/cross_module_rules"
+  },
+  {
+    "id": "vpn.setup.android",
+    "module": "vpn",
+    "rule_group": "cross_module",
+    "description": "VPN auf Android einrichten.",
+    "active": true,
+    "priority": 60006,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "android"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.vpn.android_setup"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/cross_module_rules"
+  },
+  {
+    "id": "vpn.setup.ios",
+    "module": "vpn",
+    "rule_group": "cross_module",
+    "description": "VPN auf iOS/iPadOS einrichten.",
+    "active": true,
+    "priority": 60007,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        }
+      ],
+      "any": [
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "ios"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "ipados"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.vpn.ios_setup"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/cross_module_rules"
+  },
+  {
+    "id": "vpn.connect.client_installed",
+    "module": "vpn",
+    "rule_group": "cross_module",
+    "description": "VPN verbinden, wenn Client und MFA vorhanden sind.",
+    "active": true,
+    "priority": 60008,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "vpn_connected",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.vpn.connect_common"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/cross_module_rules"
+  },
+  {
+    "id": "vpn.problem.wrong_group",
+    "module": "vpn",
+    "rule_group": "cross_module",
+    "description": "Falsche VPN-Gruppe ausgewählt.",
+    "active": true,
+    "priority": 60009,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_group_selected",
+          "operator": "equals",
+          "value": "other"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wähle für die VPN-Verbindung die Gruppe UHOH-2FA aus, damit das Feld für den zweiten Faktor angezeigt wird."
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_group_selected",
+        "value": "UHOH-2FA"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/cross_module_rules"
+  },
+  {
+    "id": "vpn.problem.linux_certificate",
+    "module": "vpn",
+    "rule_group": "cross_module",
+    "description": "Linux-Zertifikatsfehler beim VPN-Verbindungsaufbau.",
+    "active": true,
+    "priority": 60010,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "linux"
+        },
+        {
+          "fact": "linux_certificate_error",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Der Cisco Secure Client findet unter Linux vermutlich das passende SSL-Stammzertifikat nicht."
+      },
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.vpn.linux_certificate_fix"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/cross_module_rules"
+  },
+  {
+    "id": "vpn.problem.macos_drag_drop_deleted",
+    "module": "vpn",
+    "rule_group": "cross_module",
+    "description": "macOS Cisco Client wurde nur per Papierkorb gelöscht.",
+    "active": true,
+    "priority": 60011,
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "os",
+          "operator": "equals",
+          "value": "macos"
+        },
+        {
+          "fact": "macos_drag_drop_deleted",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn der Cisco Secure Client auf macOS nur per Drag & Drop in den Papierkorb gelöscht wurde, kann eine Neuinstallation scheitern."
+      },
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.vpn.macos_complete_remove_after_drag_drop"
+      }
+    ],
+    "stop_after_match": true,
+    "source_file": "Rules/cross_module_rules"
+  }
+]

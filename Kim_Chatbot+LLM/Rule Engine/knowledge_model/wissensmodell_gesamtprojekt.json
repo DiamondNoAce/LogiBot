@@ -1,0 +1,724 @@
+{
+  "id": "wissensmodell_gesamtprojekt_v2",
+  "name": "Wissensmodell Gesamtprojekt v2 – fachliche und technische Sicht",
+  "version": "2.0",
+  "description": "Aus der aktualisierten fachlichen und technischen Wissensmodell-Grafik abgeleitete dienstübergreifende Wissensstruktur. Die technische Sicht nutzt Namespaces core.*, service.mfa.*, service.vpn.*, service.eduroam.* und service.support.*. Globale Bausteine bleiben erhalten und werden mit dienstspezifischen Pfaden kombiniert.",
+  "source_images": [
+    "knowledge_model/evidence/wissensmodell_fachliche_sicht_v2.jpeg",
+    "knowledge_model/evidence/wissensmodell_technische_sicht_v2.jpeg"
+  ],
+  "color_blocks": [
+    {
+      "id": "grey",
+      "name": "Gemeinsamer Wissenskern",
+      "meaning": "Normale Abhängigkeiten und gemeinsame Fakten wie Account, Gerät, Netzwerk, Credentials, Auth-Status und Zielstatus."
+    },
+    {
+      "id": "purple",
+      "name": "Account & Zugangsdaten",
+      "meaning": "Fakten und Pfade rund um Account, Benutzername, Passwort und Loginbasis."
+    },
+    {
+      "id": "blue",
+      "name": "Campus / Netzwerk / eduroam / VPN",
+      "meaning": "Netzwerkkontext, Campus-WLAN, eduroam-Sichtbarkeit, VPN-Client und Verbindungsstatus."
+    },
+    {
+      "id": "orange",
+      "name": "MFA ↔ VPN",
+      "meaning": "MFA-/TOTP-Code als Voraussetzung für VPN-Login. Hinweis: Kein Push-Verfahren; relevant ist der zeitbasierte Code aus der Authenticator-App."
+    },
+    {
+      "id": "red",
+      "name": "Fehlerbilder / Troubleshooting",
+      "meaning": "Blockierende Fehlerpfade wie Account gesperrt, Passwortänderung, Clientproblem, Zertifikatswarnung oder ungelöster Status."
+    }
+  ],
+  "namespaces": [
+    {
+      "id": "core",
+      "label": "core.*",
+      "description": "Gemeinsame Wissensbasis für alle Dienste."
+    },
+    {
+      "id": "service.mfa",
+      "label": "service.mfa.*",
+      "description": "MFA-spezifische Zustände und Hilfefälle. In diesem Modell wird ein TOTP-Code genutzt, keine Push-Benachrichtigung."
+    },
+    {
+      "id": "service.vpn",
+      "label": "service.vpn.*",
+      "description": "VPN-spezifische Zustände vom Client bis zum Tunnel und Ressourcenzugriff."
+    },
+    {
+      "id": "service.eduroam",
+      "label": "service.eduroam.*",
+      "description": "eduroam-spezifische Zustände von Campus/WLAN-Sichtbarkeit über Profil/Zertifikat bis Internetzugriff."
+    },
+    {
+      "id": "service.support",
+      "label": "service.support.*",
+      "description": "Support- und Eskalationsknoten."
+    }
+  ],
+  "nodes": [
+    {
+      "id": "core.source",
+      "namespace": "core",
+      "label": "Quelle / Anleitung / Setup / Troubleshooting",
+      "color_block": "grey",
+      "fact_keys": [
+        "source_type",
+        "journey_type",
+        "intent",
+        "setup_source_checked"
+      ]
+    },
+    {
+      "id": "core.account",
+      "namespace": "core",
+      "label": "Account vorhanden / aktiv / gesperrt",
+      "color_block": "purple",
+      "fact_keys": [
+        "account_exists",
+        "account_activated",
+        "account_locked",
+        "account_status"
+      ],
+      "global_block": "global_account_check"
+    },
+    {
+      "id": "core.device",
+      "namespace": "core",
+      "label": "Gerät & Betriebssystem / OS-Version",
+      "color_block": "grey",
+      "fact_keys": [
+        "device_type",
+        "os",
+        "operating_system",
+        "device_os_version_known"
+      ],
+      "global_block": "global_os_check"
+    },
+    {
+      "id": "core.credentials",
+      "namespace": "core",
+      "label": "Benutzername / Passwort / Kennung / Passwortänderung",
+      "color_block": "purple",
+      "fact_keys": [
+        "username_known",
+        "password_known",
+        "credentials_valid",
+        "username_format_correct",
+        "identifier_entered_type",
+        "password_recently_changed",
+        "saved_old_credentials"
+      ],
+      "global_block": "global_account_check"
+    },
+    {
+      "id": "core.network_context",
+      "namespace": "core",
+      "label": "Netzwerk-Kontext / Internet / Campus / Firewall / Proxy",
+      "color_block": "blue",
+      "fact_keys": [
+        "internet_available",
+        "campus_network_available",
+        "network_context",
+        "network_type",
+        "firewall_proxy_relevant",
+        "external_network"
+      ],
+      "global_block": "global_network_preconditions"
+    },
+    {
+      "id": "core.auth_status",
+      "namespace": "core",
+      "label": "Authentifizierung & Sicherheit / Zertifikate / Aufrufstatus",
+      "color_block": "grey",
+      "fact_keys": [
+        "auth_status",
+        "connection_attempt_status",
+        "login_form_requested",
+        "service_certificate_status",
+        "certificate_checked"
+      ]
+    },
+    {
+      "id": "core.status_goal",
+      "namespace": "core",
+      "label": "Status & Zielzustand / Verbindung erfolgreich / Anfrage abgeschlossen",
+      "color_block": "grey",
+      "fact_keys": [
+        "connection_successful",
+        "problem_resolved",
+        "user_problem_resolved",
+        "request_answered",
+        "user_request_answered",
+        "status_goal"
+      ]
+    },
+    {
+      "id": "service.support.human",
+      "namespace": "service.support",
+      "label": "Support & Eskalation",
+      "color_block": "red",
+      "fact_keys": [
+        "needs_human_support",
+        "human_support_needed",
+        "support_needed",
+        "escalation_reason",
+        "support_reason"
+      ]
+    },
+    {
+      "id": "service.mfa.problem",
+      "namespace": "service.mfa",
+      "label": "MFA-Fehlerbild: kein Code / App nicht verfügbar / Gerät verloren",
+      "color_block": "red",
+      "fact_keys": [
+        "mfa_problem_type",
+        "mfa_app_available",
+        "mfa_code_available",
+        "mfa_device_lost",
+        "mfa_code_status"
+      ]
+    },
+    {
+      "id": "service.mfa.recovery",
+      "namespace": "service.mfa",
+      "label": "Recovery-Code / neue Einrichtung / Login nicht möglich",
+      "color_block": "orange",
+      "fact_keys": [
+        "mfa_recovery_available",
+        "mfa_recovery_requested",
+        "mfa_setup_required",
+        "mfa_recovery_required"
+      ]
+    },
+    {
+      "id": "service.mfa.enrollment",
+      "namespace": "service.mfa",
+      "label": "MFA-Registrierung / Methode / Zugangsdaten benötigt",
+      "color_block": "orange",
+      "fact_keys": [
+        "mfa_enrollment_method",
+        "mfa_enrollment_required",
+        "mfa_request_setup",
+        "mfa_requires_credentials"
+      ]
+    },
+    {
+      "id": "service.mfa.app",
+      "namespace": "service.mfa",
+      "label": "Authenticator-App / zeitbasierter TOTP-Code",
+      "color_block": "orange",
+      "fact_keys": [
+        "mfa_app_available",
+        "mfa_app_installed",
+        "mfa_totp_available",
+        "mfa_code_available",
+        "second_factor_available",
+        "second_factor_source"
+      ]
+    },
+    {
+      "id": "service.mfa.challenge",
+      "namespace": "service.mfa",
+      "label": "MFA-Prüfung / Code eingegeben oder Anfrage abgelaufen",
+      "color_block": "orange",
+      "fact_keys": [
+        "mfa_challenge_approved",
+        "mfa_challenge_status",
+        "mfa_code_status",
+        "mfa_required_for_vpn_login"
+      ]
+    },
+    {
+      "id": "service.vpn.install",
+      "namespace": "service.vpn",
+      "label": "VPN-Installation / Campus-WLAN oder eduroam nötig",
+      "color_block": "blue",
+      "fact_keys": [
+        "vpn_installation_status",
+        "campus_network_required",
+        "eduroam_for_vpn_setup_required"
+      ]
+    },
+    {
+      "id": "service.vpn.client",
+      "namespace": "service.vpn",
+      "label": "VPN-Client installiert / Version / gesund",
+      "color_block": "blue",
+      "fact_keys": [
+        "vpn_client_installed",
+        "vpn_client_version_healthy",
+        "vpn_client_problem_type"
+      ]
+    },
+    {
+      "id": "service.vpn.profile",
+      "namespace": "service.vpn",
+      "label": "VPN-Profil / Gateway / Server",
+      "color_block": "green",
+      "fact_keys": [
+        "vpn_profile_configured",
+        "vpn_gateway_profile_valid",
+        "vpn_server_entered",
+        "vpn_gateway_selected"
+      ]
+    },
+    {
+      "id": "service.vpn.problem",
+      "namespace": "service.vpn",
+      "label": "VPN-Fehlerbild: Login / Tunnel / Client / Firewall",
+      "color_block": "red",
+      "fact_keys": [
+        "vpn_problem_type",
+        "vpn_client_problem_type",
+        "vpn_auth_status",
+        "vpn_tunnel_status",
+        "firewall_proxy_relevant"
+      ]
+    },
+    {
+      "id": "service.vpn.auth",
+      "namespace": "service.vpn",
+      "label": "VPN-Authentisierung / Loginformular / MFA erforderlich",
+      "color_block": "green",
+      "fact_keys": [
+        "vpn_auth_status",
+        "vpn_login_form_valid",
+        "login_form_requested",
+        "mfa_required_for_vpn_login",
+        "mfa_challenge_approved"
+      ]
+    },
+    {
+      "id": "service.vpn.tunnel",
+      "namespace": "service.vpn",
+      "label": "VPN-Tunnel verbunden / Status",
+      "color_block": "green",
+      "fact_keys": [
+        "vpn_tunnel_status",
+        "vpn_connected",
+        "vpn_tunnel_active"
+      ]
+    },
+    {
+      "id": "service.vpn.resources",
+      "namespace": "service.vpn",
+      "label": "Interne Dienste / Ressourcen erreichbar / Berechtigung nötig",
+      "color_block": "green",
+      "fact_keys": [
+        "internal_resource_accessible",
+        "internal_service_access_required",
+        "vpn_permission_required"
+      ]
+    },
+    {
+      "id": "service.eduroam.campus",
+      "namespace": "service.eduroam",
+      "label": "eduroam-Nutzung am Campus / WLAN-Voraussetzung",
+      "color_block": "blue",
+      "fact_keys": [
+        "eduroam_campus_location_required",
+        "eduroam_campus_location_available",
+        "campus_network_available",
+        "wifi_available"
+      ]
+    },
+    {
+      "id": "service.eduroam.ssid",
+      "namespace": "service.eduroam",
+      "label": "eduroam-Netz sichtbar",
+      "color_block": "blue",
+      "fact_keys": [
+        "eduroam_visible",
+        "wifi_enabled",
+        "wlan_enabled"
+      ]
+    },
+    {
+      "id": "service.eduroam.problem",
+      "namespace": "service.eduroam",
+      "label": "eduroam-Fehlerbild: nicht sichtbar / kein Internet / Zertifikat / Login",
+      "color_block": "red",
+      "fact_keys": [
+        "eduroam_problem_type",
+        "problem_type",
+        "problem_area",
+        "login_failed",
+        "connection_attempt_status"
+      ]
+    },
+    {
+      "id": "service.eduroam.profile",
+      "namespace": "service.eduroam",
+      "label": "eduroam-Profil / CAT / Profilstatus",
+      "color_block": "blue",
+      "fact_keys": [
+        "eduroam_profile_configured",
+        "eduroam_profile_installed",
+        "eduroam_profile_status",
+        "eduroam_cat_profile_installed",
+        "eduroam_profile_missing"
+      ]
+    },
+    {
+      "id": "service.eduroam.certificate",
+      "namespace": "service.eduroam",
+      "label": "eduroam-Zertifikat / Warnung / Scope nur eduroam",
+      "color_block": "blue",
+      "fact_keys": [
+        "certificate_warning_shown",
+        "certificate_checked",
+        "eduroam_certificate_warning_scope",
+        "eduroam_certificate_valid",
+        "eduroam_ca_certificate_present",
+        "eduroam_scope"
+      ]
+    },
+    {
+      "id": "service.eduroam.connection",
+      "namespace": "service.eduroam",
+      "label": "eduroam verbunden / Internetzugriff",
+      "color_block": "blue",
+      "fact_keys": [
+        "eduroam_connected",
+        "connection_successful",
+        "internet_access_available"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "source_to_credentials_loginbasis",
+      "source": "core.source",
+      "target": "core.credentials",
+      "label": "Logikbasis: Quelle/Anleitung führt zu Zugangsdatenprüfung",
+      "relation_type": "precondition",
+      "color_block": "purple"
+    },
+    {
+      "id": "source_to_device_context",
+      "source": "core.source",
+      "target": "core.device",
+      "label": "Gerät braucht passende Anleitung / OS-Version",
+      "relation_type": "context",
+      "color_block": "grey"
+    },
+    {
+      "id": "source_to_vpn_install",
+      "source": "core.source",
+      "target": "service.vpn.install",
+      "label": "VPN-Anleitung",
+      "relation_type": "setup",
+      "color_block": "grey"
+    },
+    {
+      "id": "source_to_eduroam_profile",
+      "source": "core.source",
+      "target": "service.eduroam.profile",
+      "label": "eduroam-Anleitung / CAT-Profil",
+      "relation_type": "setup",
+      "color_block": "grey"
+    },
+    {
+      "id": "account_to_credentials",
+      "source": "core.account",
+      "target": "core.credentials",
+      "label": "Account vorhanden → Zugangsdaten prüfen",
+      "relation_type": "precondition",
+      "color_block": "purple"
+    },
+    {
+      "id": "account_locked_to_support",
+      "source": "core.account",
+      "target": "service.support.human",
+      "label": "wenn blockiert → Support",
+      "relation_type": "blocking",
+      "color_block": "red"
+    },
+    {
+      "id": "account_to_mfa_enrollment",
+      "source": "core.account",
+      "target": "service.mfa.enrollment",
+      "label": "Account nötig für MFA-Registrierung",
+      "relation_type": "precondition",
+      "color_block": "purple"
+    },
+    {
+      "id": "account_to_eduroam_profile",
+      "source": "core.account",
+      "target": "service.eduroam.profile",
+      "label": "eduroam braucht Account",
+      "relation_type": "precondition",
+      "color_block": "purple"
+    },
+    {
+      "id": "account_to_vpn_profile",
+      "source": "core.account",
+      "target": "service.vpn.profile",
+      "label": "VPN braucht Account",
+      "relation_type": "precondition",
+      "color_block": "purple"
+    },
+    {
+      "id": "credentials_to_auth",
+      "source": "core.credentials",
+      "target": "core.auth_status",
+      "label": "prüft Login / Authentifizierung",
+      "relation_type": "authentication",
+      "color_block": "purple"
+    },
+    {
+      "id": "credentials_to_mfa_enrollment",
+      "source": "core.credentials",
+      "target": "service.mfa.enrollment",
+      "label": "Zugangsdaten nötig für MFA",
+      "relation_type": "precondition",
+      "color_block": "purple"
+    },
+    {
+      "id": "credentials_to_eduroam_profile",
+      "source": "core.credentials",
+      "target": "service.eduroam.profile",
+      "label": "eduroam-Login nutzt Kürzel@uni-hohenheim.de",
+      "relation_type": "authentication",
+      "color_block": "purple"
+    },
+    {
+      "id": "credentials_to_vpn_profile",
+      "source": "core.credentials",
+      "target": "service.vpn.profile",
+      "label": "VPN-Login nutzt Zugangsdaten",
+      "relation_type": "authentication",
+      "color_block": "purple"
+    },
+    {
+      "id": "password_change_to_eduroam_problem",
+      "source": "core.credentials",
+      "target": "service.eduroam.problem",
+      "label": "Passwortänderung → gespeicherte Profile prüfen",
+      "relation_type": "troubleshooting",
+      "color_block": "red"
+    },
+    {
+      "id": "password_change_to_vpn_problem",
+      "source": "core.credentials",
+      "target": "service.vpn.problem",
+      "label": "Passwortänderung → VPN-Login prüfen",
+      "relation_type": "troubleshooting",
+      "color_block": "red"
+    },
+    {
+      "id": "network_to_status_goal",
+      "source": "core.network_context",
+      "target": "core.status_goal",
+      "label": "Verbindungsstatus / Aufrufstatus",
+      "relation_type": "status",
+      "color_block": "grey"
+    },
+    {
+      "id": "network_to_vpn_install",
+      "source": "core.network_context",
+      "target": "service.vpn.install",
+      "label": "Campus-WLAN-Kontext für VPN-Ersteinrichtung",
+      "relation_type": "network",
+      "color_block": "blue"
+    },
+    {
+      "id": "network_to_eduroam_campus",
+      "source": "core.network_context",
+      "target": "service.eduroam.campus",
+      "label": "Campus-Kontext / eduroam vor Ort sichtbar",
+      "relation_type": "network",
+      "color_block": "blue"
+    },
+    {
+      "id": "network_to_vpn_auth_external",
+      "source": "core.network_context",
+      "target": "service.vpn.auth",
+      "label": "externes Netz / Firewall kann VPN betreffen",
+      "relation_type": "network",
+      "color_block": "blue"
+    },
+    {
+      "id": "auth_status_to_goal",
+      "source": "core.auth_status",
+      "target": "core.status_goal",
+      "label": "wenn ungelöst → Status prüfen",
+      "relation_type": "status",
+      "color_block": "grey"
+    },
+    {
+      "id": "status_goal_to_support",
+      "source": "core.status_goal",
+      "target": "service.support.human",
+      "label": "wenn ungelöst → Support & Eskalation",
+      "relation_type": "troubleshooting",
+      "color_block": "red"
+    },
+    {
+      "id": "mfa_problem_to_recovery",
+      "source": "service.mfa.problem",
+      "target": "service.mfa.recovery",
+      "label": "Gerät verloren / Code nicht verfügbar → Recovery",
+      "relation_type": "recovery",
+      "color_block": "orange"
+    },
+    {
+      "id": "mfa_recovery_to_enrollment",
+      "source": "service.mfa.recovery",
+      "target": "service.mfa.enrollment",
+      "label": "neu einrichten",
+      "relation_type": "setup",
+      "color_block": "orange"
+    },
+    {
+      "id": "mfa_enrollment_to_app",
+      "source": "service.mfa.enrollment",
+      "target": "service.mfa.app",
+      "label": "Methode → Authenticator-App / TOTP",
+      "relation_type": "setup",
+      "color_block": "orange"
+    },
+    {
+      "id": "mfa_app_to_challenge",
+      "source": "service.mfa.app",
+      "target": "service.mfa.challenge",
+      "label": "zeitbasierten Code eingeben",
+      "relation_type": "mfa",
+      "color_block": "orange"
+    },
+    {
+      "id": "mfa_challenge_to_vpn_auth",
+      "source": "service.mfa.challenge",
+      "target": "service.vpn.auth",
+      "label": "MFA bestätigt VPN-Login",
+      "relation_type": "mfa",
+      "color_block": "orange"
+    },
+    {
+      "id": "vpn_install_to_client",
+      "source": "service.vpn.install",
+      "target": "service.vpn.client",
+      "label": "installiert",
+      "relation_type": "setup",
+      "color_block": "blue"
+    },
+    {
+      "id": "vpn_client_to_problem",
+      "source": "service.vpn.client",
+      "target": "service.vpn.problem",
+      "label": "Client prüfen / Problem nach Installation",
+      "relation_type": "troubleshooting",
+      "color_block": "red"
+    },
+    {
+      "id": "vpn_client_to_profile",
+      "source": "service.vpn.client",
+      "target": "service.vpn.profile",
+      "label": "konfiguriert",
+      "relation_type": "setup",
+      "color_block": "green"
+    },
+    {
+      "id": "vpn_profile_to_auth",
+      "source": "service.vpn.profile",
+      "target": "service.vpn.auth",
+      "label": "nutzt Login",
+      "relation_type": "authentication",
+      "color_block": "green"
+    },
+    {
+      "id": "vpn_auth_to_tunnel",
+      "source": "service.vpn.auth",
+      "target": "service.vpn.tunnel",
+      "label": "authentifiziert → Tunnel verbunden",
+      "relation_type": "connection",
+      "color_block": "green"
+    },
+    {
+      "id": "vpn_tunnel_to_resources",
+      "source": "service.vpn.tunnel",
+      "target": "service.vpn.resources",
+      "label": "ermöglicht Zugriff auf interne Ressourcen",
+      "relation_type": "network",
+      "color_block": "green"
+    },
+    {
+      "id": "vpn_resources_to_support",
+      "source": "service.vpn.resources",
+      "target": "service.support.human",
+      "label": "Ressource nicht erreichbar → Berechtigung/Support",
+      "relation_type": "troubleshooting",
+      "color_block": "red"
+    },
+    {
+      "id": "eduroam_campus_to_ssid",
+      "source": "service.eduroam.campus",
+      "target": "service.eduroam.ssid",
+      "label": "prüfen: WLAN/eduroam sichtbar",
+      "relation_type": "network",
+      "color_block": "blue"
+    },
+    {
+      "id": "eduroam_ssid_to_profile",
+      "source": "service.eduroam.ssid",
+      "target": "service.eduroam.profile",
+      "label": "wenn sichtbar → CAT-Profil installieren",
+      "relation_type": "setup",
+      "color_block": "blue"
+    },
+    {
+      "id": "eduroam_profile_to_certificate",
+      "source": "service.eduroam.profile",
+      "target": "service.eduroam.certificate",
+      "label": "enthält Zertifikat / Zertifikatswarnung möglich",
+      "relation_type": "certificate",
+      "color_block": "blue"
+    },
+    {
+      "id": "eduroam_certificate_to_connection",
+      "source": "service.eduroam.certificate",
+      "target": "service.eduroam.connection",
+      "label": "nur eduroam → verbinden",
+      "relation_type": "connection",
+      "color_block": "blue"
+    },
+    {
+      "id": "eduroam_problem_to_profile",
+      "source": "service.eduroam.problem",
+      "target": "service.eduroam.profile",
+      "label": "ggf. Profil neu erstellen",
+      "relation_type": "troubleshooting",
+      "color_block": "red"
+    },
+    {
+      "id": "eduroam_connection_to_vpn_tunnel",
+      "source": "service.eduroam.connection",
+      "target": "service.vpn.tunnel",
+      "label": "VPN kann zusätzlich über eduroam-WLAN aktiv sein",
+      "relation_type": "cross_service",
+      "color_block": "blue"
+    },
+    {
+      "id": "eduroam_connection_to_support",
+      "source": "service.eduroam.connection",
+      "target": "service.support.human",
+      "label": "verbunden, aber kein Internet / ungelöst → Support",
+      "relation_type": "troubleshooting",
+      "color_block": "red"
+    }
+  ],
+  "inference_design_notes": [
+    "Globale Bausteine (Account, Netzwerk, OS, MFA, Status) werden weiterhin vor dienstspezifischen Regeln berücksichtigt.",
+    "Die aktualisierte Sicht trennt klarer zwischen gemeinsamen Kernfakten und service.*-Namespaces.",
+    "MFA wird als zeitbasierter Authenticator-Code modelliert. Push-Benachrichtigungen werden nicht als Standardverfahren angenommen.",
+    "eduroam wird als Kette Campus/WLAN → SSID sichtbar → CAT-Profil → Zertifikat → Verbindung/Internet modelliert.",
+    "VPN wird als Kette Installation → Client → Profil/Gateway → Login+MFA → Tunnel → interne Ressourcen modelliert.",
+    "Rote Pfade sind blockierende oder eskalierende Fehlerbilder; sie dürfen dienstübergreifend wirksam sein."
+  ]
+}

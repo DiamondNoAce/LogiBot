@@ -1,0 +1,643 @@
+{
+  "conditions": [
+    {
+      "id": "P0",
+      "key": "service",
+      "display_name": "Service",
+      "knowledge_area": "Core",
+      "category": "Routing",
+      "allowed_values": [
+        "eduroam",
+        "vpn",
+        "mfa",
+        "account",
+        "unknown"
+      ],
+      "description": "Erkanntes Thema bzw. Service im Gespräch",
+      "used_in": "Alle service-spezifischen Regeln",
+      "translation_hint": "Pflichtfeld für jede service-spezifische Regel",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P1",
+      "key": "intent",
+      "display_name": "Intent",
+      "knowledge_area": "Core",
+      "category": "Routing",
+      "allowed_values": [
+        "setup",
+        "troubleshooting",
+        "general_info",
+        "reconnect",
+        "unknown"
+      ],
+      "description": "Absicht des Nutzers",
+      "used_in": "Router- und Fallback-Regeln",
+      "translation_hint": "Dient nur zur Grobsteuerung, konkrete Regeln nutzen zusätzliche Facts",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P2",
+      "key": "user_role",
+      "display_name": "User Role",
+      "knowledge_area": "Core",
+      "category": "Nutzerrolle",
+      "allowed_values": [
+        "guest",
+        "student",
+        "employee",
+        "unknown"
+      ],
+      "description": "Rolle des Nutzers",
+      "used_in": "Gast-, Account- und Zugangsregeln",
+      "translation_hint": "Gäste benötigen gesonderte Behandlung",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P3",
+      "key": "guest_access_exists",
+      "display_name": "Guest Access Exists",
+      "knowledge_area": "Core",
+      "category": "Nutzerrolle",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Gastzugang ist vorhanden",
+      "used_in": "Gast-Regeln",
+      "translation_hint": "Bei false keine VPN/Eduroam-Nutzung ohne Zugang",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P4",
+      "key": "account_exists",
+      "display_name": "Account Exists",
+      "knowledge_area": "Core",
+      "category": "Account",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Uni-Account existiert",
+      "used_in": "Account-, Eduroam-, VPN-, MFA-Regeln",
+      "translation_hint": "Blocker: Setup nur sinnvoll bei true",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P5",
+      "key": "account_active",
+      "display_name": "Account Active",
+      "knowledge_area": "Core",
+      "category": "Account",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Uni-Account ist aktiv und nicht gesperrt",
+      "used_in": "Login- und Auth-Regeln",
+      "translation_hint": "Bei false Account-Modul/Support",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P6",
+      "key": "username_known",
+      "display_name": "Username Known",
+      "knowledge_area": "Core",
+      "category": "Zugangsdaten",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Benutzerkennung ist bekannt",
+      "used_in": "Login-Regeln",
+      "translation_hint": "Fehlt der Benutzername, Hilferegel ausführen",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P7",
+      "key": "password_known",
+      "display_name": "Password Known",
+      "knowledge_area": "Core",
+      "category": "Zugangsdaten",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Passwort ist bekannt",
+      "used_in": "Login-Regeln",
+      "translation_hint": "Fehlt das Passwort, Reset-Hilfe ausgeben",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P8",
+      "key": "password_recently_changed",
+      "display_name": "Password Recently Changed",
+      "knowledge_area": "Core",
+      "category": "Zugangsdaten/Fehleranalyse",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Passwort wurde kürzlich geändert",
+      "used_in": "Eduroam- und VPN-Fehlerregeln",
+      "translation_hint": "Kann gespeicherte Zugangsdaten/Profile ungültig machen",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P9",
+      "key": "device_type",
+      "display_name": "Device Type",
+      "knowledge_area": "Core",
+      "category": "Gerät",
+      "allowed_values": [
+        "laptop",
+        "desktop",
+        "smartphone",
+        "tablet",
+        "unknown"
+      ],
+      "description": "Genutztes Gerät",
+      "used_in": "OS-/App-/Client-Regeln",
+      "translation_hint": "MFA-App meist auf Smartphone",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P10",
+      "key": "operating_system",
+      "display_name": "Operating System",
+      "knowledge_area": "Core",
+      "category": "Gerät/Betriebssystem",
+      "allowed_values": [
+        "windows",
+        "macos",
+        "ios",
+        "android",
+        "linux",
+        "chromeos",
+        "unknown"
+      ],
+      "description": "Betriebssystem für passende Anleitung",
+      "used_in": "Setup-Regeln",
+      "translation_hint": "unknown führt zum OS-Router",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P11",
+      "key": "on_campus",
+      "display_name": "On Campus",
+      "knowledge_area": "Core",
+      "category": "Campus/Netz",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Nutzer befindet sich am Campus bzw. Eduroam-Standort",
+      "used_in": "Eduroam und VPN-Erstinstallation",
+      "translation_hint": "Eduroam-Nutzung/Sichtbarkeit ist an Standort gebunden",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P12",
+      "key": "campus_wifi_available",
+      "display_name": "Campus Wifi Available",
+      "knowledge_area": "Core",
+      "category": "Campus/Netz",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Campus-WLAN/Eduroam ist verfügbar",
+      "used_in": "VPN-Erstinstallation, Eduroam",
+      "translation_hint": "Eine Option für VPN-Erstinstallation",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P13",
+      "key": "campus_lan_available",
+      "display_name": "Campus Lan Available",
+      "knowledge_area": "Core",
+      "category": "Campus/Netz",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Campus-LAN ist verfügbar",
+      "used_in": "VPN-Erstinstallation",
+      "translation_hint": "Alternative zu Eduroam-WLAN für VPN-Erstinstallation",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P14",
+      "key": "internet_available",
+      "display_name": "Internet Available",
+      "knowledge_area": "Core",
+      "category": "Netzwerk",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Grundsätzliche Internetverbindung vorhanden",
+      "used_in": "VPN-Nutzung, Verbindungstests",
+      "translation_hint": "Für VPN-Nutzung außerhalb Campus relevant",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P15",
+      "key": "wifi_available",
+      "display_name": "Wifi Available",
+      "knowledge_area": "Eduroam",
+      "category": "Eduroam",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Gerät besitzt WLAN",
+      "used_in": "Eduroam-WLAN-Regeln",
+      "translation_hint": "Bei false keine Eduroam-Verbindung",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P16",
+      "key": "wifi_enabled",
+      "display_name": "Wifi Enabled",
+      "knowledge_area": "Eduroam",
+      "category": "Eduroam",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "WLAN ist aktiviert",
+      "used_in": "Eduroam-WLAN-Regeln",
+      "translation_hint": "Vor Sichtbarkeitsprüfung",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P17",
+      "key": "eduroam_visible",
+      "display_name": "Eduroam Visible",
+      "knowledge_area": "Eduroam",
+      "category": "Eduroam",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Eduroam wird in der WLAN-Liste angezeigt",
+      "used_in": "Eduroam Setup/Troubleshooting",
+      "translation_hint": "Campusbezug beachten",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P18",
+      "key": "eduroam_profile_configured",
+      "display_name": "Eduroam Profile Configured",
+      "knowledge_area": "Eduroam",
+      "category": "Eduroam",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Eduroam-Profil ist eingerichtet",
+      "used_in": "Eduroam Setup/Verbindung",
+      "translation_hint": "Bei false OS-spezifisches Setup",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P19",
+      "key": "eduroam_certificate_warning_shown",
+      "display_name": "Eduroam Certificate Warning Shown",
+      "knowledge_area": "Eduroam",
+      "category": "Eduroam/Sicherheit",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Zertifikatswarnung erscheint",
+      "used_in": "Eduroam Zertifikatsregel",
+      "translation_hint": "Nur für Eduroam relevant",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P20",
+      "key": "eduroam_connection_status",
+      "display_name": "Eduroam Connection Status",
+      "knowledge_area": "Eduroam",
+      "category": "Eduroam",
+      "allowed_values": [
+        "not_tested",
+        "connected",
+        "failed"
+      ],
+      "description": "Eduroam-Verbindung wurde getestet",
+      "used_in": "Eduroam Verbindung/Troubleshooting",
+      "translation_hint": "Zentraler Übergang",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P21",
+      "key": "eduroam_internet_access",
+      "display_name": "Eduroam Internet Access",
+      "knowledge_area": "Eduroam",
+      "category": "Eduroam",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Internet funktioniert über Eduroam",
+      "used_in": "Eduroam Abschluss/No-Internet",
+      "translation_hint": "Nach Verbindung separat prüfen",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P22",
+      "key": "vpn_installation_status",
+      "display_name": "Vpn Installation Status",
+      "knowledge_area": "VPN",
+      "category": "VPN",
+      "allowed_values": [
+        "not_installed",
+        "installed",
+        "failed",
+        "unknown"
+      ],
+      "description": "VPN-Erstinstallation wurde durchgeführt",
+      "used_in": "VPN Installation/Client",
+      "translation_hint": "Erstinstallation am Campusnetz",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P23",
+      "key": "vpn_client_installed",
+      "display_name": "Vpn Client Installed",
+      "knowledge_area": "VPN",
+      "category": "VPN",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "VPN-Client ist installiert",
+      "used_in": "VPN Client-Regeln",
+      "translation_hint": "Bei false Installation",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P24",
+      "key": "vpn_client_healthy",
+      "display_name": "Vpn Client Healthy",
+      "knowledge_area": "VPN",
+      "category": "VPN",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "VPN-Client funktioniert technisch",
+      "used_in": "VPN Troubleshooting",
+      "translation_hint": "Nach Installation prüfen",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P25",
+      "key": "vpn_profile_configured",
+      "display_name": "Vpn Profile Configured",
+      "knowledge_area": "VPN",
+      "category": "VPN",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "VPN-Profil/Gateway ist eingerichtet",
+      "used_in": "VPN Profil/Auth",
+      "translation_hint": "Vor Authentifizierung nötig",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P26",
+      "key": "vpn_mfa_required",
+      "display_name": "Vpn Mfa Required",
+      "knowledge_area": "VPN",
+      "category": "VPN/MFA",
+      "allowed_values": [
+        true
+      ],
+      "description": "MFA ist für VPN notwendig",
+      "used_in": "VPN Auth/MFA",
+      "translation_hint": "Für VPN immer true",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P27",
+      "key": "vpn_auth_status",
+      "display_name": "Vpn Auth Status",
+      "knowledge_area": "VPN",
+      "category": "VPN",
+      "allowed_values": [
+        "not_tested",
+        "success",
+        "failed"
+      ],
+      "description": "VPN-Loginstatus",
+      "used_in": "VPN Auth/Troubleshooting",
+      "translation_hint": "Setzt Übergang zum Tunnel",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P28",
+      "key": "vpn_tunnel_status",
+      "display_name": "Vpn Tunnel Status",
+      "knowledge_area": "VPN",
+      "category": "VPN",
+      "allowed_values": [
+        "not_tested",
+        "connected",
+        "failed"
+      ],
+      "description": "VPN-Tunnelstatus",
+      "used_in": "VPN Aktivierung",
+      "translation_hint": "Prüft echte VPN-Verbindung",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P29",
+      "key": "vpn_resource_accessible",
+      "display_name": "Vpn Resource Accessible",
+      "knowledge_area": "VPN",
+      "category": "VPN",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Interne Dienste sind erreichbar",
+      "used_in": "VPN Abschluss",
+      "translation_hint": "Nach Tunnel separat prüfen",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P30",
+      "key": "mfa_required_for_vpn",
+      "display_name": "Mfa Required For Vpn",
+      "knowledge_area": "VPN",
+      "category": "MFA",
+      "allowed_values": [
+        true
+      ],
+      "description": "MFA ist für VPN verpflichtend",
+      "used_in": "MFA/VPN-Regeln",
+      "translation_hint": "Nicht für weitere Logins modellieren",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P31",
+      "key": "mfa_enrolled",
+      "display_name": "Mfa Enrolled",
+      "knowledge_area": "MFA",
+      "category": "MFA",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "MFA ist eingerichtet",
+      "used_in": "MFA Setup/VPN Auth",
+      "translation_hint": "Für VPN vor Auth nötig",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P32",
+      "key": "mfa_totp_available",
+      "display_name": "Mfa Totp Available",
+      "knowledge_area": "MFA",
+      "category": "MFA",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Authenticator-App zeigt zeitbasierten Code",
+      "used_in": "MFA Prüfung",
+      "translation_hint": "Kein Push; Code ändert sich alle 30 Sekunden",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P33",
+      "key": "mfa_code_status",
+      "display_name": "Mfa Code Status",
+      "knowledge_area": "MFA",
+      "category": "MFA",
+      "allowed_values": [
+        "not_tested",
+        "valid",
+        "invalid",
+        "expired"
+      ],
+      "description": "Status des eingegebenen MFA-Codes",
+      "used_in": "MFA Prüfung/VPN Auth",
+      "translation_hint": "Ungültig/abgelaufen führt zu MFA-Troubleshooting",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P34",
+      "key": "mfa_device_available",
+      "display_name": "Mfa Device Available",
+      "knowledge_area": "MFA",
+      "category": "MFA",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "MFA-Gerät/App ist verfügbar",
+      "used_in": "MFA Recovery",
+      "translation_hint": "Bei false Wiederherstellung/Support",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P35",
+      "key": "problem_type",
+      "display_name": "Problem Type",
+      "knowledge_area": "Core",
+      "category": "Troubleshooting",
+      "allowed_values": [
+        "ssid_not_visible",
+        "auth_failed",
+        "certificate_warning",
+        "no_internet",
+        "connection_drops",
+        "install_failed",
+        "mfa_failed",
+        "timeout",
+        "client_error",
+        "unknown"
+      ],
+      "description": "Art des Problems",
+      "used_in": "Alle Troubleshooting-Regeln",
+      "translation_hint": "Spezifische Problemregeln vor Router/Fallback",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P36",
+      "key": "user_problem_resolved",
+      "display_name": "User Problem Resolved",
+      "knowledge_area": "Core",
+      "category": "Abschluss",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Problem wurde gelöst",
+      "used_in": "Abschluss/Eskalation",
+      "translation_hint": "Voraussetzung für finalen Abschluss",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P37",
+      "key": "needs_human_support",
+      "display_name": "Needs Human Support",
+      "knowledge_area": "Core",
+      "category": "Eskalation",
+      "allowed_values": [
+        true,
+        false,
+        "unknown"
+      ],
+      "description": "Menschlicher Support notwendig",
+      "used_in": "Eskalation",
+      "translation_hint": "Bei Blockern oder wiederholtem Scheitern",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    },
+    {
+      "id": "P38",
+      "key": "user_request_answered",
+      "display_name": "User Request Answered",
+      "knowledge_area": "Core",
+      "category": "Abschluss",
+      "allowed_values": [
+        true,
+        false
+      ],
+      "description": "Anfrage darf abgeschlossen werden",
+      "used_in": "Finish-Regel",
+      "translation_hint": "Nur bei Lösung oder sauberer Eskalation true",
+      "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx / 02_PreConditions"
+    }
+  ]
+}

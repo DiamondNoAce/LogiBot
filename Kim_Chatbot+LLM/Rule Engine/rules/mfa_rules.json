@@ -1,0 +1,266 @@
+[
+  {
+    "id": "mfa.setup.no_account",
+    "active": true,
+    "description": "MFA braucht Benutzerkonto.",
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "account_activated",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Für die MFA-Einrichtung brauchst du zuerst ein aktiviertes Hohenheimer Benutzerkonto."
+      },
+      {
+        "type": "redirect_topic",
+        "topic": "user_account",
+        "intent": "setup",
+        "text": "Bitte aktiviere zuerst dein Benutzerkonto."
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "mfa.setup.not_on_campus",
+    "active": true,
+    "description": "MFA-Ersteinrichtung außerhalb Campus nicht möglich.",
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "campus_network_available",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Die MFA-Ersteinrichtung ist nur am Campus im Hohenheimer Netzwerk möglich, also kabelgebunden oder über eduroam. Eine VPN-Verbindung reicht dafür nicht aus."
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "mfa.setup.pc_with_mobile_app",
+    "active": true,
+    "description": "edumfa am PC öffnen und QR-Code mit mobiler App scannen.",
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "campus_network_available",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_setup_frontend_device",
+          "operator": "equals",
+          "value": "pc"
+        },
+        {
+          "fact": "mfa_token_device",
+          "operator": "in",
+          "value": [
+            "smartphone",
+            "tablet"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.mfa.pc_with_mobile_app"
+      },
+      {
+        "type": "set_fact",
+        "fact": "setup_guidance_provided",
+        "value": true
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "mfa.setup.pc_keepassxc",
+    "active": true,
+    "description": "MFA am PC mit KeePassXC.",
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "campus_network_available",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_token_device",
+          "operator": "equals",
+          "value": "pc"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.mfa.pc_keepassxc"
+      },
+      {
+        "type": "set_fact",
+        "fact": "setup_guidance_provided",
+        "value": true
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "mfa.setup.mobile_2fas",
+    "active": true,
+    "description": "MFA mit mobiler 2FAS-App.",
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "campus_network_available",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_token_device",
+          "operator": "in",
+          "value": [
+            "smartphone",
+            "tablet"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.mfa.mobile_2fas"
+      },
+      {
+        "type": "set_fact",
+        "fact": "setup_guidance_provided",
+        "value": true
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "mfa.problem.token_not_verified",
+    "active": true,
+    "description": "Token wurde ausgerollt, aber nicht verifiziert.",
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "token_rollout_started",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "token_verified",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.mfa.verify_existing_token"
+      },
+      {
+        "type": "set_fact",
+        "fact": "troubleshooting_guidance_provided",
+        "value": true
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "mfa.problem.token_lost",
+    "active": true,
+    "description": "Soft-Token verloren.",
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "token_lost",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.mfa.token_lost_service_desk"
+      },
+      {
+        "type": "set_fact",
+        "fact": "troubleshooting_guidance_provided",
+        "value": true
+      }
+    ],
+    "stop_after_match": true
+  }
+]
