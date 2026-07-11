@@ -1,0 +1,253 @@
+{
+  "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+  "items": [
+    {
+      "Funktion / Step-Package": "core_route_to_service",
+      "Kategorie": "Routing",
+      "Zweck": "Thema Eduroam/VPN/MFA erkennen und Service-Kette starten",
+      "Typische Eingangsfacts": "Nutzeranfrage",
+      "Setzt/ändert Facts": "service",
+      "Hinweis": "Gemeinsamer Einstieg"
+    },
+    {
+      "Funktion / Step-Package": "core_guest_access_help",
+      "Kategorie": "Nutzerrolle",
+      "Zweck": "Gastzugang prüfen oder KIM-Verweis ausgeben",
+      "Typische Eingangsfacts": "user_role=guest",
+      "Setzt/ändert Facts": "guest_access_exists / needs_human_support",
+      "Hinweis": "Vor Account-Kette"
+    },
+    {
+      "Funktion / Step-Package": "core_account_check",
+      "Kategorie": "Account",
+      "Zweck": "Uni-Account prüfen/aktivieren",
+      "Typische Eingangsfacts": "service gesetzt",
+      "Setzt/ändert Facts": "account_exists / account_active",
+      "Hinweis": "Blocker-Regel"
+    },
+    {
+      "Funktion / Step-Package": "core_credentials_help",
+      "Kategorie": "Zugangsdaten",
+      "Zweck": "Benutzerkennung/Passwort klären oder Reset erklären",
+      "Typische Eingangsfacts": "account_exists=true",
+      "Setzt/ändert Facts": "username_known / password_known",
+      "Hinweis": "Für Eduroam, VPN und MFA"
+    },
+    {
+      "Funktion / Step-Package": "core_password_change_router",
+      "Kategorie": "Fehleranalyse",
+      "Zweck": "Folgen einer Passwortänderung an Eduroam/VPN weiterleiten",
+      "Typische Eingangsfacts": "password_recently_changed=true",
+      "Setzt/ändert Facts": "stored_credentials_may_be_invalid",
+      "Hinweis": "Überschneidung Eduroam/VPN"
+    },
+    {
+      "Funktion / Step-Package": "mfa_requirement_info",
+      "Kategorie": "MFA",
+      "Zweck": "Erklären, dass MFA für VPN erforderlich ist",
+      "Typische Eingangsfacts": "service=vpn",
+      "Setzt/ändert Facts": "vpn_mfa_required=true",
+      "Hinweis": "Nicht für andere Logins setzen"
+    },
+    {
+      "Funktion / Step-Package": "mfa_setup_authenticator",
+      "Kategorie": "MFA",
+      "Zweck": "Authenticator-App mit TOTP-Code einrichten",
+      "Typische Eingangsfacts": "account + credentials",
+      "Setzt/ändert Facts": "mfa_enrolled / mfa_totp_available",
+      "Hinweis": "Kein Push; 30-Sekunden-Code"
+    },
+    {
+      "Funktion / Step-Package": "mfa_validate_totp_code",
+      "Kategorie": "MFA",
+      "Zweck": "TOTP-Code prüfen",
+      "Typische Eingangsfacts": "mfa_totp_available=true",
+      "Setzt/ändert Facts": "mfa_code_status",
+      "Hinweis": "Code kann ablaufen"
+    },
+    {
+      "Funktion / Step-Package": "mfa_troubleshoot_code",
+      "Kategorie": "MFA",
+      "Zweck": "MFA-Code/App/Gerät prüfen",
+      "Typische Eingangsfacts": "invalid/expired/device unavailable",
+      "Setzt/ändert Facts": "mfa_code_status / needs_human_support",
+      "Hinweis": "Bei Verlust Support"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_campus_location_help",
+      "Kategorie": "Eduroam",
+      "Zweck": "Campus-/Standorthinweis für Eduroam",
+      "Typische Eingangsfacts": "service=eduroam",
+      "Setzt/ändert Facts": "on_campus",
+      "Hinweis": "Eduroam nur dort sichtbar/nutzbar"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_wifi_hardware_check",
+      "Kategorie": "Eduroam",
+      "Zweck": "WLAN-Hardware prüfen",
+      "Typische Eingangsfacts": "service=eduroam",
+      "Setzt/ändert Facts": "wifi_available",
+      "Hinweis": "Vor WLAN-Aktivierung"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_enable_wifi",
+      "Kategorie": "Eduroam",
+      "Zweck": "WLAN aktivieren und Liste aktualisieren",
+      "Typische Eingangsfacts": "wifi_available=true",
+      "Setzt/ändert Facts": "wifi_enabled",
+      "Hinweis": "Neustart möglich"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_troubleshoot_not_visible",
+      "Kategorie": "Eduroam",
+      "Zweck": "Eduroam-Netz nicht sichtbar beheben",
+      "Typische Eingangsfacts": "on_campus + wifi_enabled",
+      "Setzt/ändert Facts": "eduroam_visible",
+      "Hinweis": "Standort/Störung prüfen"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_setup_router",
+      "Kategorie": "Eduroam",
+      "Zweck": "Betriebssystem erkennen und Anleitung verzweigen",
+      "Typische Eingangsfacts": "eduroam_profile_configured=false",
+      "Setzt/ändert Facts": "operating_system",
+      "Hinweis": "Router zu OS-Setup"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_setup_windows/macos/ios/android/linux",
+      "Kategorie": "Eduroam",
+      "Zweck": "OS-spezifische Eduroam-Einrichtung",
+      "Typische Eingangsfacts": "operating_system",
+      "Setzt/ändert Facts": "eduroam_profile_configured",
+      "Hinweis": "Ein Step-Package je OS"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_troubleshoot_certificate_warning",
+      "Kategorie": "Eduroam",
+      "Zweck": "Eduroam-Zertifikat/Profil prüfen",
+      "Typische Eingangsfacts": "certificate_warning",
+      "Setzt/ändert Facts": "eduroam_certificate_checked",
+      "Hinweis": "Nur Eduroam"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_try_connect",
+      "Kategorie": "Eduroam",
+      "Zweck": "Eduroam-Verbindung testen",
+      "Typische Eingangsfacts": "Profil + Zugangsdaten vorhanden",
+      "Setzt/ändert Facts": "eduroam_connection_status",
+      "Hinweis": "Übergang zu Erfolg/Troubleshooting"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_troubleshoot_auth_or_password",
+      "Kategorie": "Eduroam",
+      "Zweck": "Eduroam-Login-/Passwortfehler prüfen",
+      "Typische Eingangsfacts": "connection failed",
+      "Setzt/ändert Facts": "credentials_checked",
+      "Hinweis": "Passwortänderung beachten"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_troubleshoot_no_internet",
+      "Kategorie": "Eduroam",
+      "Zweck": "Verbunden, aber kein Internet",
+      "Typische Eingangsfacts": "connection connected",
+      "Setzt/ändert Facts": "eduroam_internet_access",
+      "Hinweis": "Nicht mit Loginfehler vermischen"
+    },
+    {
+      "Funktion / Step-Package": "vpn_campus_network_help",
+      "Kategorie": "VPN",
+      "Zweck": "Campusnetz für Erstinstallation prüfen",
+      "Typische Eingangsfacts": "vpn install needed",
+      "Setzt/ändert Facts": "vpn_installation_allowed",
+      "Hinweis": "Eduroam-WLAN oder LAN"
+    },
+    {
+      "Funktion / Step-Package": "vpn_install_client_os_specific",
+      "Kategorie": "VPN",
+      "Zweck": "VPN-Client OS-spezifisch installieren",
+      "Typische Eingangsfacts": "campus network available",
+      "Setzt/ändert Facts": "vpn_client_installed",
+      "Hinweis": "Erstinstallation"
+    },
+    {
+      "Funktion / Step-Package": "vpn_check_client_health",
+      "Kategorie": "VPN",
+      "Zweck": "VPN-Client nach Installation prüfen",
+      "Typische Eingangsfacts": "vpn_client_installed=true",
+      "Setzt/ändert Facts": "vpn_client_healthy",
+      "Hinweis": "Fehler nach Installation möglich"
+    },
+    {
+      "Funktion / Step-Package": "vpn_configure_profile_gateway",
+      "Kategorie": "VPN",
+      "Zweck": "VPN-Profil/Gateway konfigurieren",
+      "Typische Eingangsfacts": "client healthy",
+      "Setzt/ändert Facts": "vpn_profile_configured",
+      "Hinweis": "Vor VPN-Auth"
+    },
+    {
+      "Funktion / Step-Package": "vpn_authenticate_with_mfa",
+      "Kategorie": "VPN",
+      "Zweck": "VPN-Login mit Zugangsdaten und MFA-Code",
+      "Typische Eingangsfacts": "mfa_code_status=valid",
+      "Setzt/ändert Facts": "vpn_auth_status",
+      "Hinweis": "MFA immer erforderlich"
+    },
+    {
+      "Funktion / Step-Package": "vpn_connect_tunnel",
+      "Kategorie": "VPN",
+      "Zweck": "VPN-Tunnel aufbauen",
+      "Typische Eingangsfacts": "auth success",
+      "Setzt/ändert Facts": "vpn_tunnel_status",
+      "Hinweis": "Separat vom Login"
+    },
+    {
+      "Funktion / Step-Package": "vpn_check_internal_resources",
+      "Kategorie": "VPN",
+      "Zweck": "Interne Dienste prüfen",
+      "Typische Eingangsfacts": "tunnel connected",
+      "Setzt/ändert Facts": "vpn_resource_accessible",
+      "Hinweis": "VPN erfolgreich erst wenn Ziel erreichbar"
+    },
+    {
+      "Funktion / Step-Package": "vpn_troubleshoot_installation",
+      "Kategorie": "VPN",
+      "Zweck": "Installationsprobleme beheben",
+      "Typische Eingangsfacts": "install_failed",
+      "Setzt/ändert Facts": "vpn_client_installed",
+      "Hinweis": "Vor Profil/Auth"
+    },
+    {
+      "Funktion / Step-Package": "vpn_troubleshoot_auth_mfa",
+      "Kategorie": "VPN",
+      "Zweck": "Login-/MFA-Fehler beheben",
+      "Typische Eingangsfacts": "auth_failed/mfa_failed",
+      "Setzt/ändert Facts": "credentials_checked / mfa_code_status",
+      "Hinweis": "MFA zurück zur Codeprüfung"
+    },
+    {
+      "Funktion / Step-Package": "vpn_troubleshoot_tunnel_network",
+      "Kategorie": "VPN",
+      "Zweck": "Tunnel-/Netzwerkfehler beheben",
+      "Typische Eingangsfacts": "auth success but tunnel failed",
+      "Setzt/ändert Facts": "vpn_tunnel_status",
+      "Hinweis": "Timeout/Client/Netz"
+    },
+    {
+      "Funktion / Step-Package": "support_escalation_response",
+      "Kategorie": "Eskalation",
+      "Zweck": "Supportweg ausgeben",
+      "Typische Eingangsfacts": "needs_human_support=true",
+      "Setzt/ändert Facts": "user_request_answered=true",
+      "Hinweis": "Saubere Eskalation"
+    },
+    {
+      "Funktion / Step-Package": "finish_resolved_response",
+      "Kategorie": "Abschluss",
+      "Zweck": "Erfolgreichen Abschluss setzen",
+      "Typische Eingangsfacts": "problem solved",
+      "Setzt/ändert Facts": "user_problem_resolved / user_request_answered",
+      "Hinweis": "Finaler Zielzustand"
+    }
+  ]
+}

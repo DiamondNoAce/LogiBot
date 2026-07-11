@@ -1,0 +1,139 @@
+[
+  {
+    "id": "goal.ask_resolution_after_setup_guidance",
+    "active": true,
+    "description": "Nach Setup-Anleitung wird geprüft, ob Problem wirklich gelöst ist.",
+    "when": {
+      "all": [
+        {
+          "fact": "setup_guidance_provided",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": "unknown"
+        },
+        {
+          "fact": "resolution_confirmation_requested",
+          "operator": "not_equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "user_problem_resolved",
+        "text": "Hat die Einrichtung funktioniert und ist dein Problem damit gelöst?"
+      },
+      {
+        "type": "set_fact",
+        "fact": "resolution_confirmation_requested",
+        "value": true
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "goal.ask_resolution_after_troubleshooting_guidance",
+    "active": true,
+    "description": "Nach Troubleshooting-Anleitung wird geprüft, ob Problem gelöst ist.",
+    "when": {
+      "all": [
+        {
+          "fact": "troubleshooting_guidance_provided",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": "unknown"
+        },
+        {
+          "fact": "resolution_confirmation_requested",
+          "operator": "not_equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "user_problem_resolved",
+        "text": "Hat die Problembehebung geholfen und funktioniert es jetzt?"
+      },
+      {
+        "type": "set_fact",
+        "fact": "resolution_confirmation_requested",
+        "value": true
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "goal.mark_answered_when_resolved",
+    "active": true,
+    "description": "Nutzeranfrage nur als beantwortet markieren, wenn Problem gelöst ist.",
+    "when": {
+      "all": [
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_request_answered",
+          "operator": "not_equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Super, dann ist die Anfrage erfolgreich beantwortet."
+      },
+      {
+        "type": "set_fact",
+        "fact": "user_request_answered",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "problem_unresolved",
+        "value": false
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "goal.not_answered_when_unresolved",
+    "active": true,
+    "description": "Wenn Problem nicht gelöst ist, bleibt Anfrage offen.",
+    "when": {
+      "all": [
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "set_fact",
+        "fact": "user_request_answered",
+        "value": false
+      },
+      {
+        "type": "set_fact",
+        "fact": "problem_unresolved",
+        "value": true
+      }
+    ],
+    "stop_after_match": false
+  }
+]

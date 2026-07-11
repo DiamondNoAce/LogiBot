@@ -26,6 +26,9 @@ Rule Engine/
 
 Der Vorteil: Wenn eine neue Version der Rule Engine entsteht, kann der Ordner **Rule Engine** einfach ersetzt werden. Die App liest Regeln, Quellen und Schrittpakete zur Laufzeit wieder ein.
 
+## Link zum Testserver
+...
+
 ## Start
 
 ```powershell

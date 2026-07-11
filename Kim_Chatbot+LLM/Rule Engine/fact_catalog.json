@@ -1,0 +1,1092 @@
+{
+  "global": {
+    "topic": [
+      "user_account",
+      "eduroam",
+      "mfa",
+      "vpn",
+      "unknown"
+    ],
+    "intent": [
+      "setup",
+      "login",
+      "troubleshooting",
+      "information",
+      "change_password",
+      "reset_password",
+      "request_account",
+      "extend_account",
+      "unknown"
+    ],
+    "role": [
+      "student",
+      "employee",
+      "external_student",
+      "guest_auditor",
+      "doctoral_candidate",
+      "guest_researcher",
+      "lecturer",
+      "unknown"
+    ],
+    "os": [
+      "windows",
+      "macos",
+      "linux",
+      "android",
+      "ios",
+      "ipados",
+      "chromeos",
+      "unknown"
+    ],
+    "device_type": [
+      "pc",
+      "laptop",
+      "smartphone",
+      "tablet",
+      "chromebook",
+      "unknown"
+    ],
+    "location": [
+      "campus",
+      "home",
+      "other_university",
+      "abroad",
+      "unknown"
+    ],
+    "internet_available": [
+      true,
+      false,
+      "unknown"
+    ],
+    "campus_network_available": [
+      true,
+      false,
+      "unknown"
+    ],
+    "network_type": [
+      "eduroam",
+      "wired",
+      "howlan2",
+      "mobile_data",
+      "home_wifi",
+      "vpn",
+      "konfig_service_desk",
+      "unknown"
+    ],
+    "service": [
+      "user_account",
+      "eduroam",
+      "mfa",
+      "vpn",
+      "drucker",
+      "unknown"
+    ],
+    "operating_system": [
+      "windows",
+      "macos",
+      "linux",
+      "android",
+      "ios",
+      "ipados",
+      "chromeos",
+      "unknown"
+    ],
+    "problem_area": [
+      "organisation",
+      "login",
+      "verbinden",
+      "download",
+      "certificate_warning",
+      "unknown"
+    ],
+    "source_type": [
+      "setup",
+      "troubleshooting",
+      "information",
+      "unknown"
+    ],
+    "journey_type": [
+      "setup",
+      "login",
+      "connection",
+      "troubleshooting",
+      "unknown"
+    ],
+    "account_status": [
+      "active",
+      "locked",
+      "not_activated",
+      "unknown"
+    ],
+    "account_locked": [
+      true,
+      false,
+      "unknown"
+    ],
+    "credentials_valid": [
+      true,
+      false,
+      "unknown"
+    ],
+    "network_context": [
+      "campus",
+      "home",
+      "external_network",
+      "vpn",
+      "unknown"
+    ],
+    "auth_status": [
+      "accepted",
+      "rejected",
+      "not_requested",
+      "unknown"
+    ],
+    "firewall_proxy_relevant": [
+      true,
+      false,
+      "unknown"
+    ],
+    "internal_service_access_required": [
+      true,
+      false,
+      "unknown"
+    ],
+    "human_support_needed": [
+      true,
+      false,
+      "unknown"
+    ],
+    "escalation_reason": [
+      "account_locked",
+      "missing_mfa",
+      "authorization",
+      "network",
+      "unknown"
+    ],
+    "device_os_version_known": [
+      true,
+      false,
+      "unknown"
+    ],
+    "request_answered": [
+      true,
+      false,
+      "unknown"
+    ],
+    "setup_source_checked": [
+      true,
+      false,
+      "unknown"
+    ],
+    "external_network": [
+      true,
+      false,
+      "unknown"
+    ],
+    "service_certificate_status": [
+      "valid",
+      "warning",
+      "invalid",
+      "unknown"
+    ],
+    "status_goal": [
+      "setup_completed",
+      "connection_successful",
+      "problem_resolved",
+      "request_answered",
+      "support_needed",
+      "unknown"
+    ],
+    "problem_resolved": [
+      true,
+      false,
+      "unknown"
+    ],
+    "support_needed": [
+      true,
+      false,
+      "unknown"
+    ],
+    "support_reason": [
+      "account_locked",
+      "credentials_missing",
+      "network_blocked",
+      "mfa_recovery",
+      "vpn_permission",
+      "certificate_warning",
+      "repeated_failure",
+      "unknown"
+    ],
+    "user_role": [
+      "guest",
+      "student",
+      "employee",
+      "unknown"
+    ],
+    "guest_access_exists": [
+      true,
+      false,
+      "unknown"
+    ],
+    "account_exists": [
+      true,
+      false,
+      "unknown"
+    ],
+    "account_active": [
+      true,
+      false,
+      "unknown"
+    ],
+    "username_known": [
+      true,
+      false,
+      "unknown"
+    ],
+    "password_known": [
+      true,
+      false,
+      "unknown"
+    ],
+    "password_recently_changed": [
+      true,
+      false,
+      "unknown"
+    ],
+    "on_campus": [
+      true,
+      false,
+      "unknown"
+    ],
+    "campus_wifi_available": [
+      true,
+      false,
+      "unknown"
+    ],
+    "campus_lan_available": [
+      true,
+      false,
+      "unknown"
+    ],
+    "problem_type": [
+      "ssid_not_visible",
+      "auth_failed",
+      "certificate_warning",
+      "no_internet",
+      "connection_drops",
+      "install_failed",
+      "mfa_failed",
+      "timeout",
+      "client_error",
+      "unknown"
+    ],
+    "user_problem_resolved": [
+      true,
+      false,
+      "unknown"
+    ],
+    "needs_human_support": [
+      true,
+      false,
+      "unknown"
+    ],
+    "user_request_answered": [
+      true,
+      false
+    ]
+  },
+  "goal_state": {
+    "setup_guidance_provided": [
+      true,
+      false,
+      "unknown"
+    ],
+    "troubleshooting_guidance_provided": [
+      true,
+      false,
+      "unknown"
+    ],
+    "setup_completed": [
+      true,
+      false,
+      "unknown"
+    ],
+    "troubleshooting_completed": [
+      true,
+      false,
+      "unknown"
+    ],
+    "user_problem_resolved": [
+      true,
+      false,
+      "unknown"
+    ],
+    "user_request_answered": [
+      true,
+      false,
+      "unknown"
+    ],
+    "resolution_confirmation_requested": [
+      true,
+      false,
+      "unknown"
+    ],
+    "problem_unresolved": [
+      true,
+      false,
+      "unknown"
+    ],
+    "no_rule_matched": [
+      true,
+      false,
+      "unknown"
+    ]
+  },
+  "user_account": {
+    "account_exists": [
+      true,
+      false,
+      "unknown"
+    ],
+    "account_activated": [
+      true,
+      false,
+      "unknown"
+    ],
+    "activation_code_available": [
+      true,
+      false,
+      "unknown"
+    ],
+    "username_known": [
+      true,
+      false,
+      "unknown"
+    ],
+    "kuerzel_known": [
+      true,
+      false,
+      "unknown"
+    ],
+    "password_known": [
+      true,
+      false,
+      "unknown"
+    ],
+    "password_forgotten": [
+      true,
+      false,
+      "unknown"
+    ],
+    "external_email_registered": [
+      true,
+      false,
+      "unknown"
+    ],
+    "pin_registered": [
+      true,
+      false,
+      "unknown"
+    ],
+    "password_recently_changed": [
+      true,
+      false,
+      "unknown"
+    ],
+    "login_possible": [
+      true,
+      false,
+      "unknown"
+    ],
+    "login_possible_webmail": [
+      true,
+      false,
+      "unknown"
+    ],
+    "login_possible_ilias": [
+      true,
+      false,
+      "unknown"
+    ],
+    "login_possible_hohcampus": [
+      true,
+      false,
+      "unknown"
+    ],
+    "profile_data_wrong": [
+      true,
+      false,
+      "unknown"
+    ],
+    "identifier_entered_type": [
+      "kuerzel",
+      "email_personal",
+      "email_kuerzel_domain",
+      "unknown"
+    ],
+    "identifier_usage_context": [
+      "vpn",
+      "eduroam",
+      "mfa",
+      "idm",
+      "webmail",
+      "unknown"
+    ],
+    "official_id_available": [
+      true,
+      false,
+      "unknown"
+    ]
+  },
+  "eduroam": {
+    "eduroam_configured": [
+      true,
+      false,
+      "unknown"
+    ],
+    "eduroam_connected": [
+      true,
+      false,
+      "unknown"
+    ],
+    "eduroam_profile_installed": [
+      true,
+      false,
+      "unknown"
+    ],
+    "eduroam_profile_exists_old": [
+      true,
+      false,
+      "unknown"
+    ],
+    "wlan_enabled": [
+      true,
+      false,
+      "unknown"
+    ],
+    "username_format_correct": [
+      true,
+      false,
+      "unknown"
+    ],
+    "email_used_as_username": [
+      true,
+      false,
+      "unknown"
+    ],
+    "domain_requested": [
+      true,
+      false,
+      "unknown"
+    ],
+    "domain_entered": "string_or_null",
+    "login_failed": [
+      true,
+      false,
+      "unknown"
+    ],
+    "forget_network_done": [
+      true,
+      false,
+      "unknown"
+    ],
+    "os_updated": [
+      true,
+      false,
+      "unknown"
+    ],
+    "service": [
+      "eduroam",
+      "vpn",
+      "mfa",
+      "user_account",
+      "drucker",
+      "unknown"
+    ],
+    "operating_system": [
+      "windows",
+      "macos",
+      "ios",
+      "android",
+      "linux",
+      "chromeos",
+      "ipados",
+      "unknown"
+    ],
+    "account_exists": [
+      true,
+      false,
+      "unknown"
+    ],
+    "username_known": [
+      true,
+      false,
+      "unknown"
+    ],
+    "password_known": [
+      true,
+      false,
+      "unknown"
+    ],
+    "wifi_available": [
+      true,
+      false,
+      "unknown"
+    ],
+    "wifi_enabled": [
+      true,
+      false,
+      "unknown"
+    ],
+    "eduroam_visible": [
+      true,
+      false,
+      "unknown"
+    ],
+    "eduroam_profile_configured": [
+      true,
+      false,
+      "unknown"
+    ],
+    "connection_attempt_status": [
+      "not_tested",
+      "success",
+      "failed",
+      "unknown"
+    ],
+    "two_fa_required": [
+      true,
+      false,
+      "unknown"
+    ],
+    "two_fa_ready": [
+      true,
+      false,
+      "unknown",
+      "not_required"
+    ],
+    "certificate_warning_shown": [
+      true,
+      false,
+      "unknown"
+    ],
+    "certificate_checked": [
+      true,
+      false,
+      "unknown"
+    ],
+    "password_recently_changed": [
+      true,
+      false,
+      "unknown"
+    ],
+    "saved_old_credentials": [
+      true,
+      false,
+      "unknown"
+    ],
+    "internet_access_available": [
+      true,
+      false,
+      "unknown"
+    ],
+    "user_problem_resolved": [
+      true,
+      false,
+      "unknown"
+    ],
+    "needs_human_support": [
+      true,
+      false,
+      "unknown"
+    ],
+    "user_request_answered": [
+      true,
+      false,
+      "unknown"
+    ],
+    "connection_test_required": [
+      true,
+      false,
+      "unknown"
+    ],
+    "credentials_checked": [
+      true,
+      false,
+      "unknown"
+    ],
+    "profile_recreation_required": [
+      true,
+      false,
+      "unknown"
+    ],
+    "previous_solution_successful": [
+      true,
+      false,
+      "unknown"
+    ],
+    "multiple_attempts_failed": [
+      true,
+      false,
+      "unknown"
+    ],
+    "completion_possible": [
+      true,
+      false,
+      "unknown"
+    ],
+    "specific_rule_found": [
+      true,
+      false,
+      "unknown"
+    ],
+    "problem_type": [
+      "cannot_connect",
+      "authentication_failed",
+      "no_internet",
+      "eduroam_not_visible",
+      "connection_drops",
+      "certificate_warning",
+      "unknown"
+    ],
+    "connection_successful": [
+      true,
+      false,
+      "unknown"
+    ],
+    "eduroam_installation_source": [
+      "cat",
+      "geteduroam",
+      "manual",
+      "unknown"
+    ],
+    "eduroam_ca_certificate_present": [
+      true,
+      false,
+      "unknown"
+    ],
+    "eduroam_scope": [
+      "campus_wlan",
+      "other_university",
+      "unknown"
+    ],
+    "eduroam_campus_location_required": [
+      true,
+      false,
+      "unknown"
+    ],
+    "eduroam_campus_location_available": [
+      true,
+      false,
+      "unknown"
+    ],
+    "eduroam_certificate_warning_scope": [
+      "eduroam_only",
+      "system_wide",
+      "unknown"
+    ],
+    "eduroam_certificate_valid": [
+      true,
+      false,
+      "unknown"
+    ],
+    "eduroam_profile_status": [
+      "missing",
+      "installed",
+      "outdated",
+      "configured",
+      "invalid",
+      "unknown"
+    ],
+    "eduroam_problem_type": [
+      "not_visible",
+      "profile_missing",
+      "profile_invalid",
+      "certificate_warning",
+      "login_failed",
+      "no_internet",
+      "connection_drops",
+      "unknown"
+    ],
+    "eduroam_profile_missing": [
+      true,
+      false,
+      "unknown"
+    ],
+    "eduroam_cat_profile_installed": [
+      true,
+      false,
+      "unknown"
+    ],
+    "eduroam_certificate_warning_shown": [
+      true,
+      false,
+      "unknown"
+    ],
+    "eduroam_connection_status": [
+      "not_tested",
+      "connected",
+      "failed"
+    ],
+    "eduroam_internet_access": [
+      true,
+      false,
+      "unknown"
+    ]
+  },
+  "mfa": {
+    "mfa_configured": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_setup_frontend_device": [
+      "pc",
+      "smartphone",
+      "tablet",
+      "unknown"
+    ],
+    "mfa_token_device": [
+      "smartphone",
+      "tablet",
+      "pc",
+      "hardware_token",
+      "unknown"
+    ],
+    "mfa_app": [
+      "2fas",
+      "keepassxc",
+      "microsoft_authenticator",
+      "authy",
+      "google_authenticator",
+      "unknown"
+    ],
+    "edumfa_accessible": [
+      true,
+      false,
+      "unknown"
+    ],
+    "token_rollout_started": [
+      true,
+      false,
+      "unknown"
+    ],
+    "token_verified": [
+      true,
+      false,
+      "unknown"
+    ],
+    "token_lost": [
+      true,
+      false,
+      "unknown"
+    ],
+    "ios_version_ok_for_2fas": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_problem_type": [
+      "setup",
+      "lost_device",
+      "no_push",
+      "no_code",
+      "recovery",
+      "unknown"
+    ],
+    "mfa_app_available": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_push_available": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_code_available": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_recovery_available": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_recovery_requested": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_setup_required": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_challenge_approved": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_challenge_status": [
+      "approved",
+      "rejected",
+      "timeout",
+      "unknown"
+    ],
+    "mfa_device_lost": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_app_installed": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_totp_available": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_code_status": [
+      "available",
+      "expired",
+      "invalid",
+      "missing",
+      "approved",
+      "unknown"
+    ],
+    "mfa_recovery_required": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_enrollment_method": [
+      "authenticator_app",
+      "recovery",
+      "service_desk",
+      "unknown"
+    ],
+    "mfa_enrollment_required": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_request_setup": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_requires_credentials": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_required_for_vpn_login": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_enrolled": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_device_available": [
+      true,
+      false,
+      "unknown"
+    ]
+  },
+  "vpn": {
+    "vpn_client_installed": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_connected": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_server_entered": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_group_selected": [
+      "UHOH-2FA",
+      "other",
+      "unknown"
+    ],
+    "vpn_username_format_correct": [
+      true,
+      false,
+      "unknown"
+    ],
+    "second_factor_available": [
+      true,
+      false,
+      "unknown"
+    ],
+    "second_factor_source": [
+      "2fas_mobile_app",
+      "keepassxc_pc",
+      "hardware_token",
+      "unknown"
+    ],
+    "second_factor_entered": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_banner_accepted": [
+      true,
+      false,
+      "unknown"
+    ],
+    "linux_certificate_error": [
+      true,
+      false,
+      "unknown"
+    ],
+    "macos_drag_drop_deleted": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_needed": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_client_version_healthy": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_endpoint_reachable": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_endpoint_url": [
+      "vpn.uni-hohenheim.de",
+      "unknown"
+    ],
+    "login_form_requested": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_auth_status": [
+      "accepted",
+      "rejected",
+      "mfa_required",
+      "unknown"
+    ],
+    "vpn_tunnel_status": [
+      "connected",
+      "disconnected",
+      "failed",
+      "unknown"
+    ],
+    "internal_resource_accessible": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_profile_configured": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_installation_status": [
+      "not_installed",
+      "installed",
+      "failed",
+      "unknown"
+    ],
+    "campus_network_required": [
+      true,
+      false,
+      "unknown"
+    ],
+    "eduroam_for_vpn_setup_required": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_gateway_profile_valid": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_gateway_selected": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_login_form_valid": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_client_problem_type": [
+      "not_installed",
+      "version_outdated",
+      "client_failed",
+      "firewall",
+      "unknown"
+    ],
+    "vpn_problem_type": [
+      "login_failed",
+      "client_problem",
+      "tunnel_failed",
+      "firewall_proxy",
+      "permission_missing",
+      "resource_unreachable",
+      "unknown"
+    ],
+    "vpn_tunnel_active": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_permission_required": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_client_healthy": [
+      true,
+      false,
+      "unknown"
+    ],
+    "vpn_mfa_required": [
+      true
+    ],
+    "vpn_resource_accessible": [
+      true,
+      false,
+      "unknown"
+    ],
+    "mfa_required_for_vpn": [
+      true
+    ]
+  },
+  "support": {
+    "needs_human_support": [
+      true,
+      false,
+      "unknown"
+    ],
+    "support_case_needed": [
+      true,
+      false,
+      "unknown"
+    ]
+  }
+}

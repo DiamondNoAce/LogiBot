@@ -1,0 +1,100 @@
+[
+  {
+    "id": "kim.vpn_students",
+    "type": "website",
+    "title": "VPN für Studierende",
+    "url": "https://kim.uni-hohenheim.de/vpn#jfmulticontent_c171724-1",
+    "module": "vpn",
+    "used_for": [
+      "VPN Informationen für Studierende"
+    ]
+  },
+  {
+    "id": "kim.vpn",
+    "type": "website",
+    "title": "VPN Zugang und Cisco Secure Client",
+    "url": "https://kim.uni-hohenheim.de/?id=94958",
+    "module": "vpn",
+    "used_for": [
+      "VPN allgemein",
+      "Cisco Secure Client",
+      "MFA Voraussetzung"
+    ]
+  },
+  {
+    "id": "kim.vpn_client",
+    "type": "website",
+    "title": "VPN Client",
+    "url": "https://kim.uni-hohenheim.de/vpn-client",
+    "module": "vpn",
+    "used_for": [
+      "VPN-Client Download"
+    ]
+  },
+  {
+    "id": "kim.vpn_problem_linux_certificate",
+    "type": "website",
+    "title": "VPN Linux Zertifikatsproblem",
+    "url": "https://kim.uni-hohenheim.de/?id=102025",
+    "module": "vpn",
+    "os": "linux",
+    "used_for": [
+      "Linux Zertifikatsfehler"
+    ]
+  },
+  {
+    "id": "kim_pdf.vpn_windows",
+    "type": "pdf_landing_page",
+    "title": "VPN Windows-Anleitung im KIM-Downloadbereich",
+    "url": "https://kim.uni-hohenheim.de/vpn-client",
+    "module": "vpn",
+    "os": "windows",
+    "used_for": [
+      "Windows Installation"
+    ]
+  },
+  {
+    "id": "kim_pdf.vpn_linux",
+    "type": "pdf_landing_page",
+    "title": "VPN Linux-Anleitung im KIM-Downloadbereich",
+    "url": "https://kim.uni-hohenheim.de/vpn-client",
+    "module": "vpn",
+    "os": "linux",
+    "used_for": [
+      "Linux Installation"
+    ]
+  },
+  {
+    "id": "kim_pdf.vpn_android",
+    "type": "pdf_landing_page",
+    "title": "VPN Android-Anleitung im KIM-Downloadbereich",
+    "url": "https://kim.uni-hohenheim.de/vpn-client",
+    "module": "vpn",
+    "os": "android",
+    "used_for": [
+      "Android Einrichtung"
+    ]
+  },
+  {
+    "id": "kim_pdf.vpn_ios",
+    "type": "pdf_landing_page",
+    "title": "VPN iOS-Anleitung im KIM-Downloadbereich",
+    "url": "https://kim.uni-hohenheim.de/vpn-client",
+    "module": "vpn",
+    "os": "ios",
+    "used_for": [
+      "iOS Einrichtung"
+    ]
+  },
+  {
+    "id": "kim_pdf.vpn_macos",
+    "type": "pdf_landing_page",
+    "title": "VPN macOS-Anleitung im KIM-Downloadbereich",
+    "url": "https://kim.uni-hohenheim.de/vpn-client",
+    "module": "vpn",
+    "os": "macos",
+    "used_for": [
+      "macOS Installation"
+    ]
+  }
+]

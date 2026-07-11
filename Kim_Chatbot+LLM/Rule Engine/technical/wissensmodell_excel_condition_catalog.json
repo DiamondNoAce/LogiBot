@@ -1,0 +1,356 @@
+{
+  "source": "Regeln_aus_Wissensmodell_nach_Eduroam_Struktur.xlsx",
+  "items": [
+    {
+      "ID": "P0",
+      "Technischer Fact / Condition": "service",
+      "Kategorie": "Routing",
+      "Mögliche Werte": "eduroam, vpn, mfa, account, unknown",
+      "Bedeutung": "Erkanntes Thema bzw. Service im Gespräch",
+      "Wird geprüft in": "Alle service-spezifischen Regeln",
+      "Hinweis zur Übersetzung": "Pflichtfeld für jede service-spezifische Regel"
+    },
+    {
+      "ID": "P1",
+      "Technischer Fact / Condition": "intent",
+      "Kategorie": "Routing",
+      "Mögliche Werte": "setup, troubleshooting, general_info, reconnect, unknown",
+      "Bedeutung": "Absicht des Nutzers",
+      "Wird geprüft in": "Router- und Fallback-Regeln",
+      "Hinweis zur Übersetzung": "Dient nur zur Grobsteuerung, konkrete Regeln nutzen zusätzliche Facts"
+    },
+    {
+      "ID": "P2",
+      "Technischer Fact / Condition": "user_role",
+      "Kategorie": "Nutzerrolle",
+      "Mögliche Werte": "guest, student, employee, unknown",
+      "Bedeutung": "Rolle des Nutzers",
+      "Wird geprüft in": "Gast-, Account- und Zugangsregeln",
+      "Hinweis zur Übersetzung": "Gäste benötigen gesonderte Behandlung"
+    },
+    {
+      "ID": "P3",
+      "Technischer Fact / Condition": "guest_access_exists",
+      "Kategorie": "Nutzerrolle",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Gastzugang ist vorhanden",
+      "Wird geprüft in": "Gast-Regeln",
+      "Hinweis zur Übersetzung": "Bei false keine VPN/Eduroam-Nutzung ohne Zugang"
+    },
+    {
+      "ID": "P4",
+      "Technischer Fact / Condition": "account_exists",
+      "Kategorie": "Account",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Uni-Account existiert",
+      "Wird geprüft in": "Account-, Eduroam-, VPN-, MFA-Regeln",
+      "Hinweis zur Übersetzung": "Blocker: Setup nur sinnvoll bei true"
+    },
+    {
+      "ID": "P5",
+      "Technischer Fact / Condition": "account_active",
+      "Kategorie": "Account",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Uni-Account ist aktiv und nicht gesperrt",
+      "Wird geprüft in": "Login- und Auth-Regeln",
+      "Hinweis zur Übersetzung": "Bei false Account-Modul/Support"
+    },
+    {
+      "ID": "P6",
+      "Technischer Fact / Condition": "username_known",
+      "Kategorie": "Zugangsdaten",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Benutzerkennung ist bekannt",
+      "Wird geprüft in": "Login-Regeln",
+      "Hinweis zur Übersetzung": "Fehlt der Benutzername, Hilferegel ausführen"
+    },
+    {
+      "ID": "P7",
+      "Technischer Fact / Condition": "password_known",
+      "Kategorie": "Zugangsdaten",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Passwort ist bekannt",
+      "Wird geprüft in": "Login-Regeln",
+      "Hinweis zur Übersetzung": "Fehlt das Passwort, Reset-Hilfe ausgeben"
+    },
+    {
+      "ID": "P8",
+      "Technischer Fact / Condition": "password_recently_changed",
+      "Kategorie": "Zugangsdaten/Fehleranalyse",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Passwort wurde kürzlich geändert",
+      "Wird geprüft in": "Eduroam- und VPN-Fehlerregeln",
+      "Hinweis zur Übersetzung": "Kann gespeicherte Zugangsdaten/Profile ungültig machen"
+    },
+    {
+      "ID": "P9",
+      "Technischer Fact / Condition": "device_type",
+      "Kategorie": "Gerät",
+      "Mögliche Werte": "laptop, desktop, smartphone, tablet, unknown",
+      "Bedeutung": "Genutztes Gerät",
+      "Wird geprüft in": "OS-/App-/Client-Regeln",
+      "Hinweis zur Übersetzung": "MFA-App meist auf Smartphone"
+    },
+    {
+      "ID": "P10",
+      "Technischer Fact / Condition": "operating_system",
+      "Kategorie": "Gerät/Betriebssystem",
+      "Mögliche Werte": "windows, macos, ios, android, linux, chromeos, unknown",
+      "Bedeutung": "Betriebssystem für passende Anleitung",
+      "Wird geprüft in": "Setup-Regeln",
+      "Hinweis zur Übersetzung": "unknown führt zum OS-Router"
+    },
+    {
+      "ID": "P11",
+      "Technischer Fact / Condition": "on_campus",
+      "Kategorie": "Campus/Netz",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Nutzer befindet sich am Campus bzw. Eduroam-Standort",
+      "Wird geprüft in": "Eduroam und VPN-Erstinstallation",
+      "Hinweis zur Übersetzung": "Eduroam-Nutzung/Sichtbarkeit ist an Standort gebunden"
+    },
+    {
+      "ID": "P12",
+      "Technischer Fact / Condition": "campus_wifi_available",
+      "Kategorie": "Campus/Netz",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Campus-WLAN/Eduroam ist verfügbar",
+      "Wird geprüft in": "VPN-Erstinstallation, Eduroam",
+      "Hinweis zur Übersetzung": "Eine Option für VPN-Erstinstallation"
+    },
+    {
+      "ID": "P13",
+      "Technischer Fact / Condition": "campus_lan_available",
+      "Kategorie": "Campus/Netz",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Campus-LAN ist verfügbar",
+      "Wird geprüft in": "VPN-Erstinstallation",
+      "Hinweis zur Übersetzung": "Alternative zu Eduroam-WLAN für VPN-Erstinstallation"
+    },
+    {
+      "ID": "P14",
+      "Technischer Fact / Condition": "internet_available",
+      "Kategorie": "Netzwerk",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Grundsätzliche Internetverbindung vorhanden",
+      "Wird geprüft in": "VPN-Nutzung, Verbindungstests",
+      "Hinweis zur Übersetzung": "Für VPN-Nutzung außerhalb Campus relevant"
+    },
+    {
+      "ID": "P15",
+      "Technischer Fact / Condition": "wifi_available",
+      "Kategorie": "Eduroam",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Gerät besitzt WLAN",
+      "Wird geprüft in": "Eduroam-WLAN-Regeln",
+      "Hinweis zur Übersetzung": "Bei false keine Eduroam-Verbindung"
+    },
+    {
+      "ID": "P16",
+      "Technischer Fact / Condition": "wifi_enabled",
+      "Kategorie": "Eduroam",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "WLAN ist aktiviert",
+      "Wird geprüft in": "Eduroam-WLAN-Regeln",
+      "Hinweis zur Übersetzung": "Vor Sichtbarkeitsprüfung"
+    },
+    {
+      "ID": "P17",
+      "Technischer Fact / Condition": "eduroam_visible",
+      "Kategorie": "Eduroam",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Eduroam wird in der WLAN-Liste angezeigt",
+      "Wird geprüft in": "Eduroam Setup/Troubleshooting",
+      "Hinweis zur Übersetzung": "Campusbezug beachten"
+    },
+    {
+      "ID": "P18",
+      "Technischer Fact / Condition": "eduroam_profile_configured",
+      "Kategorie": "Eduroam",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Eduroam-Profil ist eingerichtet",
+      "Wird geprüft in": "Eduroam Setup/Verbindung",
+      "Hinweis zur Übersetzung": "Bei false OS-spezifisches Setup"
+    },
+    {
+      "ID": "P19",
+      "Technischer Fact / Condition": "eduroam_certificate_warning_shown",
+      "Kategorie": "Eduroam/Sicherheit",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Zertifikatswarnung erscheint",
+      "Wird geprüft in": "Eduroam Zertifikatsregel",
+      "Hinweis zur Übersetzung": "Nur für Eduroam relevant"
+    },
+    {
+      "ID": "P20",
+      "Technischer Fact / Condition": "eduroam_connection_status",
+      "Kategorie": "Eduroam",
+      "Mögliche Werte": "not_tested, connected, failed",
+      "Bedeutung": "Eduroam-Verbindung wurde getestet",
+      "Wird geprüft in": "Eduroam Verbindung/Troubleshooting",
+      "Hinweis zur Übersetzung": "Zentraler Übergang"
+    },
+    {
+      "ID": "P21",
+      "Technischer Fact / Condition": "eduroam_internet_access",
+      "Kategorie": "Eduroam",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Internet funktioniert über Eduroam",
+      "Wird geprüft in": "Eduroam Abschluss/No-Internet",
+      "Hinweis zur Übersetzung": "Nach Verbindung separat prüfen"
+    },
+    {
+      "ID": "P22",
+      "Technischer Fact / Condition": "vpn_installation_status",
+      "Kategorie": "VPN",
+      "Mögliche Werte": "not_installed, installed, failed, unknown",
+      "Bedeutung": "VPN-Erstinstallation wurde durchgeführt",
+      "Wird geprüft in": "VPN Installation/Client",
+      "Hinweis zur Übersetzung": "Erstinstallation am Campusnetz"
+    },
+    {
+      "ID": "P23",
+      "Technischer Fact / Condition": "vpn_client_installed",
+      "Kategorie": "VPN",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "VPN-Client ist installiert",
+      "Wird geprüft in": "VPN Client-Regeln",
+      "Hinweis zur Übersetzung": "Bei false Installation"
+    },
+    {
+      "ID": "P24",
+      "Technischer Fact / Condition": "vpn_client_healthy",
+      "Kategorie": "VPN",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "VPN-Client funktioniert technisch",
+      "Wird geprüft in": "VPN Troubleshooting",
+      "Hinweis zur Übersetzung": "Nach Installation prüfen"
+    },
+    {
+      "ID": "P25",
+      "Technischer Fact / Condition": "vpn_profile_configured",
+      "Kategorie": "VPN",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "VPN-Profil/Gateway ist eingerichtet",
+      "Wird geprüft in": "VPN Profil/Auth",
+      "Hinweis zur Übersetzung": "Vor Authentifizierung nötig"
+    },
+    {
+      "ID": "P26",
+      "Technischer Fact / Condition": "vpn_mfa_required",
+      "Kategorie": "VPN/MFA",
+      "Mögliche Werte": "true",
+      "Bedeutung": "MFA ist für VPN notwendig",
+      "Wird geprüft in": "VPN Auth/MFA",
+      "Hinweis zur Übersetzung": "Für VPN immer true"
+    },
+    {
+      "ID": "P27",
+      "Technischer Fact / Condition": "vpn_auth_status",
+      "Kategorie": "VPN",
+      "Mögliche Werte": "not_tested, success, failed",
+      "Bedeutung": "VPN-Loginstatus",
+      "Wird geprüft in": "VPN Auth/Troubleshooting",
+      "Hinweis zur Übersetzung": "Setzt Übergang zum Tunnel"
+    },
+    {
+      "ID": "P28",
+      "Technischer Fact / Condition": "vpn_tunnel_status",
+      "Kategorie": "VPN",
+      "Mögliche Werte": "not_tested, connected, failed",
+      "Bedeutung": "VPN-Tunnelstatus",
+      "Wird geprüft in": "VPN Aktivierung",
+      "Hinweis zur Übersetzung": "Prüft echte VPN-Verbindung"
+    },
+    {
+      "ID": "P29",
+      "Technischer Fact / Condition": "vpn_resource_accessible",
+      "Kategorie": "VPN",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Interne Dienste sind erreichbar",
+      "Wird geprüft in": "VPN Abschluss",
+      "Hinweis zur Übersetzung": "Nach Tunnel separat prüfen"
+    },
+    {
+      "ID": "P30",
+      "Technischer Fact / Condition": "mfa_required_for_vpn",
+      "Kategorie": "MFA",
+      "Mögliche Werte": "true",
+      "Bedeutung": "MFA ist für VPN verpflichtend",
+      "Wird geprüft in": "MFA/VPN-Regeln",
+      "Hinweis zur Übersetzung": "Nicht für weitere Logins modellieren"
+    },
+    {
+      "ID": "P31",
+      "Technischer Fact / Condition": "mfa_enrolled",
+      "Kategorie": "MFA",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "MFA ist eingerichtet",
+      "Wird geprüft in": "MFA Setup/VPN Auth",
+      "Hinweis zur Übersetzung": "Für VPN vor Auth nötig"
+    },
+    {
+      "ID": "P32",
+      "Technischer Fact / Condition": "mfa_totp_available",
+      "Kategorie": "MFA",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Authenticator-App zeigt zeitbasierten Code",
+      "Wird geprüft in": "MFA Prüfung",
+      "Hinweis zur Übersetzung": "Kein Push; Code ändert sich alle 30 Sekunden"
+    },
+    {
+      "ID": "P33",
+      "Technischer Fact / Condition": "mfa_code_status",
+      "Kategorie": "MFA",
+      "Mögliche Werte": "not_tested, valid, invalid, expired",
+      "Bedeutung": "Status des eingegebenen MFA-Codes",
+      "Wird geprüft in": "MFA Prüfung/VPN Auth",
+      "Hinweis zur Übersetzung": "Ungültig/abgelaufen führt zu MFA-Troubleshooting"
+    },
+    {
+      "ID": "P34",
+      "Technischer Fact / Condition": "mfa_device_available",
+      "Kategorie": "MFA",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "MFA-Gerät/App ist verfügbar",
+      "Wird geprüft in": "MFA Recovery",
+      "Hinweis zur Übersetzung": "Bei false Wiederherstellung/Support"
+    },
+    {
+      "ID": "P35",
+      "Technischer Fact / Condition": "problem_type",
+      "Kategorie": "Troubleshooting",
+      "Mögliche Werte": "ssid_not_visible, auth_failed, certificate_warning, no_internet, connection_drops, install_failed, mfa_failed, timeout, client_error, unknown",
+      "Bedeutung": "Art des Problems",
+      "Wird geprüft in": "Alle Troubleshooting-Regeln",
+      "Hinweis zur Übersetzung": "Spezifische Problemregeln vor Router/Fallback"
+    },
+    {
+      "ID": "P36",
+      "Technischer Fact / Condition": "user_problem_resolved",
+      "Kategorie": "Abschluss",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Problem wurde gelöst",
+      "Wird geprüft in": "Abschluss/Eskalation",
+      "Hinweis zur Übersetzung": "Voraussetzung für finalen Abschluss"
+    },
+    {
+      "ID": "P37",
+      "Technischer Fact / Condition": "needs_human_support",
+      "Kategorie": "Eskalation",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Menschlicher Support notwendig",
+      "Wird geprüft in": "Eskalation",
+      "Hinweis zur Übersetzung": "Bei Blockern oder wiederholtem Scheitern"
+    },
+    {
+      "ID": "P38",
+      "Technischer Fact / Condition": "user_request_answered",
+      "Kategorie": "Abschluss",
+      "Mögliche Werte": "true, false",
+      "Bedeutung": "Anfrage darf abgeschlossen werden",
+      "Wird geprüft in": "Finish-Regel",
+      "Hinweis zur Übersetzung": "Nur bei Lösung oder sauberer Eskalation true"
+    }
+  ]
+}

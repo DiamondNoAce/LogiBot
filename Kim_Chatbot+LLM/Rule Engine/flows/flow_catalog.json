@@ -1,0 +1,173 @@
+{
+  "flows": [
+    {
+      "id": "wissensmodell_gesamtmodell",
+      "name": "Gesamtmodell entlang der technischen Conditions",
+      "description": "Aus Excel-Blatt 05_Ablauf abgeleiteter Ablauf vor dem grafischen Entscheidungsnetz.",
+      "steps": [
+        {
+          "step": 1,
+          "condition": "service erkannt",
+          "if_true": "Passendes Service-Modul starten",
+          "if_false_unknown": "Thema klären",
+          "rule_id": "core_route_topic",
+          "post_condition": "service gesetzt",
+          "note": "Gemeinsamer Einstieg"
+        },
+        {
+          "step": 2,
+          "condition": "user_role ≠ guest oder guest_access_exists=true",
+          "if_true": "Weiter zu Account",
+          "if_false_unknown": "Gastzugang prüfen / KIM-Verweis",
+          "rule_id": "core_check_guest_access",
+          "post_condition": "needs_human_support ggf. true",
+          "note": "Gastfälle vor normalen Nutzern behandeln"
+        },
+        {
+          "step": 3,
+          "condition": "account_exists=true und account_active=true",
+          "if_true": "Weiter zu Zugangsdaten",
+          "if_false_unknown": "Account beantragen/aktivieren/Support",
+          "rule_id": "core_check_account_exists",
+          "post_condition": "account_exists=true",
+          "note": "Blocker für Eduroam/VPN/MFA"
+        },
+        {
+          "step": 4,
+          "condition": "username_known=true und password_known=true",
+          "if_true": "Weiter in Service-Kette",
+          "if_false_unknown": "Zugangsdaten erklären/Passwort zurücksetzen",
+          "rule_id": "core_check_credentials",
+          "post_condition": "username_known/password_known=true",
+          "note": "Grundlage für alle Logins"
+        },
+        {
+          "step": 5,
+          "condition": "password_recently_changed=false",
+          "if_true": "Weiter",
+          "if_false_unknown": "Alte Profile/Zugangsdaten prüfen",
+          "rule_id": "core_password_changed_router",
+          "post_condition": "stored_credentials_may_be_invalid=true",
+          "note": "Betrifft Eduroam und VPN"
+        },
+        {
+          "step": 6,
+          "condition": "service=mfa oder VPN benötigt MFA",
+          "if_true": "MFA prüfen/einrichten",
+          "if_false_unknown": "MFA-Anleitung/Support",
+          "rule_id": "mfa_vpn_requirement / mfa_check_enrollment",
+          "post_condition": "mfa_enrolled=true",
+          "note": "Für VPN immer erforderlich"
+        },
+        {
+          "step": 7,
+          "condition": "mfa_code_status=valid",
+          "if_true": "VPN-Auth möglich",
+          "if_false_unknown": "Code erneut eingeben/Troubleshooting",
+          "rule_id": "mfa_check_totp_code",
+          "post_condition": "mfa_code_status=valid",
+          "note": "TOTP-Code ändert sich alle 30 Sekunden"
+        },
+        {
+          "step": 8,
+          "condition": "service=eduroam und on_campus=true",
+          "if_true": "Eduroam-Netz prüfen",
+          "if_false_unknown": "Campus-/Standorthinweis",
+          "rule_id": "eduroam_check_campus_context",
+          "post_condition": "on_campus=true",
+          "note": "Eduroam ist standortbezogen"
+        },
+        {
+          "step": 9,
+          "condition": "wifi_available=true und wifi_enabled=true",
+          "if_true": "Eduroam-Sichtbarkeit prüfen",
+          "if_false_unknown": "WLAN aktivieren/Hardware prüfen",
+          "rule_id": "eduroam_check_wifi_available / eduroam_check_wifi_enabled",
+          "post_condition": "wifi_enabled=true",
+          "note": "Vor SSID- und Profilprüfung"
+        },
+        {
+          "step": 10,
+          "condition": "eduroam_visible=true",
+          "if_true": "Profil prüfen",
+          "if_false_unknown": "SSID/Standort/Störung prüfen",
+          "rule_id": "eduroam_check_visible_network",
+          "post_condition": "eduroam_visible=true",
+          "note": "Eduroam-Netz muss sichtbar sein"
+        },
+        {
+          "step": 11,
+          "condition": "eduroam_profile_configured=true",
+          "if_true": "Verbindung testen",
+          "if_false_unknown": "OS-spezifisches Setup",
+          "rule_id": "eduroam_profile_router / eduroam_setup_*",
+          "post_condition": "eduroam_profile_configured=true",
+          "note": "Windows/macOS/iOS/Android/Linux"
+        },
+        {
+          "step": 12,
+          "condition": "eduroam_connection_status=connected",
+          "if_true": "Internet prüfen",
+          "if_false_unknown": "Eduroam-Troubleshooting",
+          "rule_id": "eduroam_connection_attempt / eduroam_connection_failed",
+          "post_condition": "eduroam_connection_status gesetzt",
+          "note": "Verbindungstest als Übergang"
+        },
+        {
+          "step": 13,
+          "condition": "service=vpn und vpn_client_installed=false",
+          "if_true": "Erstinstallation prüfen",
+          "if_false_unknown": "Campusnetz erforderlich",
+          "rule_id": "vpn_check_installation_campus_network",
+          "post_condition": "vpn_installation_allowed=true",
+          "note": "Eduroam-WLAN oder LAN am Campus"
+        },
+        {
+          "step": 14,
+          "condition": "vpn_client_installed=true und vpn_client_healthy=true",
+          "if_true": "Profil/Gateway prüfen",
+          "if_false_unknown": "Installation/Client reparieren",
+          "rule_id": "vpn_install_client / vpn_check_client_healthy",
+          "post_condition": "vpn_client_healthy=true",
+          "note": "Nach Installation kann trotzdem Fehler auftreten"
+        },
+        {
+          "step": 15,
+          "condition": "vpn_profile_configured=true",
+          "if_true": "VPN-Auth mit MFA",
+          "if_false_unknown": "Profil/Gateway einrichten",
+          "rule_id": "vpn_profile_router",
+          "post_condition": "vpn_profile_configured=true",
+          "note": "Vor Authentifizierung"
+        },
+        {
+          "step": 16,
+          "condition": "vpn_auth_status=success",
+          "if_true": "Tunnel aufbauen",
+          "if_false_unknown": "Auth/MFA-Troubleshooting",
+          "rule_id": "vpn_authenticate",
+          "post_condition": "vpn_auth_status gesetzt",
+          "note": "VPN braucht MFA-Code"
+        },
+        {
+          "step": 17,
+          "condition": "vpn_tunnel_status=connected",
+          "if_true": "Interne Dienste prüfen",
+          "if_false_unknown": "Tunnel/Netz reparieren",
+          "rule_id": "vpn_tunnel_attempt",
+          "post_condition": "vpn_tunnel_status gesetzt",
+          "note": "Tunnel separat von Auth prüfen"
+        },
+        {
+          "step": 18,
+          "condition": "eduroam_internet_access=true oder vpn_resource_accessible=true",
+          "if_true": "Problem gelöst",
+          "if_false_unknown": "Support oder weiterer Reparaturschritt",
+          "rule_id": "finish_resolved / support_escalate",
+          "post_condition": "user_request_answered=true",
+          "note": "Finaler Abschluss nur bei Lösung oder Eskalation"
+        }
+      ]
+    }
+  ]
+}

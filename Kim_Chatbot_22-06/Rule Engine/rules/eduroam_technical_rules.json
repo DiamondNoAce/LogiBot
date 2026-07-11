@@ -1,0 +1,2536 @@
+[
+  {
+    "id": "tech.eduroam_certificate_warning",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "safety_rule",
+    "description": "eduroam_certificate_warning: Sehr hoch: sicherheitskritisch, muss vor allgemeinen Regeln greifen",
+    "priority": 5,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "any": [
+        {
+          "fact": "certificate_warning_shown",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "certificate_warning"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Prüfe die Zertifikatswarnung sorgfältig. Bestätige nur, wenn die Quelle vertrauenswürdig ist; sonst Support kontaktieren."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_certificate_warning",
+      "action_function": "eduroam_troubleshoot_certificate_warning",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "certificate_warning_shown",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "certificate_warning"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "certificate_checked",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "ggf.",
+          "value": false
+        }
+      ],
+      "next_success": "eduroam_profile_router",
+      "next_failure": "eduroam_escalate_to_support",
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_check_account_exists",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "precondition_rule",
+    "description": "eduroam_check_account_exists: Blocker: ohne Account kein Setup",
+    "priority": 10,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "any": [
+        {
+          "fact": "account_exists",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "not": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "account_exists",
+        "text": "Besitzt du ein aktiviertes Hohenheimer Benutzerkonto?"
+      },
+      {
+        "type": "recommend",
+        "text": "Prüfe, ob ein aktiviertes Hohenheimer Benutzerkonto vorhanden ist. Ohne aktiviertes Konto ist eduroam nicht nutzbar."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_check_account_exists",
+      "action_function": "eduroam_account_check",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "account_exists",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "bei fehlschlag",
+          "value": true
+        }
+      ],
+      "next_success": "eduroam_check_username",
+      "next_failure": "eduroam_escalate_to_support",
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_check_username",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "precondition_rule",
+    "description": "eduroam_check_username: Verhindert Setup ohne Zugangsdaten",
+    "priority": 20,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "username_known",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "not": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "username_known",
+        "text": "Kennst du deinen Hohenheimer Benutzernamen bzw. dein Kürzel?"
+      },
+      {
+        "type": "recommend",
+        "text": "Für eduroam wird der Benutzername im Format kuerzel@uni-hohenheim.de benötigt. Verwende nicht die persönliche E-Mail-Adresse vorname.nachname@uni-hohenheim.de."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_check_username",
+      "action_function": "eduroam_username_help",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "username_known",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "next_success": "eduroam_check_password",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_check_password",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "precondition_rule",
+    "description": "eduroam_check_password: Nach Passwort-Reset alte Profile prüfen",
+    "priority": 30,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "password_known",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "not": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "password_known",
+        "text": "Kennst du dein aktuelles Hohenheimer Passwort?"
+      },
+      {
+        "type": "recommend",
+        "text": "Prüfe dein Hohenheimer Passwort. Falls du es nicht kennst, führe zuerst einen Passwort-Reset durch."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_check_password",
+      "action_function": "eduroam_password_reset_help",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "password_known",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_recently_changed",
+          "operator": "ggf.",
+          "value": true
+        }
+      ],
+      "next_success": "eduroam_after_password_change / eduroam_check_wifi_available",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_after_password_change",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "troubleshooting_rule",
+    "description": "eduroam_after_password_change: Spezifische Fehlerregel, vor allgemeinem Troubleshooting",
+    "priority": 35,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "password_recently_changed",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "not": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Nach einer Passwortänderung können alte gespeicherte Zugangsdaten stören. Entferne alte eduroam-Profile oder gespeicherte Passwörter und richte eduroam neu ein."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_after_password_change",
+      "action_function": "eduroam_troubleshoot_after_password_change",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "password_recently_changed",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "saved_old_credentials",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "next_success": "eduroam_profile_router",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_check_wifi_available",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "precondition_rule",
+    "description": "eduroam_check_wifi_available: Blocker: Gerät braucht WLAN",
+    "priority": 40,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "any": [
+        {
+          "fact": "wifi_available",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "not": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "wifi_available",
+        "text": "Hat dein Gerät WLAN bzw. einen funktionierenden WLAN-Adapter?"
+      },
+      {
+        "type": "recommend",
+        "text": "Prüfe, ob dein Gerät WLAN unterstützt und ob der WLAN-Adapter funktioniert."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_check_wifi_available",
+      "action_function": "eduroam_wifi_hardware_check",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "wifi_available",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "wifi_available",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "bei fehlschlag",
+          "value": true
+        }
+      ],
+      "next_success": "eduroam_check_wifi_enabled",
+      "next_failure": "eduroam_escalate_to_support",
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_check_wifi_enabled",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "precondition_rule",
+    "description": "eduroam_check_wifi_enabled: Vor Netzwerksuche ausführen",
+    "priority": 45,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "wifi_available",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "wifi_enabled",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "not": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "wifi_enabled",
+        "text": "Ist WLAN am Gerät aktiviert?"
+      },
+      {
+        "type": "recommend",
+        "text": "Aktiviere WLAN am Gerät und aktualisiere die WLAN-Liste."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_check_wifi_enabled",
+      "action_function": "eduroam_enable_wifi",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "wifi_available",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "wifi_enabled",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "next_success": "eduroam_check_visible_network",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_check_visible_network",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "precondition_rule",
+    "description": "eduroam_check_visible_network: Vor Setup prüfen; Netzwerk muss sichtbar sein",
+    "priority": 50,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "wifi_available",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_visible",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "not": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "eduroam_visible",
+        "text": "Wird eduroam in der WLAN-Liste angezeigt?"
+      },
+      {
+        "type": "recommend",
+        "text": "Wenn eduroam nicht sichtbar ist, prüfe Standort, WLAN-Aktivierung und ob andere WLANs sichtbar sind. Versuche es an einem anderen Ort oder kontaktiere den Support."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_check_visible_network",
+      "action_function": "eduroam_troubleshoot_not_visible",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "wifi_available",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_visible",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "bei fehlschlag",
+          "value": true
+        }
+      ],
+      "next_success": "eduroam_profile_router",
+      "next_failure": "eduroam_escalate_to_support",
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_profile_router",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "router_rule",
+    "description": "eduroam_profile_router: Router, darf spezifische OS-Regeln nicht überschreiben",
+    "priority": 60,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "wifi_available",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "is_unknown",
+          "value": "unknown"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "not": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "operating_system",
+        "text": "Welches Betriebssystem nutzt du? (windows, macos, ios, android, linux)"
+      },
+      {
+        "type": "recommend",
+        "text": "Wähle dein Betriebssystem aus, damit die passende eduroam-Anleitung angezeigt werden kann."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_profile_router",
+      "action_function": "eduroam_setup_router",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "wifi_available",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "operating_system",
+          "operator": "wird gesetzt",
+          "value": "windows/macos/ios/android/linux"
+        }
+      ],
+      "next_success": "OS-spezifische Setup-Regel",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_setup_windows",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "setup_rule",
+    "description": "eduroam_setup_windows: Spezifisch",
+    "priority": 61,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "windows"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "not": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.eduroam.windows_cat"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_setup_windows",
+      "action_function": "eduroam_setup_windows",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "windows"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_test_required",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "next_success": "eduroam_connection_attempt",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_setup_macos",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "setup_rule",
+    "description": "eduroam_setup_macos: Spezifisch",
+    "priority": 62,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "macos"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "not": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.eduroam.macos_cat_profile"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_setup_macos",
+      "action_function": "eduroam_setup_macos",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "macos"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_test_required",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "next_success": "eduroam_connection_attempt",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_setup_ios",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "setup_rule",
+    "description": "eduroam_setup_ios: Spezifisch",
+    "priority": 63,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "ios"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "not": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.eduroam.ios_cat_profile"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_setup_ios",
+      "action_function": "eduroam_setup_ios",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "ios"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_test_required",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "next_success": "eduroam_connection_attempt",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_setup_android",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "setup_rule",
+    "description": "eduroam_setup_android: Spezifisch",
+    "priority": 64,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "android"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "not": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.eduroam.android_geteduroam"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_setup_android",
+      "action_function": "eduroam_setup_android",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "android"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_test_required",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "next_success": "eduroam_connection_attempt",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_setup_linux",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "setup_rule",
+    "description": "eduroam_setup_linux: Spezifisch",
+    "priority": 65,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "linux"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "not": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "show_steps",
+        "step_package_id": "steps.eduroam.linux_cat_script"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_setup_linux",
+      "action_function": "eduroam_setup_linux",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "linux"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_test_required",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "next_success": "eduroam_connection_attempt",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_check_2fa",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "precondition_rule",
+    "description": "eduroam_check_2fa: Nur aktivieren, wenn 2FA für Eduroam-Kontext wirklich erforderlich ist",
+    "priority": 70,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "two_fa_required",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "two_fa_ready",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "not": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "two_fa_ready",
+        "text": "Ist 2FA eingerichtet bzw. für diesen Kontext nicht erforderlich?"
+      },
+      {
+        "type": "recommend",
+        "text": "Richte 2FA ein, falls sie für den konkreten eduroam-Kontext erforderlich ist."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_check_2fa",
+      "action_function": "eduroam_2fa_setup_help",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "two_fa_required",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "two_fa_ready",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "two_fa_ready",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "next_success": "eduroam_connection_attempt",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_connection_attempt",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "connection_rule",
+    "description": "eduroam_connection_attempt: Zentraler Übergang zu Abschluss/Troubleshooting",
+    "priority": 80,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "two_fa_ready",
+          "operator": "in",
+          "value": [
+            true,
+            "not_required"
+          ]
+        }
+      ],
+      "any": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "not_tested"
+        },
+        {
+          "fact": "connection_test_required",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "connection_attempt_status",
+        "text": "War der Verbindungsversuch erfolgreich? (success/failed)"
+      },
+      {
+        "type": "recommend",
+        "text": "Teste die Verbindung mit eduroam. Melde anschließend, ob die Verbindung erfolgreich war oder fehlgeschlagen ist."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_connection_attempt",
+      "action_function": "eduroam_try_connect",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "two_fa_ready",
+          "operator": "in",
+          "value": [
+            true,
+            "not_required"
+          ]
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "not_tested"
+        },
+        {
+          "fact": "connection_test_required",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "bei erfolg",
+          "value": "success"
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "bei fehlschlag",
+          "value": "failed"
+        }
+      ],
+      "next_success": "eduroam_check_solution",
+      "next_failure": "eduroam_connection_failed",
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_connection_failed",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "troubleshooting_rule",
+    "description": "eduroam_connection_failed: Spezifischer als Troubleshooting-Router",
+    "priority": 90,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "any": [
+        {
+          "fact": "problem_type",
+          "operator": "in",
+          "value": [
+            "cannot_connect",
+            "authentication_failed",
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Prüfe Zugangsdaten, gespeicherte Profile und ob das Passwort aktuell ist. Bei wiederholtem Scheitern Profil löschen und neu einrichten."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_connection_failed",
+      "action_function": "eduroam_troubleshoot_cannot_connect",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "problem_type",
+          "operator": "in",
+          "value": [
+            "cannot_connect",
+            "authentication_failed",
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "credentials_checked",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "profile_recreation_required",
+          "operator": "ggf.",
+          "value": true
+        }
+      ],
+      "next_success": "eduroam_delete_and_recreate_profile",
+      "next_failure": "eduroam_escalate_to_support",
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_delete_and_recreate_profile",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "repair_rule",
+    "description": "eduroam_delete_and_recreate_profile: Verknüpft Troubleshooting zurück zum Setup",
+    "priority": 95,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "credentials_checked",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "any": [
+        {
+          "fact": "profile_recreation_required",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Lösche das alte eduroam-Profil bzw. gespeicherte Netzwerk und starte die Einrichtung erneut."
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_profile_configured",
+        "value": false
+      },
+      {
+        "type": "set_fact",
+        "fact": "connection_attempt_status",
+        "value": "not_tested"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_delete_and_recreate_profile",
+      "action_function": "eduroam_delete_profile_router",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "credentials_checked",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "profile_recreation_required",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "next_success": "eduroam_profile_router",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_no_internet_after_connection",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "troubleshooting_rule",
+    "description": "eduroam_no_internet_after_connection: Nur nach erfolgreicher WLAN-Verbindung prüfen",
+    "priority": 100,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ],
+      "any": [
+        {
+          "fact": "internet_access_available",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "no_internet"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn eduroam verbunden ist, aber kein Internet funktioniert, trenne die Verbindung, verbinde dich neu und prüfe anschließend die Netzwerkeinstellungen."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_no_internet_after_connection",
+      "action_function": "eduroam_troubleshoot_no_internet",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "internet_access_available",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "no_internet"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "internet_access_available",
+          "operator": "bei erfolg",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "bei fehlschlag",
+          "value": true
+        }
+      ],
+      "next_success": "eduroam_check_solution",
+      "next_failure": "eduroam_escalate_to_support",
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_connection_drops",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "troubleshooting_rule",
+    "description": "eduroam_connection_drops: Neustart/Standort/Profil erneuern als mögliche Schritte",
+    "priority": 110,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "connection_drops"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Bei Verbindungsabbrüchen: Standort wechseln, Gerät neu starten und das Profil bei Bedarf neu einrichten."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_connection_drops",
+      "action_function": "eduroam_troubleshoot_connection_drops",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "connection_drops"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "next_success": "eduroam_connection_attempt",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_restart_device_hint",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "repair_rule",
+    "description": "eduroam_restart_device_hint: Allgemeiner Reparaturschritt, nicht zu früh ausführen",
+    "priority": 120,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": false
+        }
+      ],
+      "any": [
+        {
+          "fact": "previous_solution_successful",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "recommend",
+        "text": "Starte das Gerät neu und teste die eduroam-Verbindung anschließend erneut."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_restart_device_hint",
+      "action_function": "eduroam_restart_device",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": false
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "previous_solution_successful",
+          "operator": "equals",
+          "value": false
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "next_success": "eduroam_connection_attempt",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_check_solution",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "completion_rule",
+    "description": "eduroam_check_solution: Abschlussprüfung",
+    "priority": 130,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ],
+      "any": [
+        {
+          "fact": "internet_access_available",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_successful",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "user_problem_resolved",
+        "text": "Ist dein Problem jetzt gelöst?"
+      },
+      {
+        "type": "recommend",
+        "text": "Prüfe, ob eduroam verbunden ist und Internetzugriff funktioniert. Wenn ja, kann die Anfrage abgeschlossen werden."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_check_solution",
+      "action_function": "eduroam_check_solution",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "internet_access_available",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_successful",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "next_success": "eduroam_finish_resolved",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_escalate_to_support",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "escalation_rule",
+    "description": "eduroam_escalate_to_support: Darf abschließen, wenn Supportweg ausgegeben wurde",
+    "priority": 140,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "multiple_attempts_failed",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "recommend",
+        "text": "Wenn mehrere Lösungsversuche fehlgeschlagen sind, kontaktiere den KIM-IT-Service-Desk und nenne die bisher geprüften Schritte."
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_escalate_to_support",
+      "action_function": "eduroam_escalate_to_support",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "multiple_attempts_failed",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": false
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "next_success": "eduroam_finish_escalated",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_finish_resolved",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "completion_rule",
+    "description": "eduroam_finish_resolved: Finaler Zielzustand",
+    "priority": 150,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "completion_possible",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "recommend",
+        "text": "Die eduroam-Anfrage ist gelöst und kann abgeschlossen werden."
+      },
+      {
+        "type": "set_fact",
+        "fact": "user_request_answered",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_finish_resolved",
+      "action_function": "eduroam_finish_resolved",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "completion_possible",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "user_request_answered",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "next_success": "Ende",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  },
+  {
+    "id": "tech.eduroam_finish_escalated",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "completion_rule",
+    "description": "eduroam_finish_escalated: Anfrage wird nach Support-Eskalation sauber abgeschlossen.",
+    "priority": 151,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Die Anfrage wird an den KIM-IT-Service-Desk eskaliert. Damit ist die Nutzeranfrage beantwortet, auch wenn das technische Problem noch nicht vollständig gelöst ist."
+      },
+      {
+        "type": "set_fact",
+        "fact": "user_request_answered",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_finish_escalated",
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx",
+      "note": "Ergänzt, weil die Excel-Regel eduroam_escalate_to_support auf diesen Abschluss verweist."
+    }
+  },
+  {
+    "id": "tech.eduroam_fallback",
+    "active": true,
+    "module": "eduroam_technical",
+    "rule_group": "fallback_rule",
+    "description": "eduroam_fallback: Ganz unten, sonst Überschattung",
+    "priority": 999,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "any": [
+        {
+          "fact": "specific_rule_found",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "problem_type",
+        "text": "Welche Art von Problem tritt auf? (cannot_connect, authentication_failed, no_internet, eduroam_not_visible, connection_drops, certificate_warning)"
+      },
+      {
+        "type": "recommend",
+        "text": "Ich brauche noch mehr Informationen: Welches Betriebssystem nutzt du und bei welchem Schritt oder Fehler hängst du?"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "original_rule_id": "eduroam_fallback",
+      "action_function": "eduroam_clarify_request",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "specific_rule_found",
+          "operator": "equals",
+          "value": false
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "missing_facts",
+          "operator": "werden abgefragt",
+          "value": true
+        }
+      ],
+      "next_success": "passende Regel nach Klärung",
+      "next_failure": null,
+      "source_file": "Eduroam_Regeln_technische_Sicht.xlsx"
+    }
+  }
+]
