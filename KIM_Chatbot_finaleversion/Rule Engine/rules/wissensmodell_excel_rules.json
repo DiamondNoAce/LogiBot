@@ -1,0 +1,4367 @@
+[
+  {
+    "id": "excel.security_eduroam_certificate_warning",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "safety_rule",
+    "description": "Eduroam-Zertifikatswarnung priorisiert behandeln",
+    "priority": 5,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_certificate_warning_shown",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "certificate_warning"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_troubleshoot_certificate_warning"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_certificate_checked",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "security_eduroam_certificate_warning",
+      "namespace": "service.eduroam",
+      "rule_display_name": "Eduroam-Zertifikatswarnung priorisiert behandeln",
+      "rule_type": "safety_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_certificate_warning_shown",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "certificate_warning"
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "eduroam_certificate_checked",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "metadata",
+          "value": false,
+          "metadata_operator": "maybe",
+          "source_text": "eduroam_profile_configured maybe false"
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_certificate_checked",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "metadata",
+          "value": false,
+          "metadata_operator": "maybe",
+          "source_text": "eduroam_profile_configured maybe false"
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "eduroam_troubleshoot_certificate_warning",
+      "action_display_name": "Eduroam-Zertifikatswarnung prüfen",
+      "next_success": "eduroam_profile_router",
+      "next_failure": "support_escalate",
+      "note": "Sicherheitsrelevant; Zertifikat nur für Eduroam.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.core_route_topic",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "router_rule",
+    "description": "Thema erkennen und Service-Kette starten",
+    "priority": 10,
+    "when": {
+      "any": [
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa",
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "core_route_to_service"
+      },
+      {
+        "type": "set_fact",
+        "fact": "service",
+        "value": "eduroam/vpn/mfa"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "core_route_topic",
+      "namespace": "core",
+      "rule_display_name": "Thema erkennen und Service-Kette starten",
+      "rule_type": "router_rule",
+      "status": "aktiv",
+      "pre_conditions": [],
+      "trigger_conditions": [
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa",
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam/vpn/mfa"
+        }
+      ],
+      "post_conditions_failure": [],
+      "post_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam/vpn/mfa"
+        }
+      ],
+      "action_function": "core_route_to_service",
+      "action_display_name": "Thema erkennen",
+      "next_success": "service_specific_chain",
+      "next_failure": "core_clarify_topic",
+      "note": "Einstieg in alle Abläufe.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.core_check_guest_access",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "Gastzugang prüfen",
+    "priority": 12,
+    "when": {
+      "all": [
+        {
+          "fact": "user_role",
+          "operator": "equals",
+          "value": "guest"
+        }
+      ],
+      "any": [
+        {
+          "fact": "guest_access_exists",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "core_guest_access_help"
+      },
+      {
+        "type": "set_fact",
+        "fact": "guest_access_exists",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "core_check_guest_access",
+      "namespace": "core",
+      "rule_display_name": "Gastzugang prüfen",
+      "rule_type": "precondition_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "user_role",
+          "operator": "equals",
+          "value": "guest"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "guest_access_exists",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "guest_access_exists",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "guest_access_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "core_guest_access_help",
+      "action_display_name": "Gastzugang prüfen",
+      "next_success": "core_check_account_exists",
+      "next_failure": "support_escalate",
+      "note": "Gäste ohne Zugang nicht in normalen Setup-Fluss schicken.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.core_check_account_exists",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "Uni-Account vorhanden und aktiv?",
+    "priority": 15,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa"
+          ]
+        }
+      ],
+      "any": [
+        {
+          "fact": "account_exists",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        },
+        {
+          "fact": "account_active",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "core_account_check"
+      },
+      {
+        "type": "set_fact",
+        "fact": "account_exists",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "account_active",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "core_check_account_exists",
+      "namespace": "core",
+      "rule_display_name": "Uni-Account vorhanden und aktiv?",
+      "rule_type": "precondition_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa"
+          ]
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "account_exists",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        },
+        {
+          "fact": "account_active",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "account_active",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "account_active",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "core_account_check",
+      "action_display_name": "Uni-Account prüfen",
+      "next_success": "core_check_credentials",
+      "next_failure": "support_escalate",
+      "note": "Zentrale Blocker-Regel.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.core_check_credentials",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "Zugangsdaten bekannt?",
+    "priority": 20,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa"
+          ]
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "username_known",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        },
+        {
+          "fact": "password_known",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "core_credentials_help"
+      },
+      {
+        "type": "set_fact",
+        "fact": "username_known",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "password_known",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "core_check_credentials",
+      "namespace": "core",
+      "rule_display_name": "Zugangsdaten bekannt?",
+      "rule_type": "precondition_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa"
+          ]
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "username_known",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        },
+        {
+          "fact": "password_known",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "core_credentials_help",
+      "action_display_name": "Zugangsdaten prüfen",
+      "next_success": "service_specific_chain",
+      "next_failure": "support_escalate",
+      "note": "Vor Login-/Setup-Regeln.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.core_password_changed_router",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "troubleshooting_rule",
+    "description": "Passwortänderung beeinflusst Eduroam/VPN",
+    "priority": 25,
+    "when": {
+      "all": [
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "password_recently_changed",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "core_password_change_router"
+      },
+      {
+        "type": "set_fact",
+        "fact": "stored_credentials_may_be_invalid",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "core_password_changed_router",
+      "namespace": "core",
+      "rule_display_name": "Passwortänderung beeinflusst Eduroam/VPN",
+      "rule_type": "troubleshooting_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "password_recently_changed",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "stored_credentials_may_be_invalid",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [],
+      "post_conditions": [
+        {
+          "fact": "stored_credentials_may_be_invalid",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "core_password_change_router",
+      "action_display_name": "Folgen einer Passwortänderung prüfen",
+      "next_success": "affected_service_troubleshooting",
+      "next_failure": null,
+      "note": "Überschneidung zwischen Eduroam und VPN.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.mfa_vpn_requirement",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "MFA für VPN erforderlich",
+    "priority": 30,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        }
+      ],
+      "any": [
+        {
+          "fact": "mfa_required_for_vpn",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "mfa_requirement_info"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_mfa_required",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "mfa_vpn_requirement",
+      "namespace": "service.mfa",
+      "rule_display_name": "MFA für VPN erforderlich",
+      "rule_type": "precondition_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "mfa_required_for_vpn",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "vpn_mfa_required",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [],
+      "post_conditions": [
+        {
+          "fact": "vpn_mfa_required",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "mfa_requirement_info",
+      "action_display_name": "MFA-Pflicht für VPN erklären",
+      "next_success": "mfa_check_enrollment",
+      "next_failure": null,
+      "note": "MFA nur für VPN verpflichtend.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.mfa_check_enrollment",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "MFA-Einrichtung prüfen",
+    "priority": 35,
+    "when": {
+      "all": [
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "mfa_enrolled",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "mfa_setup_authenticator"
+      },
+      {
+        "type": "set_fact",
+        "fact": "mfa_enrolled",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "mfa_totp_available",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "mfa_check_enrollment",
+      "namespace": "service.mfa",
+      "rule_display_name": "MFA-Einrichtung prüfen",
+      "rule_type": "precondition_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "mfa_enrolled",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "mfa_enrolled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_totp_available",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "mfa_enrolled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_totp_available",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "mfa_setup_authenticator",
+      "action_display_name": "Authenticator-App einrichten",
+      "next_success": "mfa_check_totp_code",
+      "next_failure": "support_escalate",
+      "note": "MFA-Erstinstallation benötigt Account und Zugangsdaten.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.mfa_check_totp_code",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "auth_rule",
+    "description": "30-Sekunden-Code prüfen",
+    "priority": 38,
+    "when": {
+      "all": [
+        {
+          "fact": "mfa_enrolled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_totp_available",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "mfa_code_status",
+          "operator": "in",
+          "value": [
+            "not_tested",
+            "invalid",
+            "expired"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "mfa_validate_totp_code"
+      },
+      {
+        "type": "set_fact",
+        "fact": "mfa_code_status",
+        "value": "valid"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "mfa_check_totp_code",
+      "namespace": "service.mfa",
+      "rule_display_name": "30-Sekunden-Code prüfen",
+      "rule_type": "auth_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "mfa_enrolled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_totp_available",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "mfa_code_status",
+          "operator": "in",
+          "value": [
+            "not_tested",
+            "invalid",
+            "expired"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "mfa_code_status",
+          "operator": "equals",
+          "value": "valid"
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "mfa_code_status",
+          "operator": "equals",
+          "value": "invalid/expired"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "mfa_code_status",
+          "operator": "equals",
+          "value": "valid"
+        },
+        {
+          "fact": "mfa_code_status",
+          "operator": "equals",
+          "value": "invalid/expired"
+        }
+      ],
+      "action_function": "mfa_validate_totp_code",
+      "action_display_name": "30-Sekunden-Code prüfen",
+      "next_success": "vpn_authenticate",
+      "next_failure": "mfa_troubleshoot_code",
+      "note": "Kein Push; Code ändert sich alle 30 Sekunden.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.eduroam_check_campus_context",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "Eduroam-Standort prüfen",
+    "priority": 40,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "any": [
+        {
+          "fact": "on_campus",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_campus_location_help"
+      },
+      {
+        "type": "set_fact",
+        "fact": "on_campus",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "eduroam_check_campus_context",
+      "namespace": "service.eduroam",
+      "rule_display_name": "Eduroam-Standort prüfen",
+      "rule_type": "precondition_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "on_campus",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "on_campus",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "on_campus",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "eduroam_campus_location_help",
+      "action_display_name": "Eduroam-Standort prüfen",
+      "next_success": "eduroam_check_wifi_available",
+      "next_failure": "support_or_wait_until_on_campus",
+      "note": "Eduroam ist standortbezogen.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.eduroam_check_wifi_available",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "WLAN-Hardware prüfen",
+    "priority": 42,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "on_campus",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "wifi_available",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_wifi_hardware_check"
+      },
+      {
+        "type": "set_fact",
+        "fact": "wifi_available",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "eduroam_check_wifi_available",
+      "namespace": "service.eduroam",
+      "rule_display_name": "WLAN-Hardware prüfen",
+      "rule_type": "precondition_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "on_campus",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "wifi_available",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "wifi_available",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "wifi_available",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "eduroam_wifi_hardware_check",
+      "action_display_name": "WLAN-Hardware prüfen",
+      "next_success": "eduroam_check_wifi_enabled",
+      "next_failure": "support_escalate",
+      "note": "Gerät braucht WLAN.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.eduroam_check_wifi_enabled",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "WLAN aktivieren",
+    "priority": 45,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "wifi_available",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "wifi_enabled",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_enable_wifi"
+      },
+      {
+        "type": "set_fact",
+        "fact": "wifi_enabled",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "eduroam_check_wifi_enabled",
+      "namespace": "service.eduroam",
+      "rule_display_name": "WLAN aktivieren",
+      "rule_type": "precondition_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "wifi_available",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "wifi_enabled",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "eduroam_enable_wifi",
+      "action_display_name": "WLAN aktivieren",
+      "next_success": "eduroam_check_visible_network",
+      "next_failure": "support_escalate",
+      "note": "Vor SSID-Suche.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.eduroam_check_visible_network",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "Eduroam-Netz sichtbar?",
+    "priority": 50,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "on_campus",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_visible",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_troubleshoot_not_visible"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_visible",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "eduroam_check_visible_network",
+      "namespace": "service.eduroam",
+      "rule_display_name": "Eduroam-Netz sichtbar?",
+      "rule_type": "precondition_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "on_campus",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "wifi_enabled",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_visible",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "eduroam_troubleshoot_not_visible",
+      "action_display_name": "Eduroam-Netz sichtbar prüfen",
+      "next_success": "eduroam_profile_router",
+      "next_failure": "support_escalate",
+      "note": "Vor Profil-Setup prüfen.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.eduroam_profile_router",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "router_rule",
+    "description": "Eduroam-Profil nach Betriebssystem wählen",
+    "priority": 60,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_setup_router"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "eduroam_profile_router",
+      "namespace": "service.eduroam",
+      "rule_display_name": "Eduroam-Profil nach Betriebssystem wählen",
+      "rule_type": "router_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "operating_system",
+          "operator": "metadata",
+          "value": "windows/macos/ios/android/linux",
+          "metadata_operator": "sets",
+          "source_text": "operating_system sets windows/macos/ios/android/linux"
+        }
+      ],
+      "post_conditions_failure": [],
+      "post_conditions": [
+        {
+          "fact": "operating_system",
+          "operator": "metadata",
+          "value": "windows/macos/ios/android/linux",
+          "metadata_operator": "sets",
+          "source_text": "operating_system sets windows/macos/ios/android/linux"
+        }
+      ],
+      "action_function": "eduroam_setup_router",
+      "action_display_name": "Eduroam-Einrichtung nach Betriebssystem wählen",
+      "next_success": "eduroam_setup_os_specific",
+      "next_failure": "support_escalate",
+      "note": "Router darf OS-spezifische Regeln nicht überschreiben.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.eduroam_setup_windows",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "setup_rule",
+    "description": "Eduroam unter Windows einrichten",
+    "priority": 61,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "windows"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_setup_windows"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_profile_configured",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_connection_status",
+        "value": "not_tested"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "eduroam_setup_windows",
+      "namespace": "service.eduroam",
+      "rule_display_name": "Eduroam unter Windows einrichten",
+      "rule_type": "setup_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "windows"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "eduroam_setup_windows",
+      "action_display_name": "Eduroam unter Windows einrichten",
+      "next_success": "eduroam_connection_attempt",
+      "next_failure": "support_escalate",
+      "note": "OS-spezifische Setup-Regel.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.eduroam_setup_macos",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "setup_rule",
+    "description": "Eduroam unter macOS einrichten",
+    "priority": 62,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "macos"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_setup_macos"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_profile_configured",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_connection_status",
+        "value": "not_tested"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "eduroam_setup_macos",
+      "namespace": "service.eduroam",
+      "rule_display_name": "Eduroam unter macOS einrichten",
+      "rule_type": "setup_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "macos"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "eduroam_setup_macos",
+      "action_display_name": "Eduroam unter macOS einrichten",
+      "next_success": "eduroam_connection_attempt",
+      "next_failure": "support_escalate",
+      "note": "OS-spezifische Setup-Regel.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.eduroam_setup_ios",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "setup_rule",
+    "description": "Eduroam unter iOS/iPadOS einrichten",
+    "priority": 63,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "ios"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_setup_ios"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_profile_configured",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_connection_status",
+        "value": "not_tested"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "eduroam_setup_ios",
+      "namespace": "service.eduroam",
+      "rule_display_name": "Eduroam unter iOS/iPadOS einrichten",
+      "rule_type": "setup_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "ios"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "eduroam_setup_ios",
+      "action_display_name": "Eduroam unter iOS/iPadOS einrichten",
+      "next_success": "eduroam_connection_attempt",
+      "next_failure": "support_escalate",
+      "note": "OS-spezifische Setup-Regel.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.eduroam_setup_android",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "setup_rule",
+    "description": "Eduroam unter Android einrichten",
+    "priority": 64,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "android"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_setup_android"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_profile_configured",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_connection_status",
+        "value": "not_tested"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "eduroam_setup_android",
+      "namespace": "service.eduroam",
+      "rule_display_name": "Eduroam unter Android einrichten",
+      "rule_type": "setup_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "android"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "eduroam_setup_android",
+      "action_display_name": "Eduroam unter Android einrichten",
+      "next_success": "eduroam_connection_attempt",
+      "next_failure": "support_escalate",
+      "note": "OS-spezifische Setup-Regel.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.eduroam_setup_linux",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "setup_rule",
+    "description": "Eduroam unter Linux einrichten",
+    "priority": 65,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "linux"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_setup_linux"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_profile_configured",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_connection_status",
+        "value": "not_tested"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "eduroam_setup_linux",
+      "namespace": "service.eduroam",
+      "rule_display_name": "Eduroam unter Linux einrichten",
+      "rule_type": "setup_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "operating_system",
+          "operator": "equals",
+          "value": "linux"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "eduroam_setup_linux",
+      "action_display_name": "Eduroam unter Linux einrichten",
+      "next_success": "eduroam_connection_attempt",
+      "next_failure": "support_escalate",
+      "note": "OS-spezifische Setup-Regel.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.eduroam_connection_attempt",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "connection_rule",
+    "description": "Eduroam-Verbindung testen",
+    "priority": 80,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "in",
+          "value": [
+            "not_tested",
+            "failed"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_try_connect"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_connection_status",
+        "value": "connected"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "eduroam_connection_attempt",
+      "namespace": "service.eduroam",
+      "rule_display_name": "Eduroam-Verbindung testen",
+      "rule_type": "connection_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "in",
+          "value": [
+            "not_tested",
+            "failed"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "connected"
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "connected"
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "action_function": "eduroam_try_connect",
+      "action_display_name": "Eduroam-Verbindung testen",
+      "next_success": "eduroam_check_internet",
+      "next_failure": "eduroam_connection_failed",
+      "note": "Nach Setup immer Verbindung testen.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.eduroam_connection_failed",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "troubleshooting_rule",
+    "description": "Eduroam-Login/Passwortfehler beheben",
+    "priority": 90,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "any": [
+        {
+          "fact": "problem_type",
+          "operator": "in",
+          "value": [
+            "auth_failed",
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_troubleshoot_auth_or_password"
+      },
+      {
+        "type": "set_fact",
+        "fact": "credentials_checked",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "eduroam_connection_failed",
+      "namespace": "service.eduroam",
+      "rule_display_name": "Eduroam-Login/Passwortfehler beheben",
+      "rule_type": "troubleshooting_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "problem_type",
+          "operator": "in",
+          "value": [
+            "auth_failed",
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "credentials_checked",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "profile_recreation_required",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "profile_recreation_required maybe true"
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "credentials_checked",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "profile_recreation_required",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "profile_recreation_required maybe true"
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "eduroam_troubleshoot_auth_or_password",
+      "action_display_name": "Eduroam-Login/Passwortfehler beheben",
+      "next_success": "eduroam_recreate_profile_or_retry",
+      "next_failure": "support_escalate",
+      "note": "Zugangsdaten/Profile prüfen.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.eduroam_check_internet",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "connection_rule",
+    "description": "Eduroam-Internet prüfen",
+    "priority": 100,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "connected"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_internet_access",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_troubleshoot_no_internet"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_internet_access",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "user_problem_resolved",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "eduroam_check_internet",
+      "namespace": "service.eduroam",
+      "rule_display_name": "Eduroam-Internet prüfen",
+      "rule_type": "connection_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "connected"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_internet_access",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "eduroam_internet_access",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_internet_access",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "eduroam_troubleshoot_no_internet",
+      "action_display_name": "Eduroam verbunden, aber kein Internet",
+      "next_success": "finish_resolved",
+      "next_failure": "support_escalate",
+      "note": "No-Internet nicht mit Auth-Fehler mischen.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.eduroam_connection_drops",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "troubleshooting_rule",
+    "description": "Eduroam-Verbindungsabbrüche beheben",
+    "priority": 110,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "connection_drops"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "eduroam_troubleshoot_no_internet"
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_connection_status",
+        "value": "not_tested"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "eduroam_connection_drops",
+      "namespace": "service.eduroam",
+      "rule_display_name": "Eduroam-Verbindungsabbrüche beheben",
+      "rule_type": "troubleshooting_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "connection_drops"
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "eduroam_connection_status",
+          "operator": "equals",
+          "value": "not_tested"
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "eduroam_troubleshoot_no_internet",
+      "action_display_name": "Eduroam verbunden, aber kein Internet",
+      "next_success": "eduroam_connection_attempt",
+      "next_failure": "support_escalate",
+      "note": "Standort/Profil/Neustart prüfen.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.vpn_check_installation_campus_network",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "Campusnetz für VPN-Erstinstallation prüfen",
+    "priority": 120,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "any": [
+        {
+          "fact": "on_campus",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        },
+        {
+          "fact": "campus_wifi_available",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "campus_lan_available",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_campus_network_help"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_installation_allowed",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "vpn_check_installation_campus_network",
+      "namespace": "service.vpn",
+      "rule_display_name": "Campusnetz für VPN-Erstinstallation prüfen",
+      "rule_type": "precondition_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "on_campus",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        },
+        {
+          "fact": "campus_wifi_available",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "campus_lan_available",
+          "operator": "equals",
+          "value": false
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "vpn_installation_allowed",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_installation_allowed",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "vpn_campus_network_help",
+      "action_display_name": "Campusnetz für VPN-Erstinstallation prüfen",
+      "next_success": "vpn_install_client",
+      "next_failure": "support_or_wait_until_on_campus",
+      "note": "VPN-Erstinstallation über Eduroam-WLAN oder LAN am Campus.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.vpn_install_client",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "setup_rule",
+    "description": "VPN-Client installieren",
+    "priority": 125,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "on_campus",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "vpn_client_installed",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_install_client_os_specific"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_client_installed",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_installation_status",
+        "value": "installed"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "vpn_install_client",
+      "namespace": "service.vpn",
+      "rule_display_name": "VPN-Client installieren",
+      "rule_type": "setup_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "on_campus",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "vpn_client_installed",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "vpn_client_installed",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "vpn_installation_status",
+          "operator": "equals",
+          "value": "installed"
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "vpn_installation_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_client_installed",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "vpn_installation_status",
+          "operator": "equals",
+          "value": "installed"
+        },
+        {
+          "fact": "vpn_installation_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "action_function": "vpn_install_client_os_specific",
+      "action_display_name": "VPN-Client installieren",
+      "next_success": "vpn_check_client_healthy",
+      "next_failure": "vpn_troubleshoot_installation",
+      "note": "OS-spezifische Installation.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.vpn_check_client_healthy",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "precondition_rule",
+    "description": "VPN-Client nach Installation prüfen",
+    "priority": 130,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "vpn_client_healthy",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_check_client_health"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_client_healthy",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "vpn_check_client_healthy",
+      "namespace": "service.vpn",
+      "rule_display_name": "VPN-Client nach Installation prüfen",
+      "rule_type": "precondition_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "vpn_client_healthy",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "vpn_client_healthy",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "vpn_client_healthy",
+          "operator": "equals",
+          "value": false
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_client_healthy",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "vpn_client_healthy",
+          "operator": "equals",
+          "value": false
+        }
+      ],
+      "action_function": "vpn_check_client_health",
+      "action_display_name": "VPN-Client prüfen",
+      "next_success": "vpn_profile_router",
+      "next_failure": "vpn_troubleshoot_client",
+      "note": "Nach Installation können Probleme auftreten.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.vpn_profile_router",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "router_rule",
+    "description": "VPN-Profil/Gateway prüfen",
+    "priority": 135,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "vpn_client_healthy",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "vpn_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_configure_profile_gateway"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_profile_configured",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "vpn_profile_router",
+      "namespace": "service.vpn",
+      "rule_display_name": "VPN-Profil/Gateway prüfen",
+      "rule_type": "router_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "vpn_client_healthy",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "vpn_profile_configured",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "vpn_profile_configured",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "vpn_configure_profile_gateway",
+      "action_display_name": "VPN-Profil/Gateway konfigurieren",
+      "next_success": "mfa_vpn_requirement",
+      "next_failure": "vpn_troubleshoot_client",
+      "note": "Vor VPN-Authentifizierung.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.vpn_authenticate",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "auth_rule",
+    "description": "VPN-Login mit MFA-Code prüfen",
+    "priority": 140,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_code_status",
+          "operator": "equals",
+          "value": "valid"
+        }
+      ],
+      "any": [
+        {
+          "fact": "vpn_auth_status",
+          "operator": "in",
+          "value": [
+            "not_tested",
+            "failed"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_authenticate_with_mfa"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_auth_status",
+        "value": "success"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "vpn_authenticate",
+      "namespace": "service.vpn",
+      "rule_display_name": "VPN-Login mit MFA-Code prüfen",
+      "rule_type": "auth_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_profile_configured",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "account_exists",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_code_status",
+          "operator": "equals",
+          "value": "valid"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "vpn_auth_status",
+          "operator": "in",
+          "value": [
+            "not_tested",
+            "failed"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "success"
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "action_function": "vpn_authenticate_with_mfa",
+      "action_display_name": "VPN-Login mit MFA-Code prüfen",
+      "next_success": "vpn_tunnel_attempt",
+      "next_failure": "vpn_troubleshoot_auth_mfa",
+      "note": "VPN benötigt gültigen 30-Sekunden-Code.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.vpn_tunnel_attempt",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "connection_rule",
+    "description": "VPN-Tunnel aufbauen",
+    "priority": 145,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ],
+      "any": [
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "in",
+          "value": [
+            "not_tested",
+            "failed"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_connect_tunnel"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_tunnel_status",
+        "value": "connected"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "vpn_tunnel_attempt",
+      "namespace": "service.vpn",
+      "rule_display_name": "VPN-Tunnel aufbauen",
+      "rule_type": "connection_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "in",
+          "value": [
+            "not_tested",
+            "failed"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "connected"
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "connected"
+        },
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "action_function": "vpn_connect_tunnel",
+      "action_display_name": "VPN-Tunnel aufbauen",
+      "next_success": "vpn_check_resource_access",
+      "next_failure": "vpn_troubleshoot_tunnel_network",
+      "note": "Tunnel getrennt vom Login prüfen.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.vpn_check_resource_access",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "connection_rule",
+    "description": "Interne Dienste prüfen",
+    "priority": 150,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "connected"
+        }
+      ],
+      "any": [
+        {
+          "fact": "vpn_resource_accessible",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_check_internal_resources"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_resource_accessible",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "user_problem_resolved",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "vpn_check_resource_access",
+      "namespace": "service.vpn",
+      "rule_display_name": "Interne Dienste prüfen",
+      "rule_type": "connection_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "connected"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "vpn_resource_accessible",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "vpn_resource_accessible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_resource_accessible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "vpn_check_internal_resources",
+      "action_display_name": "Interne Dienste prüfen",
+      "next_success": "finish_resolved",
+      "next_failure": "support_escalate",
+      "note": "VPN verbunden heißt nicht automatisch Ressource erreichbar.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.vpn_troubleshoot_installation",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "troubleshooting_rule",
+    "description": "VPN-Installation beheben",
+    "priority": 155,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        }
+      ],
+      "any": [
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "install_failed"
+        },
+        {
+          "fact": "vpn_installation_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_troubleshoot_installation"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "vpn_troubleshoot_installation",
+      "namespace": "service.vpn",
+      "rule_display_name": "VPN-Installation beheben",
+      "rule_type": "troubleshooting_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "install_failed"
+        },
+        {
+          "fact": "vpn_installation_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "vpn_client_installed",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "vpn_client_installed maybe true"
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_client_installed",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "vpn_client_installed maybe true"
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "vpn_troubleshoot_installation",
+      "action_display_name": "VPN-Installationsproblem beheben",
+      "next_success": "vpn_check_client_healthy",
+      "next_failure": "support_escalate",
+      "note": "Installationsproblem getrennt behandeln.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.vpn_troubleshoot_auth_mfa",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "troubleshooting_rule",
+    "description": "VPN-Login/MFA-Fehler beheben",
+    "priority": 160,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        }
+      ],
+      "any": [
+        {
+          "fact": "problem_type",
+          "operator": "in",
+          "value": [
+            "auth_failed",
+            "mfa_failed"
+          ]
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_troubleshoot_auth_mfa"
+      },
+      {
+        "type": "set_fact",
+        "fact": "credentials_checked",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "vpn_troubleshoot_auth_mfa",
+      "namespace": "service.vpn",
+      "rule_display_name": "VPN-Login/MFA-Fehler beheben",
+      "rule_type": "troubleshooting_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "problem_type",
+          "operator": "in",
+          "value": [
+            "auth_failed",
+            "mfa_failed"
+          ]
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "credentials_checked",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_code_status",
+          "operator": "metadata",
+          "value": "not_tested",
+          "metadata_operator": "maybe",
+          "source_text": "mfa_code_status maybe not_tested"
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "credentials_checked",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_code_status",
+          "operator": "metadata",
+          "value": "not_tested",
+          "metadata_operator": "maybe",
+          "source_text": "mfa_code_status maybe not_tested"
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "vpn_troubleshoot_auth_mfa",
+      "action_display_name": "VPN-Login oder MFA-Fehler beheben",
+      "next_success": "mfa_check_totp_code",
+      "next_failure": "support_escalate",
+      "note": "Trennt Zugangsdaten- und MFA-Fehler.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.vpn_troubleshoot_tunnel_network",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "troubleshooting_rule",
+    "description": "VPN-Tunnel/Netzwerk beheben",
+    "priority": 165,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ],
+      "any": [
+        {
+          "fact": "problem_type",
+          "operator": "in",
+          "value": [
+            "timeout",
+            "client_error"
+          ]
+        },
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "vpn_troubleshoot_tunnel_network"
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_tunnel_status",
+        "value": "not_tested"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "vpn_troubleshoot_tunnel_network",
+      "namespace": "service.vpn",
+      "rule_display_name": "VPN-Tunnel/Netzwerk beheben",
+      "rule_type": "troubleshooting_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "success"
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "problem_type",
+          "operator": "in",
+          "value": [
+            "timeout",
+            "client_error"
+          ]
+        },
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ],
+      "post_conditions_failure": [
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "post_conditions": [
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "not_tested"
+        },
+        {
+          "fact": "needs_human_support",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "maybe",
+          "source_text": "needs_human_support maybe true"
+        }
+      ],
+      "action_function": "vpn_troubleshoot_tunnel_network",
+      "action_display_name": "VPN-Tunnel/Netzwerkfehler beheben",
+      "next_success": "vpn_tunnel_attempt",
+      "next_failure": "support_escalate",
+      "note": "Nach erfolgreicher Auth Tunnel/Netz prüfen.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.finish_resolved",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "completion_rule",
+    "description": "Anfrage erfolgreich abschließen",
+    "priority": 180,
+    "when": {
+      "any": [
+        {
+          "fact": "eduroam_internet_access",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "vpn_resource_accessible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "finish_resolved_response"
+      },
+      {
+        "type": "set_fact",
+        "fact": "user_problem_resolved",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "user_request_answered",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "finish_resolved",
+      "namespace": "core",
+      "rule_display_name": "Anfrage erfolgreich abschließen",
+      "rule_type": "completion_rule",
+      "status": "aktiv",
+      "pre_conditions": [],
+      "trigger_conditions": [
+        {
+          "fact": "eduroam_internet_access",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "vpn_resource_accessible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_request_answered",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [],
+      "post_conditions": [
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_request_answered",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "finish_resolved_response",
+      "action_display_name": "Anfrage erfolgreich abschließen",
+      "next_success": "end",
+      "next_failure": null,
+      "note": "Finaler Zielzustand.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.support_escalate",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "escalation_rule",
+    "description": "An KIM/IT-Support verweisen",
+    "priority": 190,
+    "when": {
+      "any": [
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "support_escalation_response"
+      },
+      {
+        "type": "set_fact",
+        "fact": "user_request_answered",
+        "value": true
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "support_escalate",
+      "namespace": "service.support",
+      "rule_display_name": "An KIM/IT-Support verweisen",
+      "rule_type": "escalation_rule",
+      "status": "aktiv",
+      "pre_conditions": [],
+      "trigger_conditions": [
+        {
+          "fact": "needs_human_support",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "user_request_answered",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_failure": [],
+      "post_conditions": [
+        {
+          "fact": "user_request_answered",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "action_function": "support_escalation_response",
+      "action_display_name": "An KIM/IT-Support verweisen",
+      "next_success": "end",
+      "next_failure": null,
+      "note": "Abschluss erlaubt, wenn Supportweg ausgegeben wurde.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  },
+  {
+    "id": "excel.service_fallback",
+    "active": true,
+    "module": "wissensmodell_excel",
+    "rule_group": "fallback_rule",
+    "description": "Fehlende Informationen klären",
+    "priority": 999,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa",
+            "unknown"
+          ]
+        }
+      ],
+      "any": [
+        {
+          "fact": "no_specific_rule_matches",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "function",
+        "function_id": "core_clarify_missing_facts"
+      }
+    ],
+    "stop_after_match": true,
+    "technical_metadata": {
+      "source_file": "Regeln_vollständig_neu.xlsx",
+      "original_rule_id": "service_fallback",
+      "namespace": "core",
+      "rule_display_name": "Fehlende Informationen klären",
+      "rule_type": "fallback_rule",
+      "status": "aktiv",
+      "pre_conditions": [
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa",
+            "unknown"
+          ]
+        }
+      ],
+      "trigger_conditions": [
+        {
+          "fact": "no_specific_rule_matches",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "post_conditions_success": [
+        {
+          "fact": "missing_facts",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "sets",
+          "source_text": "missing_facts sets true"
+        }
+      ],
+      "post_conditions_failure": [],
+      "post_conditions": [
+        {
+          "fact": "missing_facts",
+          "operator": "metadata",
+          "value": true,
+          "metadata_operator": "sets",
+          "source_text": "missing_facts sets true"
+        }
+      ],
+      "action_function": "core_clarify_missing_facts",
+      "action_display_name": "core_clarify_missing_facts",
+      "next_success": "service_specific_chain",
+      "next_failure": "support_escalate",
+      "note": "Ganz unten, sonst Überschattung.",
+      "editor": "excel_structured_admin_view_v2"
+    }
+  }
+]

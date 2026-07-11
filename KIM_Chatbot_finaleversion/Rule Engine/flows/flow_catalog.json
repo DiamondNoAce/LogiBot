@@ -1,0 +1,427 @@
+{
+  "flows": [
+    {
+      "id": "excel_core_service_chain",
+      "name": "Gemeinsamer Einstieg und Wissenskern",
+      "description": "Account, Zugangsdaten und serviceübergreifende Voraussetzungen vor Eduroam, VPN und MFA.",
+      "active": true,
+      "steps": [
+        {
+          "step": 1,
+          "condition": "service in eduroam, vpn, mfa, unknown",
+          "if_true": "service_specific_chain",
+          "if_false_unknown": "core_clarify_topic",
+          "rule_id": "core_route_topic",
+          "post_condition": "service eq eduroam/vpn/mfa",
+          "action": "core_route_to_service",
+          "note": "Einstieg in alle Abläufe."
+        },
+        {
+          "step": 2,
+          "condition": "user_role eq guest; guest_access_exists in false, unknown",
+          "if_true": "core_check_account_exists",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "core_check_guest_access",
+          "post_condition": "guest_access_exists eq true",
+          "action": "core_guest_access_help",
+          "note": "Gäste ohne Zugang nicht in normalen Setup-Fluss schicken."
+        },
+        {
+          "step": 3,
+          "condition": "service in eduroam, vpn, mfa; account_exists in false, unknown; account_active in false, unknown",
+          "if_true": "core_check_credentials",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "core_check_account_exists",
+          "post_condition": "account_exists eq true; account_active eq true",
+          "action": "core_account_check",
+          "note": "Zentrale Blocker-Regel."
+        },
+        {
+          "step": 4,
+          "condition": "service in eduroam, vpn, mfa; account_exists eq true; username_known in false, unknown; password_known in false, unknown",
+          "if_true": "service_specific_chain",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "core_check_credentials",
+          "post_condition": "username_known eq true; password_known eq true",
+          "action": "core_credentials_help",
+          "note": "Vor Login-/Setup-Regeln."
+        },
+        {
+          "step": 5,
+          "condition": "account_exists eq true; username_known eq true; password_known eq true; password_recently_changed eq true",
+          "if_true": "affected_service_troubleshooting",
+          "if_false_unknown": "klären / Support",
+          "rule_id": "core_password_changed_router",
+          "post_condition": "stored_credentials_may_be_invalid eq true",
+          "action": "core_password_change_router",
+          "note": "Überschneidung zwischen Eduroam und VPN."
+        }
+      ],
+      "source": "Regeln_vollständig_neu.xlsx / Admin-Konzept"
+    },
+    {
+      "id": "excel_eduroam_flow",
+      "name": "Eduroam Einrichtung und Troubleshooting",
+      "description": "Campus/WLAN/Sichtbarkeit, Profil, Zertifikat, Verbindung und Internet getrennt prüfen.",
+      "active": true,
+      "steps": [
+        {
+          "step": 1,
+          "condition": "service eq eduroam; eduroam_certificate_warning_shown eq true; problem_type eq certificate_warning",
+          "if_true": "eduroam_profile_router",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "security_eduroam_certificate_warning",
+          "post_condition": "eduroam_certificate_checked eq true; eduroam_profile_configured maybe false",
+          "action": "eduroam_troubleshoot_certificate_warning",
+          "note": "Sicherheitsrelevant; Zertifikat nur für Eduroam."
+        },
+        {
+          "step": 2,
+          "condition": "service eq eduroam; on_campus in false, unknown",
+          "if_true": "eduroam_check_wifi_available",
+          "if_false_unknown": "support_or_wait_until_on_campus",
+          "rule_id": "eduroam_check_campus_context",
+          "post_condition": "on_campus eq true",
+          "action": "eduroam_campus_location_help",
+          "note": "Eduroam ist standortbezogen."
+        },
+        {
+          "step": 3,
+          "condition": "service eq eduroam; on_campus eq true; wifi_available in false, unknown",
+          "if_true": "eduroam_check_wifi_enabled",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "eduroam_check_wifi_available",
+          "post_condition": "wifi_available eq true",
+          "action": "eduroam_wifi_hardware_check",
+          "note": "Gerät braucht WLAN."
+        },
+        {
+          "step": 4,
+          "condition": "service eq eduroam; wifi_available eq true; wifi_enabled in false, unknown",
+          "if_true": "eduroam_check_visible_network",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "eduroam_check_wifi_enabled",
+          "post_condition": "wifi_enabled eq true",
+          "action": "eduroam_enable_wifi",
+          "note": "Vor SSID-Suche."
+        },
+        {
+          "step": 5,
+          "condition": "service eq eduroam; on_campus eq true; wifi_enabled eq true; eduroam_visible in false, unknown",
+          "if_true": "eduroam_profile_router",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "eduroam_check_visible_network",
+          "post_condition": "eduroam_visible eq true",
+          "action": "eduroam_troubleshoot_not_visible",
+          "note": "Vor Profil-Setup prüfen."
+        },
+        {
+          "step": 6,
+          "condition": "service eq eduroam; account_exists eq true; username_known eq true; password_known eq true; eduroam_visible eq true; eduroam_profile_configured in false, unknown",
+          "if_true": "eduroam_setup_os_specific",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "eduroam_profile_router",
+          "post_condition": "operating_system sets windows/macos/ios/android/linux",
+          "action": "eduroam_setup_router",
+          "note": "Router darf OS-spezifische Regeln nicht überschreiben."
+        },
+        {
+          "step": 7,
+          "condition": "service eq eduroam; account_exists eq true; username_known eq true; password_known eq true; eduroam_visible eq true; operating_system eq windows; eduroam_profile_configured in false, unknown",
+          "if_true": "eduroam_connection_attempt",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "eduroam_setup_windows",
+          "post_condition": "eduroam_profile_configured eq true; eduroam_connection_status eq not_tested",
+          "action": "eduroam_setup_windows",
+          "note": "OS-spezifische Setup-Regel."
+        },
+        {
+          "step": 8,
+          "condition": "service eq eduroam; account_exists eq true; username_known eq true; password_known eq true; eduroam_visible eq true; operating_system eq macos; eduroam_profile_configured in false, unknown",
+          "if_true": "eduroam_connection_attempt",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "eduroam_setup_macos",
+          "post_condition": "eduroam_profile_configured eq true; eduroam_connection_status eq not_tested",
+          "action": "eduroam_setup_macos",
+          "note": "OS-spezifische Setup-Regel."
+        },
+        {
+          "step": 9,
+          "condition": "service eq eduroam; account_exists eq true; username_known eq true; password_known eq true; eduroam_visible eq true; operating_system eq ios; eduroam_profile_configured in false, unknown",
+          "if_true": "eduroam_connection_attempt",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "eduroam_setup_ios",
+          "post_condition": "eduroam_profile_configured eq true; eduroam_connection_status eq not_tested",
+          "action": "eduroam_setup_ios",
+          "note": "OS-spezifische Setup-Regel."
+        },
+        {
+          "step": 10,
+          "condition": "service eq eduroam; account_exists eq true; username_known eq true; password_known eq true; eduroam_visible eq true; operating_system eq android; eduroam_profile_configured in false, unknown",
+          "if_true": "eduroam_connection_attempt",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "eduroam_setup_android",
+          "post_condition": "eduroam_profile_configured eq true; eduroam_connection_status eq not_tested",
+          "action": "eduroam_setup_android",
+          "note": "OS-spezifische Setup-Regel."
+        },
+        {
+          "step": 11,
+          "condition": "service eq eduroam; account_exists eq true; username_known eq true; password_known eq true; eduroam_visible eq true; operating_system eq linux; eduroam_profile_configured in false, unknown",
+          "if_true": "eduroam_connection_attempt",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "eduroam_setup_linux",
+          "post_condition": "eduroam_profile_configured eq true; eduroam_connection_status eq not_tested",
+          "action": "eduroam_setup_linux",
+          "note": "OS-spezifische Setup-Regel."
+        },
+        {
+          "step": 12,
+          "condition": "service eq eduroam; eduroam_profile_configured eq true; username_known eq true; password_known eq true; eduroam_connection_status in not_tested, failed",
+          "if_true": "eduroam_check_internet",
+          "if_false_unknown": "eduroam_connection_failed",
+          "rule_id": "eduroam_connection_attempt",
+          "post_condition": "eduroam_connection_status eq connected",
+          "action": "eduroam_try_connect",
+          "note": "Nach Setup immer Verbindung testen."
+        },
+        {
+          "step": 13,
+          "condition": "service eq eduroam; eduroam_profile_configured eq true; eduroam_connection_status eq failed; problem_type in auth_failed, unknown",
+          "if_true": "eduroam_recreate_profile_or_retry",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "eduroam_connection_failed",
+          "post_condition": "credentials_checked eq true; profile_recreation_required maybe true",
+          "action": "eduroam_troubleshoot_auth_or_password",
+          "note": "Zugangsdaten/Profile prüfen."
+        },
+        {
+          "step": 14,
+          "condition": "service eq eduroam; eduroam_connection_status eq connected; eduroam_internet_access in false, unknown",
+          "if_true": "finish_resolved",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "eduroam_check_internet",
+          "post_condition": "eduroam_internet_access eq true; user_problem_resolved eq true",
+          "action": "eduroam_troubleshoot_no_internet",
+          "note": "No-Internet nicht mit Auth-Fehler mischen."
+        }
+      ],
+      "source": "Regeln_vollständig_neu.xlsx / Admin-Konzept"
+    },
+    {
+      "id": "excel_vpn_installation_flow",
+      "name": "VPN Erstinstallation",
+      "description": "VPN-Erstinstallation über Campusnetz/Eduroam oder LAN, anschließend Client und Profil prüfen.",
+      "active": true,
+      "steps": [
+        {
+          "step": 1,
+          "condition": "service eq vpn; vpn_client_installed in false, unknown; on_campus in false, unknown; campus_wifi_available eq false; campus_lan_available eq false",
+          "if_true": "vpn_install_client",
+          "if_false_unknown": "support_or_wait_until_on_campus",
+          "rule_id": "vpn_check_installation_campus_network",
+          "post_condition": "vpn_installation_allowed eq true",
+          "action": "vpn_campus_network_help",
+          "note": "VPN-Erstinstallation über Eduroam-WLAN oder LAN am Campus."
+        },
+        {
+          "step": 2,
+          "condition": "service eq vpn; account_exists eq true; username_known eq true; password_known eq true; on_campus eq true; vpn_client_installed in false, unknown",
+          "if_true": "vpn_check_client_healthy",
+          "if_false_unknown": "vpn_troubleshoot_installation",
+          "rule_id": "vpn_install_client",
+          "post_condition": "vpn_client_installed eq true; vpn_installation_status eq installed",
+          "action": "vpn_install_client_os_specific",
+          "note": "OS-spezifische Installation."
+        },
+        {
+          "step": 3,
+          "condition": "service eq vpn; vpn_client_installed eq true; vpn_client_healthy in false, unknown",
+          "if_true": "vpn_profile_router",
+          "if_false_unknown": "vpn_troubleshoot_client",
+          "rule_id": "vpn_check_client_healthy",
+          "post_condition": "vpn_client_healthy eq true",
+          "action": "vpn_check_client_health",
+          "note": "Nach Installation können Probleme auftreten."
+        },
+        {
+          "step": 4,
+          "condition": "service eq vpn; vpn_client_installed eq true; vpn_client_healthy eq true; vpn_profile_configured in false, unknown",
+          "if_true": "mfa_vpn_requirement",
+          "if_false_unknown": "vpn_troubleshoot_client",
+          "rule_id": "vpn_profile_router",
+          "post_condition": "vpn_profile_configured eq true",
+          "action": "vpn_configure_profile_gateway",
+          "note": "Vor VPN-Authentifizierung."
+        }
+      ],
+      "source": "Regeln_vollständig_neu.xlsx / Admin-Konzept"
+    },
+    {
+      "id": "excel_vpn_usage_flow",
+      "name": "VPN Nutzung und interne Dienste",
+      "description": "MFA-Code, VPN-Login, Tunnelaufbau und Zugriff auf interne Dienste getrennt prüfen.",
+      "active": true,
+      "steps": [
+        {
+          "step": 1,
+          "condition": "service eq vpn; mfa_required_for_vpn eq true",
+          "if_true": "mfa_check_enrollment",
+          "if_false_unknown": "klären / Support",
+          "rule_id": "mfa_vpn_requirement",
+          "post_condition": "vpn_mfa_required eq true",
+          "action": "mfa_requirement_info",
+          "note": "MFA nur für VPN verpflichtend."
+        },
+        {
+          "step": 2,
+          "condition": "account_exists eq true; username_known eq true; password_known eq true; mfa_enrolled in false, unknown",
+          "if_true": "mfa_check_totp_code",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "mfa_check_enrollment",
+          "post_condition": "mfa_enrolled eq true; mfa_totp_available eq true",
+          "action": "mfa_setup_authenticator",
+          "note": "MFA-Erstinstallation benötigt Account und Zugangsdaten."
+        },
+        {
+          "step": 3,
+          "condition": "mfa_enrolled eq true; mfa_totp_available eq true; mfa_code_status in not_tested, invalid, expired",
+          "if_true": "vpn_authenticate",
+          "if_false_unknown": "mfa_troubleshoot_code",
+          "rule_id": "mfa_check_totp_code",
+          "post_condition": "mfa_code_status eq valid",
+          "action": "mfa_validate_totp_code",
+          "note": "Kein Push; Code ändert sich alle 30 Sekunden."
+        },
+        {
+          "step": 4,
+          "condition": "service eq vpn; vpn_profile_configured eq true; account_exists eq true; username_known eq true; password_known eq true; mfa_code_status eq valid; vpn_auth_status in not_tested, failed",
+          "if_true": "vpn_tunnel_attempt",
+          "if_false_unknown": "vpn_troubleshoot_auth_mfa",
+          "rule_id": "vpn_authenticate",
+          "post_condition": "vpn_auth_status eq success",
+          "action": "vpn_authenticate_with_mfa",
+          "note": "VPN benötigt gültigen 30-Sekunden-Code."
+        },
+        {
+          "step": 5,
+          "condition": "service eq vpn; vpn_auth_status eq success; vpn_tunnel_status in not_tested, failed",
+          "if_true": "vpn_check_resource_access",
+          "if_false_unknown": "vpn_troubleshoot_tunnel_network",
+          "rule_id": "vpn_tunnel_attempt",
+          "post_condition": "vpn_tunnel_status eq connected",
+          "action": "vpn_connect_tunnel",
+          "note": "Tunnel getrennt vom Login prüfen."
+        },
+        {
+          "step": 6,
+          "condition": "service eq vpn; vpn_tunnel_status eq connected; vpn_resource_accessible in false, unknown",
+          "if_true": "finish_resolved",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "vpn_check_resource_access",
+          "post_condition": "vpn_resource_accessible eq true; user_problem_resolved eq true",
+          "action": "vpn_check_internal_resources",
+          "note": "VPN verbunden heißt nicht automatisch Ressource erreichbar."
+        },
+        {
+          "step": 7,
+          "condition": "service eq vpn; problem_type in auth_failed, mfa_failed; vpn_auth_status eq failed",
+          "if_true": "mfa_check_totp_code",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "vpn_troubleshoot_auth_mfa",
+          "post_condition": "credentials_checked eq true; mfa_code_status maybe not_tested",
+          "action": "vpn_troubleshoot_auth_mfa",
+          "note": "Trennt Zugangsdaten- und MFA-Fehler."
+        },
+        {
+          "step": 8,
+          "condition": "service eq vpn; vpn_auth_status eq success; problem_type in timeout, client_error; vpn_tunnel_status eq failed",
+          "if_true": "vpn_tunnel_attempt",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "vpn_troubleshoot_tunnel_network",
+          "post_condition": "vpn_tunnel_status eq not_tested",
+          "action": "vpn_troubleshoot_tunnel_network",
+          "note": "Nach erfolgreicher Auth Tunnel/Netz prüfen."
+        }
+      ],
+      "source": "Regeln_vollständig_neu.xlsx / Admin-Konzept"
+    },
+    {
+      "id": "excel_mfa_flow",
+      "name": "MFA Einrichtung und Codeprüfung",
+      "description": "Authenticator-App einrichten und 30-Sekunden-Code prüfen. Keine Push-Benachrichtigung.",
+      "active": true,
+      "steps": [
+        {
+          "step": 1,
+          "condition": "account_exists eq true; username_known eq true; password_known eq true; mfa_enrolled in false, unknown",
+          "if_true": "mfa_check_totp_code",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "mfa_check_enrollment",
+          "post_condition": "mfa_enrolled eq true; mfa_totp_available eq true",
+          "action": "mfa_setup_authenticator",
+          "note": "MFA-Erstinstallation benötigt Account und Zugangsdaten."
+        },
+        {
+          "step": 2,
+          "condition": "mfa_enrolled eq true; mfa_totp_available eq true; mfa_code_status in not_tested, invalid, expired",
+          "if_true": "vpn_authenticate",
+          "if_false_unknown": "mfa_troubleshoot_code",
+          "rule_id": "mfa_check_totp_code",
+          "post_condition": "mfa_code_status eq valid",
+          "action": "mfa_validate_totp_code",
+          "note": "Kein Push; Code ändert sich alle 30 Sekunden."
+        },
+        {
+          "step": 3,
+          "condition": "mfa_troubleshoot_code",
+          "if_true": "weiter",
+          "if_false_unknown": "klären",
+          "rule_id": "mfa_troubleshoot_code",
+          "post_condition": "",
+          "note": ""
+        }
+      ],
+      "source": "Regeln_vollständig_neu.xlsx / Admin-Konzept"
+    },
+    {
+      "id": "excel_completion_support_flow",
+      "name": "Abschluss und Support",
+      "description": "Problem gelöst oder sauberer KIM-/IT-Support-Verweis.",
+      "active": true,
+      "steps": [
+        {
+          "step": 1,
+          "condition": "eduroam_internet_access eq true; vpn_resource_accessible eq true; user_problem_resolved eq true",
+          "if_true": "end",
+          "if_false_unknown": "klären / Support",
+          "rule_id": "finish_resolved",
+          "post_condition": "user_problem_resolved eq true; user_request_answered eq true",
+          "action": "finish_resolved_response",
+          "note": "Finaler Zielzustand."
+        },
+        {
+          "step": 2,
+          "condition": "needs_human_support eq true; user_problem_resolved in false, unknown",
+          "if_true": "end",
+          "if_false_unknown": "klären / Support",
+          "rule_id": "support_escalate",
+          "post_condition": "user_request_answered eq true",
+          "action": "support_escalation_response",
+          "note": "Abschluss erlaubt, wenn Supportweg ausgegeben wurde."
+        },
+        {
+          "step": 3,
+          "condition": "service in eduroam, vpn, mfa, unknown; no_specific_rule_matches eq true",
+          "if_true": "service_specific_chain",
+          "if_false_unknown": "support_escalate",
+          "rule_id": "service_fallback",
+          "post_condition": "missing_facts sets true",
+          "action": "core_clarify_missing_facts",
+          "note": "Ganz unten, sonst Überschattung."
+        }
+      ],
+      "source": "Regeln_vollständig_neu.xlsx / Admin-Konzept"
+    }
+  ]
+}

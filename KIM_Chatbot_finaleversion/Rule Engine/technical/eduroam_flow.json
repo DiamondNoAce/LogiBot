@@ -1,0 +1,122 @@
+{
+  "source": "Eduroam_Regeln_technische_Sicht.xlsx",
+  "items": [
+    {
+      "Schritt": 1,
+      "Prüfung / Condition": "service=eduroam",
+      "Wenn erfüllt": "Eduroam-Modul starten",
+      "Wenn nicht erfüllt / unknown": "Thema klären",
+      "Auszulösende Regel": "eduroam_fallback",
+      "Ziel / Post-Condition": "service gesetzt",
+      "Notiz": "Routing"
+    },
+    {
+      "Schritt": 2,
+      "Prüfung / Condition": "account_exists=true",
+      "Wenn erfüllt": "Weiter zu Benutzername",
+      "Wenn nicht erfüllt / unknown": "Account prüfen/aktivieren",
+      "Auszulösende Regel": "eduroam_check_account_exists",
+      "Ziel / Post-Condition": "account_exists=true",
+      "Notiz": "Blocker vor Setup"
+    },
+    {
+      "Schritt": 3,
+      "Prüfung / Condition": "username_known=true",
+      "Wenn erfüllt": "Weiter zu Passwort",
+      "Wenn nicht erfüllt / unknown": "Benutzername erklären",
+      "Auszulösende Regel": "eduroam_check_username",
+      "Ziel / Post-Condition": "username_known=true",
+      "Notiz": "Zugangsdaten vollständig machen"
+    },
+    {
+      "Schritt": 4,
+      "Prüfung / Condition": "password_known=true",
+      "Wenn erfüllt": "Weiter zu WLAN",
+      "Wenn nicht erfüllt / unknown": "Passwort zurücksetzen",
+      "Auszulösende Regel": "eduroam_check_password",
+      "Ziel / Post-Condition": "password_known=true",
+      "Notiz": "Bei Reset Passwortänderungsregel beachten"
+    },
+    {
+      "Schritt": 5,
+      "Prüfung / Condition": "password_recently_changed=false",
+      "Wenn erfüllt": "Weiter zu WLAN",
+      "Wenn nicht erfüllt / unknown": "Alte Zugangsdaten/Profile entfernen",
+      "Auszulösende Regel": "eduroam_after_password_change",
+      "Ziel / Post-Condition": "eduroam_profile_configured=false",
+      "Notiz": "Verknüpft Account-Problem mit Profil-Neuaufbau"
+    },
+    {
+      "Schritt": 6,
+      "Prüfung / Condition": "wifi_available=true",
+      "Wenn erfüllt": "Weiter zu WLAN aktiviert",
+      "Wenn nicht erfüllt / unknown": "Hardware prüfen",
+      "Auszulösende Regel": "eduroam_check_wifi_available",
+      "Ziel / Post-Condition": "wifi_available=true",
+      "Notiz": "Gerät muss WLAN unterstützen"
+    },
+    {
+      "Schritt": 7,
+      "Prüfung / Condition": "wifi_enabled=true",
+      "Wenn erfüllt": "Weiter zu Eduroam sichtbar",
+      "Wenn nicht erfüllt / unknown": "WLAN aktivieren",
+      "Auszulösende Regel": "eduroam_check_wifi_enabled",
+      "Ziel / Post-Condition": "wifi_enabled=true",
+      "Notiz": "Auch Neustart möglich"
+    },
+    {
+      "Schritt": 8,
+      "Prüfung / Condition": "eduroam_visible=true",
+      "Wenn erfüllt": "Weiter zu Profil",
+      "Wenn nicht erfüllt / unknown": "WLAN-Liste/Standort prüfen",
+      "Auszulösende Regel": "eduroam_check_visible_network",
+      "Ziel / Post-Condition": "eduroam_visible=true",
+      "Notiz": "Wenn andere WLANs sichtbar, Eduroam aber nicht: mögliche Störung"
+    },
+    {
+      "Schritt": 9,
+      "Prüfung / Condition": "eduroam_profile_configured=true",
+      "Wenn erfüllt": "Weiter zu Verbindungstest",
+      "Wenn nicht erfüllt / unknown": "Setup-Router und OS-Anleitung",
+      "Auszulösende Regel": "eduroam_profile_router",
+      "Ziel / Post-Condition": "eduroam_profile_configured=true",
+      "Notiz": "Windows/macOS/iOS/Android/Linux"
+    },
+    {
+      "Schritt": 10,
+      "Prüfung / Condition": "two_fa_ready=true oder not_required",
+      "Wenn erfüllt": "Weiter zu Verbindungstest",
+      "Wenn nicht erfüllt / unknown": "2FA einrichten, falls erforderlich",
+      "Auszulösende Regel": "eduroam_check_2fa",
+      "Ziel / Post-Condition": "two_fa_ready=true",
+      "Notiz": "Nur falls für Kontext notwendig"
+    },
+    {
+      "Schritt": 11,
+      "Prüfung / Condition": "connection_attempt_status=success",
+      "Wenn erfüllt": "Lösung prüfen",
+      "Wenn nicht erfüllt / unknown": "Troubleshooting",
+      "Auszulösende Regel": "eduroam_connection_attempt / eduroam_connection_failed",
+      "Ziel / Post-Condition": "connection_attempt_status gesetzt",
+      "Notiz": "Setup endet nie ohne Verbindungstest"
+    },
+    {
+      "Schritt": 12,
+      "Prüfung / Condition": "internet_access_available=true",
+      "Wenn erfüllt": "Problem gelöst",
+      "Wenn nicht erfüllt / unknown": "No-Internet-Troubleshooting",
+      "Auszulösende Regel": "eduroam_no_internet_after_connection",
+      "Ziel / Post-Condition": "internet_access_available=true",
+      "Notiz": "Nach Verbindung separates Internet prüfen"
+    },
+    {
+      "Schritt": 13,
+      "Prüfung / Condition": "user_problem_resolved=true",
+      "Wenn erfüllt": "Anfrage abschließen",
+      "Wenn nicht erfüllt / unknown": "Support oder weiterer Reparaturschritt",
+      "Auszulösende Regel": "eduroam_check_solution / eduroam_escalate_to_support",
+      "Ziel / Post-Condition": "user_request_answered=true oder needs_human_support=true",
+      "Notiz": "Zielzustand/sauberer Abschluss"
+    }
+  ]
+}

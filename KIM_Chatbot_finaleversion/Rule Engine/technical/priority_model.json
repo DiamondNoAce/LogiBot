@@ -1,0 +1,54 @@
+{
+  "source": "Eduroam_Regeln_technische_Sicht.xlsx",
+  "items": [
+    {
+      "Prioritätsbereich": "1–9",
+      "Regeltyp": "Sicherheitskritische Regeln",
+      "Beispiele": "eduroam_certificate_warning",
+      "Warum diese Reihenfolge?": "Sicherheitshinweise dürfen nicht von allgemeinen Regeln überdeckt werden",
+      "Debugger-Hinweis": "Warnen, wenn allgemeine Regel darüber liegt"
+    },
+    {
+      "Prioritätsbereich": "10–39",
+      "Regeltyp": "Account-/Zugangsdaten- und spezifische Fehlerregeln",
+      "Beispiele": "Account prüfen, Benutzername, Passwort, Passwortänderung",
+      "Warum diese Reihenfolge?": "Ohne Zugangsdaten ist Setup nicht sinnvoll",
+      "Debugger-Hinweis": "Blocker-Regeln müssen vor Setup liegen"
+    },
+    {
+      "Prioritätsbereich": "40–59",
+      "Regeltyp": "Netzwerk-Preconditions",
+      "Beispiele": "WLAN vorhanden, WLAN aktiviert, Eduroam sichtbar",
+      "Warum diese Reihenfolge?": "Erst Netzwerksituation klären, dann Profil einrichten",
+      "Debugger-Hinweis": "Setup-Regeln dürfen diese nicht überspringen"
+    },
+    {
+      "Prioritätsbereich": "60–79",
+      "Regeltyp": "Setup- und Router-Regeln",
+      "Beispiele": "Profile Router, OS-spezifische Setups, 2FA",
+      "Warum diese Reihenfolge?": "Führen Nutzer zur passenden Anleitung",
+      "Debugger-Hinweis": "Router darf spezifische OS-Regeln nicht überschreiben"
+    },
+    {
+      "Prioritätsbereich": "80–119",
+      "Regeltyp": "Verbindungstest und Troubleshooting",
+      "Beispiele": "Verbindungstest, Verbindungsfehler, kein Internet, Abbrüche",
+      "Warum diese Reihenfolge?": "Nach Einrichtung prüfen und reparieren",
+      "Debugger-Hinweis": "Spezifische Fehlertypen vor allgemeinen Troubleshooting-Regeln"
+    },
+    {
+      "Prioritätsbereich": "120–159",
+      "Regeltyp": "Reparatur, Abschluss, Eskalation",
+      "Beispiele": "Neustart, Lösung prüfen, Support, Finish",
+      "Warum diese Reihenfolge?": "Sauberer Abschluss erst nach Lösung oder Eskalation",
+      "Debugger-Hinweis": "user_request_answered nur nach user_problem_resolved oder Eskalation"
+    },
+    {
+      "Prioritätsbereich": "900+",
+      "Regeltyp": "Fallback-Regeln",
+      "Beispiele": "eduroam_fallback",
+      "Warum diese Reihenfolge?": "Greift nur, wenn nichts Spezifisches passt",
+      "Debugger-Hinweis": "Muss immer ganz unten stehen"
+    }
+  ]
+}

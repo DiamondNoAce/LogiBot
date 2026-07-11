@@ -1,0 +1,55 @@
+{
+  "source": "Regeln_vollständig_neu.xlsx",
+  "items": [
+    {
+      "Namespace": "core",
+      "Anzeigename": "Gemeinsamer Wissenskern",
+      "Typ": "global",
+      "Inhalt / Unterbereiche": "Account, Zugangsdaten, Nutzerrolle, Gerät, Campus-Kontext, Netzwerk, Status",
+      "Aktiv?": "Ja",
+      "Fachliche Notiz": "Dient als wiederverwendbare Grundlage für Eduroam, VPN und MFA",
+      "Zentrale Facts": "account_exists, username_known, password_known, on_campus",
+      "Zentrale Funktionen": "core_check_account_exists, core_check_credentials"
+    },
+    {
+      "Namespace": "service.eduroam",
+      "Anzeigename": "Eduroam",
+      "Typ": "service",
+      "Inhalt / Unterbereiche": "Campusbezug, WLAN, sichtbares Eduroam-Netz, Profil, Zertifikat, Verbindung, Fehlerbilder",
+      "Aktiv?": "Ja",
+      "Fachliche Notiz": "Eduroam ist standortbezogen; Zertifikat ist nur für Eduroam relevant",
+      "Zentrale Facts": "eduroam_visible, eduroam_profile_configured, eduroam_certificate_warning_shown",
+      "Zentrale Funktionen": "eduroam_setup_router, eduroam_try_connect"
+    },
+    {
+      "Namespace": "service.vpn",
+      "Anzeigename": "VPN",
+      "Typ": "service",
+      "Inhalt / Unterbereiche": "Erstinstallation am Campus über Eduroam-WLAN oder LAN, Client, Profil/Gateway, MFA, Tunnel, interne Dienste",
+      "Aktiv?": "Ja",
+      "Fachliche Notiz": "VPN benötigt MFA; Erstinstallation braucht Campusnetz",
+      "Zentrale Facts": "vpn_client_installed, vpn_profile_configured, vpn_tunnel_status",
+      "Zentrale Funktionen": "vpn_install_client, vpn_authenticate, vpn_tunnel_attempt"
+    },
+    {
+      "Namespace": "service.mfa",
+      "Anzeigename": "MFA",
+      "Typ": "service",
+      "Inhalt / Unterbereiche": "MFA-Registrierung, Authenticator-App, 30-Sekunden-Code, Codeprüfung, Gerätewechsel",
+      "Aktiv?": "Ja",
+      "Fachliche Notiz": "Keine Push-Benachrichtigung; Authenticator-Code ändert sich alle 30 Sekunden",
+      "Zentrale Facts": "mfa_enrolled, mfa_totp_available, mfa_code_status",
+      "Zentrale Funktionen": "mfa_check_enrollment, mfa_validate_totp_code"
+    },
+    {
+      "Namespace": "service.support",
+      "Anzeigename": "Support / Eskalation",
+      "Typ": "service",
+      "Inhalt / Unterbereiche": "Supportverweis, KIM/IT-Service, Eskalationsgrund, Abschluss trotz ungelöstem Problem",
+      "Aktiv?": "Ja",
+      "Fachliche Notiz": "Wird genutzt, wenn Lösung nicht möglich ist oder Voraussetzungen fehlen",
+      "Zentrale Facts": "needs_human_support, user_request_answered",
+      "Zentrale Funktionen": "support_escalate"
+    }
+  ]
+}

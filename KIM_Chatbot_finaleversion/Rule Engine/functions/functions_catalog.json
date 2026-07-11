@@ -1,0 +1,652 @@
+{
+  "functions": [
+    {
+      "id": "core_route_to_service",
+      "display_name": "Thema erkennen",
+      "namespace": "core",
+      "knowledge_area": "Core",
+      "category": "Routing",
+      "function_type": "Routing",
+      "purpose": "Erkennt Eduroam/VPN/MFA und startet passende Regelkette.",
+      "input_facts": "Nutzeranfrage",
+      "sets_facts": "service",
+      "response_text": "Erkennt Eduroam/VPN/MFA und startet passende Regelkette.",
+      "used_in_rule": "core_route_topic",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "core_route_to_service"
+      }
+    },
+    {
+      "id": "core_guest_access_help",
+      "display_name": "Gastzugang prüfen",
+      "namespace": "core",
+      "knowledge_area": "Core",
+      "category": "Precondition",
+      "function_type": "Precondition",
+      "purpose": "Prüft, ob Gäste einen Zugang besitzen; sonst KIM-Verweis.",
+      "input_facts": "user_role, guest_access_exists",
+      "sets_facts": "needs_human_support",
+      "response_text": "Prüft, ob Gäste einen Zugang besitzen; sonst KIM-Verweis.",
+      "used_in_rule": "core_check_guest_access",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "core_guest_access_help"
+      }
+    },
+    {
+      "id": "core_account_check",
+      "display_name": "Uni-Account prüfen",
+      "namespace": "core",
+      "knowledge_area": "Core",
+      "category": "Precondition",
+      "function_type": "Precondition",
+      "purpose": "Prüft, ob ein aktiver Uni-Account vorhanden ist.",
+      "input_facts": "service, account_exists, account_active",
+      "sets_facts": "account_exists, account_active",
+      "response_text": "Prüft, ob ein aktiver Uni-Account vorhanden ist.",
+      "used_in_rule": "core_check_account_exists",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "core_account_check"
+      }
+    },
+    {
+      "id": "core_credentials_help",
+      "display_name": "Zugangsdaten prüfen",
+      "namespace": "core",
+      "knowledge_area": "Core",
+      "category": "Precondition",
+      "function_type": "Precondition",
+      "purpose": "Hilft bei Benutzerkennung/Passwort oder Reset.",
+      "input_facts": "username_known, password_known",
+      "sets_facts": "username_known, password_known",
+      "response_text": "Hilft bei Benutzerkennung/Passwort oder Reset.",
+      "used_in_rule": "core_check_credentials",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "core_credentials_help"
+      }
+    },
+    {
+      "id": "core_password_change_router",
+      "display_name": "Folgen einer Passwortänderung prüfen",
+      "namespace": "core",
+      "knowledge_area": "Core",
+      "category": "Troubleshooting",
+      "function_type": "Troubleshooting",
+      "purpose": "Leitet zu Eduroam-/VPN-Folgen nach Passwortänderung.",
+      "input_facts": "password_recently_changed",
+      "sets_facts": "stored_credentials_may_be_invalid",
+      "response_text": "Leitet zu Eduroam-/VPN-Folgen nach Passwortänderung.",
+      "used_in_rule": "core_password_changed_router",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "core_password_change_router"
+      }
+    },
+    {
+      "id": "mfa_requirement_info",
+      "display_name": "MFA-Pflicht für VPN erklären",
+      "namespace": "service.mfa",
+      "knowledge_area": "MFA",
+      "category": "Precondition",
+      "function_type": "Precondition",
+      "purpose": "Erklärt, dass MFA für VPN erforderlich ist.",
+      "input_facts": "service=vpn",
+      "sets_facts": "vpn_mfa_required",
+      "response_text": "Erklärt, dass MFA für VPN erforderlich ist.",
+      "used_in_rule": "mfa_vpn_requirement",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "mfa_requirement_info"
+      }
+    },
+    {
+      "id": "mfa_setup_authenticator",
+      "display_name": "Authenticator-App einrichten",
+      "namespace": "service.mfa",
+      "knowledge_area": "MFA",
+      "category": "Setup",
+      "function_type": "Setup",
+      "purpose": "Einrichtung der Authenticator-App mit zeitbasiertem Code.",
+      "input_facts": "account_exists, username_known, password_known",
+      "sets_facts": "mfa_enrolled, mfa_totp_available",
+      "response_text": "Einrichtung der Authenticator-App mit zeitbasiertem Code.",
+      "used_in_rule": "mfa_check_enrollment",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "mfa_setup_authenticator"
+      }
+    },
+    {
+      "id": "mfa_validate_totp_code",
+      "display_name": "30-Sekunden-Code prüfen",
+      "namespace": "service.mfa",
+      "knowledge_area": "MFA",
+      "category": "Auth",
+      "function_type": "Auth",
+      "purpose": "Prüft den TOTP-Code aus der App. Keine Push-Benachrichtigung.",
+      "input_facts": "mfa_totp_available, mfa_code_status",
+      "sets_facts": "mfa_code_status",
+      "response_text": "Prüft den TOTP-Code aus der App. Keine Push-Benachrichtigung.",
+      "used_in_rule": "mfa_check_totp_code",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "mfa_validate_totp_code"
+      }
+    },
+    {
+      "id": "mfa_troubleshoot_code",
+      "display_name": "MFA-Code/App-Problem beheben",
+      "namespace": "service.mfa",
+      "knowledge_area": "MFA",
+      "category": "Troubleshooting",
+      "function_type": "Troubleshooting",
+      "purpose": "Hilft bei abgelaufenem/ungültigem Code oder App/Geräteproblem.",
+      "input_facts": "mfa_code_status, mfa_device_available",
+      "sets_facts": "mfa_code_status, needs_human_support",
+      "response_text": "Hilft bei abgelaufenem/ungültigem Code oder App/Geräteproblem.",
+      "used_in_rule": "mfa_troubleshoot_code",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "mfa_troubleshoot_code"
+      }
+    },
+    {
+      "id": "eduroam_campus_location_help",
+      "display_name": "Eduroam-Standort prüfen",
+      "namespace": "service.eduroam",
+      "knowledge_area": "Eduroam",
+      "category": "Precondition",
+      "function_type": "Precondition",
+      "purpose": "Erklärt, dass Eduroam am Campus bzw. Eduroam-Standort sichtbar/nutzbar ist.",
+      "input_facts": "on_campus",
+      "sets_facts": "on_campus",
+      "response_text": "Erklärt, dass Eduroam am Campus bzw. Eduroam-Standort sichtbar/nutzbar ist.",
+      "used_in_rule": "eduroam_check_campus_context",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "eduroam_campus_location_help"
+      }
+    },
+    {
+      "id": "eduroam_wifi_hardware_check",
+      "display_name": "WLAN-Hardware prüfen",
+      "namespace": "service.eduroam",
+      "knowledge_area": "Eduroam",
+      "category": "Precondition",
+      "function_type": "Precondition",
+      "purpose": "Prüft, ob WLAN am Gerät vorhanden ist.",
+      "input_facts": "wifi_available",
+      "sets_facts": "wifi_available",
+      "response_text": "Prüft, ob WLAN am Gerät vorhanden ist.",
+      "used_in_rule": "eduroam_check_wifi_available",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "eduroam_wifi_hardware_check"
+      }
+    },
+    {
+      "id": "eduroam_enable_wifi",
+      "display_name": "WLAN aktivieren",
+      "namespace": "service.eduroam",
+      "knowledge_area": "Eduroam",
+      "category": "Precondition",
+      "function_type": "Precondition",
+      "purpose": "Leitet an, WLAN einzuschalten und die WLAN-Liste zu aktualisieren.",
+      "input_facts": "wifi_enabled",
+      "sets_facts": "wifi_enabled",
+      "response_text": "Leitet an, WLAN einzuschalten und die WLAN-Liste zu aktualisieren.",
+      "used_in_rule": "eduroam_check_wifi_enabled",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "eduroam_enable_wifi"
+      }
+    },
+    {
+      "id": "eduroam_troubleshoot_not_visible",
+      "display_name": "Eduroam-Netz sichtbar prüfen",
+      "namespace": "service.eduroam",
+      "knowledge_area": "Eduroam",
+      "category": "Troubleshooting",
+      "function_type": "Troubleshooting",
+      "purpose": "Hilft, wenn Eduroam nicht angezeigt wird.",
+      "input_facts": "on_campus, wifi_enabled, eduroam_visible",
+      "sets_facts": "eduroam_visible, needs_human_support",
+      "response_text": "Hilft, wenn Eduroam nicht angezeigt wird.",
+      "used_in_rule": "eduroam_check_visible_network",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "eduroam_troubleshoot_not_visible"
+      }
+    },
+    {
+      "id": "eduroam_setup_router",
+      "display_name": "Eduroam-Einrichtung nach Betriebssystem wählen",
+      "namespace": "service.eduroam",
+      "knowledge_area": "Eduroam",
+      "category": "Routing",
+      "function_type": "Routing",
+      "purpose": "Fragt Betriebssystem ab und verzweigt in OS-Anleitung.",
+      "input_facts": "operating_system, eduroam_profile_configured",
+      "sets_facts": "operating_system",
+      "response_text": "Fragt Betriebssystem ab und verzweigt in OS-Anleitung.",
+      "used_in_rule": "eduroam_profile_router",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "eduroam_setup_router"
+      }
+    },
+    {
+      "id": "eduroam_setup_windows",
+      "display_name": "Eduroam unter Windows einrichten",
+      "namespace": "service.eduroam",
+      "knowledge_area": "Eduroam",
+      "category": "Setup",
+      "function_type": "Setup",
+      "purpose": "OS-spezifische Eduroam-Anleitung.",
+      "input_facts": "operating_system=windows",
+      "sets_facts": "eduroam_profile_configured",
+      "response_text": "OS-spezifische Eduroam-Anleitung.",
+      "used_in_rule": "eduroam_setup_windows",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "eduroam_setup_windows"
+      }
+    },
+    {
+      "id": "eduroam_setup_macos",
+      "display_name": "Eduroam unter macOS einrichten",
+      "namespace": "service.eduroam",
+      "knowledge_area": "Eduroam",
+      "category": "Setup",
+      "function_type": "Setup",
+      "purpose": "OS-spezifische Eduroam-Anleitung.",
+      "input_facts": "operating_system=macos",
+      "sets_facts": "eduroam_profile_configured",
+      "response_text": "OS-spezifische Eduroam-Anleitung.",
+      "used_in_rule": "eduroam_setup_macos",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "eduroam_setup_macos"
+      }
+    },
+    {
+      "id": "eduroam_setup_ios",
+      "display_name": "Eduroam unter iOS/iPadOS einrichten",
+      "namespace": "service.eduroam",
+      "knowledge_area": "Eduroam",
+      "category": "Setup",
+      "function_type": "Setup",
+      "purpose": "OS-spezifische Eduroam-Anleitung.",
+      "input_facts": "operating_system=ios",
+      "sets_facts": "eduroam_profile_configured",
+      "response_text": "OS-spezifische Eduroam-Anleitung.",
+      "used_in_rule": "eduroam_setup_ios",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "eduroam_setup_ios"
+      }
+    },
+    {
+      "id": "eduroam_setup_android",
+      "display_name": "Eduroam unter Android einrichten",
+      "namespace": "service.eduroam",
+      "knowledge_area": "Eduroam",
+      "category": "Setup",
+      "function_type": "Setup",
+      "purpose": "OS-spezifische Eduroam-Anleitung.",
+      "input_facts": "operating_system=android",
+      "sets_facts": "eduroam_profile_configured",
+      "response_text": "OS-spezifische Eduroam-Anleitung.",
+      "used_in_rule": "eduroam_setup_android",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "eduroam_setup_android"
+      }
+    },
+    {
+      "id": "eduroam_setup_linux",
+      "display_name": "Eduroam unter Linux einrichten",
+      "namespace": "service.eduroam",
+      "knowledge_area": "Eduroam",
+      "category": "Setup",
+      "function_type": "Setup",
+      "purpose": "OS-spezifische Eduroam-Anleitung.",
+      "input_facts": "operating_system=linux",
+      "sets_facts": "eduroam_profile_configured",
+      "response_text": "OS-spezifische Eduroam-Anleitung.",
+      "used_in_rule": "eduroam_setup_linux",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "eduroam_setup_linux"
+      }
+    },
+    {
+      "id": "eduroam_troubleshoot_certificate_warning",
+      "display_name": "Eduroam-Zertifikatswarnung prüfen",
+      "namespace": "service.eduroam",
+      "knowledge_area": "Eduroam",
+      "category": "Troubleshooting",
+      "function_type": "Troubleshooting",
+      "purpose": "Sicherheitskritische Warnung nur für Eduroam.",
+      "input_facts": "eduroam_certificate_warning_shown",
+      "sets_facts": "eduroam_certificate_checked, eduroam_profile_configured",
+      "response_text": "Sicherheitskritische Warnung nur für Eduroam.",
+      "used_in_rule": "security_eduroam_certificate_warning",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "eduroam_troubleshoot_certificate_warning"
+      }
+    },
+    {
+      "id": "eduroam_try_connect",
+      "display_name": "Eduroam-Verbindung testen",
+      "namespace": "service.eduroam",
+      "knowledge_area": "Eduroam",
+      "category": "Connection",
+      "function_type": "Connection",
+      "purpose": "Testet die Verbindung nach Einrichtung.",
+      "input_facts": "eduroam_profile_configured",
+      "sets_facts": "eduroam_connection_status",
+      "response_text": "Testet die Verbindung nach Einrichtung.",
+      "used_in_rule": "eduroam_connection_attempt",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "eduroam_try_connect"
+      }
+    },
+    {
+      "id": "eduroam_troubleshoot_auth_or_password",
+      "display_name": "Eduroam-Login/Passwortfehler beheben",
+      "namespace": "service.eduroam",
+      "knowledge_area": "Eduroam",
+      "category": "Troubleshooting",
+      "function_type": "Troubleshooting",
+      "purpose": "Prüft Zugangsdaten, alte gespeicherte Daten und Profil.",
+      "input_facts": "eduroam_connection_status, problem_type",
+      "sets_facts": "credentials_checked, profile_recreation_required",
+      "response_text": "Prüft Zugangsdaten, alte gespeicherte Daten und Profil.",
+      "used_in_rule": "eduroam_connection_failed",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "eduroam_troubleshoot_auth_or_password"
+      }
+    },
+    {
+      "id": "eduroam_troubleshoot_no_internet",
+      "display_name": "Eduroam verbunden, aber kein Internet",
+      "namespace": "service.eduroam",
+      "knowledge_area": "Eduroam",
+      "category": "Troubleshooting",
+      "function_type": "Troubleshooting",
+      "purpose": "Behandelt No-Internet nach erfolgreicher WLAN-Verbindung.",
+      "input_facts": "eduroam_connection_status, eduroam_internet_access",
+      "sets_facts": "eduroam_internet_access",
+      "response_text": "Behandelt No-Internet nach erfolgreicher WLAN-Verbindung.",
+      "used_in_rule": "eduroam_check_internet",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "eduroam_troubleshoot_no_internet"
+      }
+    },
+    {
+      "id": "vpn_campus_network_help",
+      "display_name": "Campusnetz für VPN-Erstinstallation prüfen",
+      "namespace": "service.vpn",
+      "knowledge_area": "VPN",
+      "category": "Precondition",
+      "function_type": "Precondition",
+      "purpose": "Prüft, ob Eduroam-WLAN oder Campus-LAN für Erstinstallation verfügbar ist.",
+      "input_facts": "on_campus, campus_wifi_available, campus_lan_available",
+      "sets_facts": "vpn_installation_allowed",
+      "response_text": "Prüft, ob Eduroam-WLAN oder Campus-LAN für Erstinstallation verfügbar ist.",
+      "used_in_rule": "vpn_check_installation_campus_network",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "vpn_campus_network_help"
+      }
+    },
+    {
+      "id": "vpn_install_client_os_specific",
+      "display_name": "VPN-Client installieren",
+      "namespace": "service.vpn",
+      "knowledge_area": "VPN",
+      "category": "Setup",
+      "function_type": "Setup",
+      "purpose": "OS-spezifische Installation des VPN-Clients.",
+      "input_facts": "on_campus, operating_system",
+      "sets_facts": "vpn_client_installed, vpn_installation_status",
+      "response_text": "OS-spezifische Installation des VPN-Clients.",
+      "used_in_rule": "vpn_install_client",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "vpn_install_client_os_specific"
+      }
+    },
+    {
+      "id": "vpn_check_client_health",
+      "display_name": "VPN-Client prüfen",
+      "namespace": "service.vpn",
+      "knowledge_area": "VPN",
+      "category": "Precondition",
+      "function_type": "Precondition",
+      "purpose": "Prüft, ob Client nach Installation funktioniert.",
+      "input_facts": "vpn_client_installed, vpn_client_healthy",
+      "sets_facts": "vpn_client_healthy",
+      "response_text": "Prüft, ob Client nach Installation funktioniert.",
+      "used_in_rule": "vpn_check_client_healthy",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "vpn_check_client_health"
+      }
+    },
+    {
+      "id": "vpn_configure_profile_gateway",
+      "display_name": "VPN-Profil/Gateway konfigurieren",
+      "namespace": "service.vpn",
+      "knowledge_area": "VPN",
+      "category": "Setup",
+      "function_type": "Setup",
+      "purpose": "Richtet Profil/Gateway für VPN ein.",
+      "input_facts": "vpn_client_healthy, vpn_profile_configured",
+      "sets_facts": "vpn_profile_configured",
+      "response_text": "Richtet Profil/Gateway für VPN ein.",
+      "used_in_rule": "vpn_profile_router",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "vpn_configure_profile_gateway"
+      }
+    },
+    {
+      "id": "vpn_authenticate_with_mfa",
+      "display_name": "VPN-Login mit MFA-Code prüfen",
+      "namespace": "service.vpn",
+      "knowledge_area": "VPN",
+      "category": "Auth",
+      "function_type": "Auth",
+      "purpose": "VPN-Login mit Zugangsdaten und gültigem 30-Sekunden-Code.",
+      "input_facts": "account_exists, credentials, mfa_code_status",
+      "sets_facts": "vpn_auth_status",
+      "response_text": "VPN-Login mit Zugangsdaten und gültigem 30-Sekunden-Code.",
+      "used_in_rule": "vpn_authenticate",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "vpn_authenticate_with_mfa"
+      }
+    },
+    {
+      "id": "vpn_connect_tunnel",
+      "display_name": "VPN-Tunnel aufbauen",
+      "namespace": "service.vpn",
+      "knowledge_area": "VPN",
+      "category": "Connection",
+      "function_type": "Connection",
+      "purpose": "Baut VPN-Tunnel auf und prüft Status.",
+      "input_facts": "vpn_auth_status",
+      "sets_facts": "vpn_tunnel_status",
+      "response_text": "Baut VPN-Tunnel auf und prüft Status.",
+      "used_in_rule": "vpn_tunnel_attempt",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "vpn_connect_tunnel"
+      }
+    },
+    {
+      "id": "vpn_check_internal_resources",
+      "display_name": "Interne Dienste prüfen",
+      "namespace": "service.vpn",
+      "knowledge_area": "VPN",
+      "category": "Connection",
+      "function_type": "Connection",
+      "purpose": "Prüft, ob die benötigten internen Dienste erreichbar sind.",
+      "input_facts": "vpn_tunnel_status",
+      "sets_facts": "vpn_resource_accessible",
+      "response_text": "Prüft, ob die benötigten internen Dienste erreichbar sind.",
+      "used_in_rule": "vpn_check_resource_access",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "vpn_check_internal_resources"
+      }
+    },
+    {
+      "id": "vpn_troubleshoot_installation",
+      "display_name": "VPN-Installationsproblem beheben",
+      "namespace": "service.vpn",
+      "knowledge_area": "VPN",
+      "category": "Troubleshooting",
+      "function_type": "Troubleshooting",
+      "purpose": "Hilft bei fehlgeschlagener Installation.",
+      "input_facts": "vpn_installation_status, problem_type",
+      "sets_facts": "vpn_client_installed",
+      "response_text": "Hilft bei fehlgeschlagener Installation.",
+      "used_in_rule": "vpn_troubleshoot_installation",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "vpn_troubleshoot_installation"
+      }
+    },
+    {
+      "id": "vpn_troubleshoot_auth_mfa",
+      "display_name": "VPN-Login oder MFA-Fehler beheben",
+      "namespace": "service.vpn",
+      "knowledge_area": "VPN",
+      "category": "Troubleshooting",
+      "function_type": "Troubleshooting",
+      "purpose": "Trennt Zugangsdaten- und MFA-Code-Fehler.",
+      "input_facts": "vpn_auth_status, mfa_code_status",
+      "sets_facts": "credentials_checked, mfa_code_status",
+      "response_text": "Trennt Zugangsdaten- und MFA-Code-Fehler.",
+      "used_in_rule": "vpn_troubleshoot_auth_mfa",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "vpn_troubleshoot_auth_mfa"
+      }
+    },
+    {
+      "id": "vpn_troubleshoot_tunnel_network",
+      "display_name": "VPN-Tunnel/Netzwerkfehler beheben",
+      "namespace": "service.vpn",
+      "knowledge_area": "VPN",
+      "category": "Troubleshooting",
+      "function_type": "Troubleshooting",
+      "purpose": "Hilft bei Timeout, Tunnel- oder Netzwerkfehlern.",
+      "input_facts": "vpn_tunnel_status, problem_type",
+      "sets_facts": "vpn_tunnel_status",
+      "response_text": "Hilft bei Timeout, Tunnel- oder Netzwerkfehlern.",
+      "used_in_rule": "vpn_troubleshoot_tunnel_network",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "vpn_troubleshoot_tunnel_network"
+      }
+    },
+    {
+      "id": "support_escalation_response",
+      "display_name": "An KIM/IT-Support verweisen",
+      "namespace": "service.support",
+      "knowledge_area": "Support",
+      "category": "Escalation",
+      "function_type": "Escalation",
+      "purpose": "Gibt Supportweg aus, wenn automatisierte Lösung nicht möglich ist.",
+      "input_facts": "needs_human_support",
+      "sets_facts": "user_request_answered",
+      "response_text": "Gibt Supportweg aus, wenn automatisierte Lösung nicht möglich ist.",
+      "used_in_rule": "support_escalate",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "support_escalation_response"
+      }
+    },
+    {
+      "id": "finish_resolved_response",
+      "display_name": "Anfrage erfolgreich abschließen",
+      "namespace": "core",
+      "knowledge_area": "Core",
+      "category": "Completion",
+      "function_type": "Completion",
+      "purpose": "Setzt erfolgreichen Abschluss.",
+      "input_facts": "user_problem_resolved",
+      "sets_facts": "user_request_answered",
+      "response_text": "Setzt erfolgreichen Abschluss.",
+      "used_in_rule": "finish_resolved",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 03_Funktionen_Antworten",
+      "technical_config": {
+        "source_action_id": "finish_resolved_response"
+      }
+    },
+    {
+      "id": "core_clarify_missing_facts",
+      "display_name": "core_clarify_missing_facts",
+      "namespace": "core",
+      "knowledge_area": "Core",
+      "category": "Aus Regelverwaltung abgeleitet",
+      "function_type": "Antwortbaustein",
+      "purpose": "Aus der Regelverwaltung abgeleitete Funktion. Bitte fachlich mit Antworttext ergänzen.",
+      "input_facts": "",
+      "sets_facts": "",
+      "response_text": "core_clarify_missing_facts",
+      "used_in_rule": "service_fallback",
+      "active": true,
+      "source": "Regeln_vollständig_neu.xlsx / 04_Regelverwaltung",
+      "technical_config": {
+        "generated_from_rule_overview": true
+      }
+    }
+  ]
+}

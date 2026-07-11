@@ -1,0 +1,567 @@
+[
+  {
+    "id": "km.v2.source.intent_unknown",
+    "active": false,
+    "module": "knowledge_model_v2_core",
+    "rule_group": "core_source",
+    "description": "Aktualisiertes Wissensmodell: Zuerst Journey/Intent klären, wenn keine eindeutige Absicht erkannt wurde. (Deaktiviert, weil der globale Baustein global_source_journey_check dieselbe Rückfrage stellt.)",
+    "priority": 7,
+    "when": {
+      "any": [
+        {
+          "fact": "intent",
+          "operator": "is_unknown"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "unknown"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "intent",
+        "text": "Möchtest du etwas einrichten, ein Login-Problem lösen, dein Passwort ändern/zurücksetzen oder nur eine allgemeine Information?"
+      }
+    ],
+    "stop_after_match": false,
+    "knowledge_model_refs": [
+      "core.source"
+    ]
+  },
+  {
+    "id": "km.v2.credentials.password_changed_affects_network_profiles",
+    "active": true,
+    "module": "knowledge_model_v2_core",
+    "rule_group": "core_credentials",
+    "description": "Passwortänderung wirkt im Wissensmodell auf eduroam-Profile und VPN-Loginpfade.",
+    "priority": 13,
+    "when": {
+      "all": [
+        {
+          "fact": "password_recently_changed",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "recommend",
+        "text": "Du hast dein Passwort geändert. Prüfe bei eduroam und VPN gespeicherte Zugangsdaten. Bei eduroam kann es nötig sein, das alte Profil zu entfernen und das CAT-Profil neu einzurichten; bei VPN müssen die neuen Zugangsdaten im Login verwendet werden."
+      },
+      {
+        "type": "set_fact",
+        "fact": "saved_old_credentials",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "knowledge_model_refs": [
+      "core.credentials",
+      "service.eduroam.problem",
+      "service.vpn.problem"
+    ]
+  },
+  {
+    "id": "km.v2.mfa.totp_code_missing_or_invalid",
+    "active": true,
+    "module": "knowledge_model_v2_mfa",
+    "rule_group": "mfa_code",
+    "description": "MFA im aktualisierten Modell: keine Push-Benachrichtigung, sondern zeitbasierter Code. Fehlender/ungültiger Code führt zu MFA-Hilfe.",
+    "priority": 18,
+    "when": {
+      "any": [
+        {
+          "fact": "mfa_code_status",
+          "operator": "in",
+          "value": [
+            "missing",
+            "invalid",
+            "expired"
+          ]
+        },
+        {
+          "fact": "mfa_totp_available",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "mfa_problem_type",
+          "operator": "in",
+          "value": [
+            "no_code",
+            "code_invalid",
+            "code_expired"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "recommend",
+        "text": "Die MFA nutzt einen zeitbasierten Code aus der Authenticator-App. Prüfe, ob die Uhrzeit am Gerät korrekt ist und gib den aktuell angezeigten Code ein. Wenn kein Code mehr verfügbar ist, ist eine Recovery- oder Neuregistrierung nötig."
+      },
+      {
+        "type": "set_fact",
+        "fact": "mfa_recovery_required",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "knowledge_model_refs": [
+      "service.mfa.app",
+      "service.mfa.challenge",
+      "service.mfa.recovery"
+    ]
+  },
+  {
+    "id": "km.v2.mfa.device_lost_requires_recovery",
+    "active": true,
+    "module": "knowledge_model_v2_mfa",
+    "rule_group": "mfa_recovery",
+    "description": "Gerät verloren oder App nicht verfügbar führt im Modell über Recovery zur Neuregistrierung.",
+    "priority": 17,
+    "when": {
+      "any": [
+        {
+          "fact": "mfa_device_lost",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_problem_type",
+          "operator": "in",
+          "value": [
+            "lost_device",
+            "app_unavailable"
+          ]
+        },
+        {
+          "fact": "mfa_app_available",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "recommend",
+        "text": "Wenn das Gerät mit der Authenticator-App verloren ist oder die App nicht mehr verfügbar ist, musst du den MFA-Zugang über Recovery-Code oder den KIM-IT-Service-Desk neu einrichten."
+      },
+      {
+        "type": "set_fact",
+        "fact": "mfa_setup_required",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "mfa_recovery_required",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "knowledge_model_refs": [
+      "service.mfa.problem",
+      "service.mfa.recovery",
+      "service.mfa.enrollment"
+    ]
+  },
+  {
+    "id": "km.v2.vpn.install_requires_campus_or_eduroam",
+    "active": true,
+    "module": "knowledge_model_v2_vpn",
+    "rule_group": "vpn_installation",
+    "description": "VPN-Ersteinrichtung benötigt laut Wissensmodell Campus-WLAN oder vorhandene eduroam-/LAN-Verbindung.",
+    "priority": 21,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "campus_network_available",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "vpn_client_installed",
+          "operator": "in",
+          "value": [
+            false,
+            "unknown"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "campus_network_available",
+        "text": "Bist du für die VPN-Ersteinrichtung am Campus oder über ein geeignetes Uni-Netz verbunden?"
+      },
+      {
+        "type": "recommend",
+        "text": "Für die VPN-Ersteinrichtung wird ein Uni-/Campus-Kontext benötigt. Nutze am Campus LAN oder eduroam; außerhalb kann die Ersteinrichtung je nach Stand nicht möglich sein."
+      }
+    ],
+    "stop_after_match": false,
+    "knowledge_model_refs": [
+      "core.network_context",
+      "service.vpn.install"
+    ]
+  },
+  {
+    "id": "km.v2.vpn.login_requires_totp_mfa",
+    "active": true,
+    "module": "knowledge_model_v2_vpn",
+    "rule_group": "vpn_mfa",
+    "description": "VPN-Login führt über MFA-Challenge mit zeitbasiertem Code zum Tunnelstatus.",
+    "priority": 23,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "login_form_requested",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "not_equals",
+          "value": "connected"
+        }
+      ],
+      "any": [
+        {
+          "fact": "mfa_challenge_approved",
+          "operator": "is_unknown"
+        },
+        {
+          "fact": "mfa_challenge_approved",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "mfa_challenge_approved",
+        "text": "Konntest du beim VPN-Login den aktuellen MFA-Code aus deiner Authenticator-App eingeben?"
+      },
+      {
+        "type": "recommend",
+        "text": "Der VPN-Login benötigt nach Benutzername und Passwort den zeitbasierten MFA-Code. Ohne gültigen Code kann der VPN-Tunnel nicht aufgebaut werden."
+      }
+    ],
+    "stop_after_match": false,
+    "knowledge_model_refs": [
+      "service.mfa.challenge",
+      "service.vpn.auth",
+      "service.vpn.tunnel"
+    ]
+  },
+  {
+    "id": "km.v2.vpn.client_or_gateway_problem",
+    "active": true,
+    "module": "knowledge_model_v2_vpn",
+    "rule_group": "vpn_client",
+    "description": "Client-, Gateway- oder Profilprobleme werden vor Login/Tunnel geprüft.",
+    "priority": 22,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        }
+      ],
+      "any": [
+        {
+          "fact": "vpn_client_version_healthy",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "vpn_gateway_profile_valid",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "vpn_client_problem_type",
+          "operator": "not_in",
+          "value": [
+            "unknown",
+            null
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "recommend",
+        "text": "Prüfe zuerst den VPN-Client und das Gateway-/Profil. Aktualisiere den Cisco/Secure-Client, kontrolliere den VPN-Server bzw. das Profil und starte den Client danach neu."
+      }
+    ],
+    "stop_after_match": false,
+    "knowledge_model_refs": [
+      "service.vpn.client",
+      "service.vpn.profile",
+      "service.vpn.problem"
+    ]
+  },
+  {
+    "id": "km.v2.vpn.tunnel_connected_resource_denied",
+    "active": true,
+    "module": "knowledge_model_v2_vpn",
+    "rule_group": "vpn_resources",
+    "description": "Tunnel verbunden, aber interne Ressource nicht erreichbar: Berechtigung, Netzwerk oder Support prüfen.",
+    "priority": 25,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_tunnel_status",
+          "operator": "equals",
+          "value": "connected"
+        },
+        {
+          "fact": "internal_resource_accessible",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "recommend",
+        "text": "Der VPN-Tunnel scheint verbunden zu sein, aber die interne Ressource ist nicht erreichbar. Prüfe die genaue URL/Ressource, mögliche Berechtigungen und ob der Dienst intern verfügbar ist. Falls es weiterhin nicht funktioniert, ist Support oder eine Berechtigungsprüfung nötig."
+      },
+      {
+        "type": "set_fact",
+        "fact": "vpn_permission_required",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "needs_human_support",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "knowledge_model_refs": [
+      "service.vpn.tunnel",
+      "service.vpn.resources",
+      "service.support.human"
+    ]
+  },
+  {
+    "id": "km.v2.eduroam.campus_or_wlan_required_for_visibility",
+    "active": true,
+    "module": "knowledge_model_v2_eduroam",
+    "rule_group": "eduroam_visibility",
+    "description": "eduroam-Sichtbarkeit hängt am Campus-/WLAN-Kontext.",
+    "priority": 30,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "eduroam_problem_type",
+          "operator": "equals",
+          "value": "not_visible"
+        },
+        {
+          "fact": "problem_type",
+          "operator": "equals",
+          "value": "eduroam_not_visible"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "campus_network_available",
+        "text": "Bist du gerade an einem Standort, an dem eduroam ausgestrahlt wird, und ist WLAN am Gerät aktiviert?"
+      },
+      {
+        "type": "recommend",
+        "text": "Wenn eduroam nicht sichtbar ist, prüfe zuerst WLAN am Gerät und ob du dich an einem eduroam-Standort befindest. Für die Einrichtung brauchst du zusätzlich eine Internetverbindung für den CAT-Installer."
+      }
+    ],
+    "stop_after_match": false,
+    "knowledge_model_refs": [
+      "service.eduroam.campus",
+      "service.eduroam.ssid"
+    ]
+  },
+  {
+    "id": "km.v2.eduroam.profile_missing_or_invalid",
+    "active": true,
+    "module": "knowledge_model_v2_eduroam",
+    "rule_group": "eduroam_profile",
+    "description": "Fehlendes oder ungültiges CAT-Profil führt zum Installations-/Profilpfad.",
+    "priority": 31,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        }
+      ],
+      "any": [
+        {
+          "fact": "eduroam_profile_missing",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_profile_status",
+          "operator": "in",
+          "value": [
+            "missing",
+            "invalid",
+            "outdated"
+          ]
+        },
+        {
+          "fact": "eduroam_profile_configured",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "recommend",
+        "text": "Das eduroam-Profil fehlt oder ist ungültig. Öffne cat.eduroam.org, wähle Universität Hohenheim aus und installiere das passende Profil für dein Betriebssystem. Falls ein altes Profil vorhanden ist, entferne es vorher."
+      },
+      {
+        "type": "set_fact",
+        "fact": "profile_recreation_required",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "knowledge_model_refs": [
+      "service.eduroam.profile"
+    ]
+  },
+  {
+    "id": "km.v2.eduroam.certificate_warning_scoped",
+    "active": true,
+    "module": "knowledge_model_v2_eduroam",
+    "rule_group": "eduroam_certificate",
+    "description": "Zertifikatswarnung wird als eduroam-spezifischer Scope modelliert und muss vom CAT-Profil unterschieden werden.",
+    "priority": 32,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "certificate_warning_shown",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "recommend",
+        "text": "Wenn die Sicherheits- oder Zertifikatswarnung während der offiziellen eduroam-CAT-Installation erscheint und Universität Hohenheim ausgewählt wurde, gehört sie zum eduroam-Profil. Prüfe trotzdem, dass der Installer wirklich von cat.eduroam.org stammt."
+      },
+      {
+        "type": "set_fact",
+        "fact": "eduroam_certificate_warning_scope",
+        "value": "eduroam_only"
+      }
+    ],
+    "stop_after_match": false,
+    "knowledge_model_refs": [
+      "service.eduroam.certificate"
+    ]
+  },
+  {
+    "id": "km.v2.eduroam.connected_no_internet_support_path",
+    "active": true,
+    "module": "knowledge_model_v2_eduroam",
+    "rule_group": "eduroam_connection",
+    "description": "eduroam verbunden, aber kein Internet: Statusziel und Supportpfad prüfen.",
+    "priority": 35,
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_connected",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "internet_access_available",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "recommend",
+        "text": "Du bist mit eduroam verbunden, hast aber keinen Internetzugriff. Schalte WLAN kurz aus und wieder ein, starte das Gerät neu und prüfe, ob das Profil korrekt installiert ist. Wenn das Problem bleibt, sollte der KIM-IT-Service-Desk kontaktiert werden."
+      },
+      {
+        "type": "set_fact",
+        "fact": "needs_human_support",
+        "value": true
+      }
+    ],
+    "stop_after_match": false,
+    "knowledge_model_refs": [
+      "service.eduroam.connection",
+      "service.support.human"
+    ]
+  }
+]

@@ -1,0 +1,124 @@
+{
+  "source": "Regeln_vollständig_neu.xlsx",
+  "items": [
+    {
+      "Prüfung": "1-9",
+      "Typ": "Sicherheitskritische Regeln",
+      "Beschreibung": "security_eduroam_certificate_warning",
+      "Warum wichtig": "Vor allgemeinen Regeln ausführen",
+      "Prüfhinweis": "Warnen, wenn eine allgemeinere Regel davor liegt"
+    },
+    {
+      "Prüfung": "10-29",
+      "Typ": "Core/Routing/Account/Zugangsdaten",
+      "Beschreibung": "core_route_topic, core_check_account_exists",
+      "Warum wichtig": "Gemeinsame Voraussetzungen vor Service-Logik klären",
+      "Prüfhinweis": "Setup-Regeln dürfen diese Voraussetzungen nicht überspringen"
+    },
+    {
+      "Prüfung": "30-39",
+      "Typ": "MFA für VPN",
+      "Beschreibung": "mfa_vpn_requirement, mfa_check_totp_code",
+      "Warum wichtig": "VPN-Authentifizierung braucht gültigen TOTP-Code",
+      "Prüfhinweis": "Push darf nicht als Methode modelliert werden"
+    },
+    {
+      "Prüfung": "40-59",
+      "Typ": "Eduroam Pre-Conditions",
+      "Beschreibung": "eduroam_check_campus_context, eduroam_check_visible_network",
+      "Warum wichtig": "Standort/WLAN/Sichtbarkeit vor Profil-Setup",
+      "Prüfhinweis": "Eduroam-Setup darf diese Checks nicht überspringen"
+    },
+    {
+      "Prüfung": "60-79",
+      "Typ": "Eduroam Setup",
+      "Beschreibung": "eduroam_profile_router, eduroam_setup_windows",
+      "Warum wichtig": "OS-spezifisches Setup",
+      "Prüfhinweis": "Router-Regel unter spezifischen Sicherheitsregeln"
+    },
+    {
+      "Prüfung": "80-119",
+      "Typ": "Eduroam Verbindung/Troubleshooting",
+      "Beschreibung": "eduroam_connection_attempt, eduroam_check_internet",
+      "Warum wichtig": "Verbindung/Internet separat prüfen",
+      "Prüfhinweis": "No-Internet nicht mit Auth-Fehler vermischen"
+    },
+    {
+      "Prüfung": "120-169",
+      "Typ": "VPN Installation/Auth/Tunnel",
+      "Beschreibung": "vpn_install_client, vpn_authenticate, vpn_tunnel_attempt",
+      "Warum wichtig": "Installation, Client, Profil, MFA, Tunnel, Ressourcen",
+      "Prüfhinweis": "VPN-Erstinstallation braucht Campusnetz"
+    },
+    {
+      "Prüfung": "180-199",
+      "Typ": "Abschluss/Eskalation",
+      "Beschreibung": "finish_resolved, support_escalate",
+      "Warum wichtig": "Lösung oder Supportverweis setzt Abschluss",
+      "Prüfhinweis": "user_request_answered nicht früher setzen"
+    },
+    {
+      "Prüfung": "999",
+      "Typ": "Fallback",
+      "Beschreibung": "service_fallback",
+      "Warum wichtig": "Nur wenn keine spezifischere Regel passt",
+      "Prüfhinweis": "Muss ganz unten bleiben"
+    },
+    {
+      "Prüfung": "Rule-ID eindeutig",
+      "Typ": "Jede Regel-ID darf nur einmal vorkommen",
+      "Beschreibung": "04_Regelverwaltung",
+      "Warum wichtig": null,
+      "Prüfhinweis": null
+    },
+    {
+      "Prüfung": "Action existiert",
+      "Typ": "Jede Action in Regeln muss in 03_Funktionen_Antworten existieren",
+      "Beschreibung": "04_Regelverwaltung / 03_Funktionen_Antworten",
+      "Warum wichtig": null,
+      "Prüfhinweis": null
+    },
+    {
+      "Prüfung": "Fact existiert",
+      "Typ": "Jeder Fact in Pre/Trigger/Post muss im Fact-Katalog existieren",
+      "Beschreibung": "02_Facts_Conditions / 05_Regelbedingungen",
+      "Warum wichtig": null,
+      "Prüfhinweis": null
+    },
+    {
+      "Prüfung": "Pre vor Trigger",
+      "Typ": "Pre-Conditions beschreiben Voraussetzungen; Trigger beschreibt Auslöser",
+      "Beschreibung": "04_Regelverwaltung",
+      "Warum wichtig": null,
+      "Prüfhinweis": null
+    },
+    {
+      "Prüfung": "Fallback ganz unten",
+      "Typ": "Fallback-Regeln mit Priorität 999 oder sehr niedriger Rangfolge",
+      "Beschreibung": "04_Regelverwaltung",
+      "Warum wichtig": null,
+      "Prüfhinweis": null
+    },
+    {
+      "Prüfung": "MFA ohne Push",
+      "Typ": "MFA nutzt nur TOTP-Code, der sich alle 30 Sekunden ändert",
+      "Beschreibung": "02_Facts_Conditions / 03_Funktionen_Antworten",
+      "Warum wichtig": null,
+      "Prüfhinweis": null
+    },
+    {
+      "Prüfung": "Eduroam-Zertifikat nur Eduroam",
+      "Typ": "Keine Regel darf Eduroam-Zertifikat als VPN-Voraussetzung verwenden",
+      "Beschreibung": "04_Regelverwaltung",
+      "Warum wichtig": null,
+      "Prüfhinweis": null
+    },
+    {
+      "Prüfung": "VPN-Erstinstallation Campusnetz",
+      "Typ": "VPN-Erstinstallation über Eduroam-WLAN oder Campus-LAN",
+      "Beschreibung": "06_Abläufe_Netz",
+      "Warum wichtig": null,
+      "Prüfhinweis": null
+    }
+  ]
+}

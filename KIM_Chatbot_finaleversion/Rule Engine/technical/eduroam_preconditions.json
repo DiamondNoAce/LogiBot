@@ -1,0 +1,176 @@
+{
+  "source": "Eduroam_Regeln_technische_Sicht.xlsx",
+  "items": [
+    {
+      "ID": "P0",
+      "Technischer Fact / Condition": "service",
+      "Kategorie": "Routing",
+      "Mögliche Werte": "eduroam, unknown",
+      "Bedeutung": "Anfrage gehört zum Eduroam-Modul",
+      "Wird geprüft in": "Alle Regeln",
+      "Hinweis zur Übersetzung": "Pflichtfeld für jede Eduroam-Regel"
+    },
+    {
+      "ID": "P1",
+      "Technischer Fact / Condition": "account_exists",
+      "Kategorie": "Account",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Nutzer besitzt einen Uni-Account",
+      "Wird geprüft in": "R1, R2, R3, Setup, Verbindungstest",
+      "Hinweis zur Übersetzung": "Blocker: Setup erst sinnvoll bei true"
+    },
+    {
+      "ID": "P2",
+      "Technischer Fact / Condition": "username_known",
+      "Kategorie": "Account",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Nutzer kennt seinen Benutzernamen",
+      "Wird geprüft in": "R2, R3, Setup, Verbindungstest",
+      "Hinweis zur Übersetzung": "Fehlt der Benutzername, zuerst Hilferegel ausführen"
+    },
+    {
+      "ID": "P3",
+      "Technischer Fact / Condition": "password_known",
+      "Kategorie": "Account",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Nutzer kennt sein Passwort",
+      "Wird geprüft in": "R3, Setup, Verbindungstest",
+      "Hinweis zur Übersetzung": "Nach Reset ggf. password_recently_changed=true setzen"
+    },
+    {
+      "ID": "P4",
+      "Technischer Fact / Condition": "wifi_available",
+      "Kategorie": "Gerät/Netzwerk",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Gerät besitzt WLAN",
+      "Wird geprüft in": "R4",
+      "Hinweis zur Übersetzung": "Bei false keine Eduroam-Verbindung möglich"
+    },
+    {
+      "ID": "P4.1",
+      "Technischer Fact / Condition": "wifi_enabled",
+      "Kategorie": "Gerät/Netzwerk",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "WLAN ist am Gerät aktiviert",
+      "Wird geprüft in": "R4, R5, Setup",
+      "Hinweis zur Übersetzung": "Vor Netzwerksuche prüfen"
+    },
+    {
+      "ID": "P5",
+      "Technischer Fact / Condition": "eduroam_visible",
+      "Kategorie": "Gerät/Netzwerk",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Eduroam wird in der WLAN-Liste angezeigt",
+      "Wird geprüft in": "R5, Setup",
+      "Hinweis zur Übersetzung": "Vor Einrichtung und Verbindungstest prüfen"
+    },
+    {
+      "ID": "P6",
+      "Technischer Fact / Condition": "eduroam_profile_configured",
+      "Kategorie": "Profil/Konfiguration",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Eduroam-Profil ist korrekt eingerichtet",
+      "Wird geprüft in": "R6, Setup, R7",
+      "Hinweis zur Übersetzung": "Bei false OS-spezifisches Setup starten"
+    },
+    {
+      "ID": "P7",
+      "Technischer Fact / Condition": "connection_attempt_status",
+      "Kategorie": "Verbindungstest",
+      "Mögliche Werte": "not_tested, success, failed",
+      "Bedeutung": "Verbindung wurde getestet",
+      "Wird geprüft in": "R0, R7, Abschluss",
+      "Hinweis zur Übersetzung": "Zentraler Übergang zwischen Setup und Troubleshooting"
+    },
+    {
+      "ID": "P8",
+      "Technischer Fact / Condition": "two_fa_required",
+      "Kategorie": "2FA",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "2FA wird für diesen Kontext benötigt",
+      "Wird geprüft in": "R8",
+      "Hinweis zur Übersetzung": "Nur prüfen, wenn für konkrete Hochschule/Dienst relevant"
+    },
+    {
+      "ID": "P8.1",
+      "Technischer Fact / Condition": "two_fa_ready",
+      "Kategorie": "2FA",
+      "Mögliche Werte": "true, false, unknown, not_required",
+      "Bedeutung": "2FA ist eingerichtet oder nicht erforderlich",
+      "Wird geprüft in": "R8, R0",
+      "Hinweis zur Übersetzung": "Nicht immer zwingend; not_required erlaubt Verbindung"
+    },
+    {
+      "ID": "P9",
+      "Technischer Fact / Condition": "certificate_warning_shown",
+      "Kategorie": "Sicherheit",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Zertifikatswarnung erscheint",
+      "Wird geprüft in": "Zertifikatsregel",
+      "Hinweis zur Übersetzung": "Sicherheitskritisch, hohe Priorität"
+    },
+    {
+      "ID": "P10",
+      "Technischer Fact / Condition": "password_recently_changed",
+      "Kategorie": "Account/Fehleranalyse",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Passwort wurde kürzlich geändert",
+      "Wird geprüft in": "Passwortänderungsregel",
+      "Hinweis zur Übersetzung": "Kann alte gespeicherte Zugangsdaten verursachen"
+    },
+    {
+      "ID": "P11",
+      "Technischer Fact / Condition": "internet_access_available",
+      "Kategorie": "Verbindungstest",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Internet funktioniert nach Verbindung",
+      "Wird geprüft in": "No-Internet-Regel, Abschluss",
+      "Hinweis zur Übersetzung": "Erst nach erfolgreicher Verbindung prüfen"
+    },
+    {
+      "ID": "P12",
+      "Technischer Fact / Condition": "user_problem_resolved",
+      "Kategorie": "Abschluss",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Nutzerproblem wurde gelöst",
+      "Wird geprüft in": "Abschluss/Eskalation",
+      "Hinweis zur Übersetzung": "Voraussetzung für finalen Abschluss"
+    },
+    {
+      "ID": "P13",
+      "Technischer Fact / Condition": "needs_human_support",
+      "Kategorie": "Eskalation",
+      "Mögliche Werte": "true, false, unknown",
+      "Bedeutung": "Menschlicher Support notwendig",
+      "Wird geprüft in": "Eskalationsregel",
+      "Hinweis zur Übersetzung": "Wird bei Blockern oder wiederholtem Scheitern gesetzt"
+    },
+    {
+      "ID": "P14",
+      "Technischer Fact / Condition": "user_request_answered",
+      "Kategorie": "Abschluss",
+      "Mögliche Werte": "true, false",
+      "Bedeutung": "Anfrage darf final abgeschlossen werden",
+      "Wird geprüft in": "Finish-Regel",
+      "Hinweis zur Übersetzung": "Nur true, wenn Problem gelöst oder Eskalationsweg ausgegeben"
+    },
+    {
+      "ID": "P15",
+      "Technischer Fact / Condition": "operating_system",
+      "Kategorie": "Gerät/Betriebssystem",
+      "Mögliche Werte": "windows, macos, ios, android, linux, unknown",
+      "Bedeutung": "Betriebssystem für passende Anleitung",
+      "Wird geprüft in": "Setup/Profil löschen",
+      "Hinweis zur Übersetzung": "unknown führt zum OS-Router"
+    },
+    {
+      "ID": "P16",
+      "Technischer Fact / Condition": "problem_type",
+      "Kategorie": "Troubleshooting",
+      "Mögliche Werte": "cannot_connect, authentication_failed, no_internet, eduroam_not_visible, connection_drops, certificate_warning, unknown",
+      "Bedeutung": "Art des Problems",
+      "Wird geprüft in": "Troubleshooting-Regeln",
+      "Hinweis zur Übersetzung": "Spezifische Problemregeln vor Router/Fallback prüfen"
+    }
+  ]
+}

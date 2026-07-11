@@ -1,0 +1,1607 @@
+[
+  {
+    "id": "dialog.invalid_or_troll_request",
+    "module": "dialog_guard",
+    "rule_group": "input_guard",
+    "priority": 0,
+    "active": true,
+    "description": "Wirre/Troll-Eingaben freundlich abfangen, statt in beliebige Pflichtfragen zu fallen.",
+    "when": {
+      "all": [
+        {
+          "fact": "invalid_request",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Ich kann daraus noch keine IT-Frage erkennen. Beschreibe bitte kurz, worum es geht, zum Beispiel: eduroam, VPN, MFA, Benutzerkonto oder Passwort."
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.explain_operating_system",
+    "active": true,
+    "module": "dialog_guard",
+    "rule_group": "explanation",
+    "priority": 1,
+    "description": "Erklärt den Begriff Betriebssystem, statt die gleiche OS-Frage zu wiederholen.",
+    "when": {
+      "all": [
+        {
+          "fact": "explanation_request",
+          "operator": "equals",
+          "value": "operating_system"
+        },
+        {
+          "fact": "os",
+          "operator": "is_unknown"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Ein Betriebssystem ist die Grundsoftware deines Geräts. Beispiele sind Windows auf einem Laptop/PC, macOS auf einem MacBook, iOS auf einem iPhone, Android auf einem Smartphone oder Linux. Für die Anleitung ist wichtig, welches davon du nutzt."
+      },
+      {
+        "type": "ask",
+        "fact": "os",
+        "text": "Welches Betriebssystem nutzt du: Windows, macOS, Linux, Android oder iOS/iPadOS?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.ilias_etherpad_info",
+    "module": "dialog_guard",
+    "rule_group": "information",
+    "priority": 1,
+    "active": true,
+    "description": "Ilias/Etherpad-Anfragen nicht fälschlich in eduroam/VPN drücken.",
+    "when": {
+      "all": [
+        {
+          "fact": "user_request",
+          "operator": "equals",
+          "value": "ilias_etherpad"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Bei ILIAS bzw. Etherpad-Lite geht es nicht direkt um eduroam oder VPN. Prüfe zuerst, ob du dich in ILIAS mit deinem Hohenheimer Konto anmelden kannst. Wenn die Anmeldung funktioniert, aber Etherpad-Lite in ILIAS nicht startet oder fehlt, ist das eher ein ILIAS-/Kurs- oder Berechtigungsproblem und sollte mit Kursverantwortlichen oder dem KIM-Support geklärt werden."
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.eduroam_certificate_warning_user_guard",
+    "module": "dialog_guard",
+    "rule_group": "security",
+    "priority": 2,
+    "active": true,
+    "description": "eduroam-Zertifikatswarnung sicherheitsrelevant behandeln.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "certificate_warning_shown",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Bei einer Zertifikatswarnung solltest du nicht einfach auf Verbinden oder Vertrauen klicken. Brich den Verbindungsversuch zunächst ab und richte eduroam über die offizielle eduroam/CAT-Anleitung der Universität Hohenheim neu ein. Wenn die Warnung danach weiterhin erscheint, kontaktiere den KIM-IT-Service-Desk."
+      },
+      {
+        "type": "set_fact",
+        "fact": "needs_human_support",
+        "value": true
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.eduroam_no_internet_prioritize",
+    "module": "dialog_guard",
+    "rule_group": "eduroam_troubleshooting",
+    "priority": 2,
+    "active": true,
+    "description": "eduroam verbunden/eingerichtet, aber kein Internet: nicht erst Passwortänderung abfragen.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "internet_access_available",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn eduroam verbunden oder eingerichtet ist, aber kein Internetzugriff besteht, liegt es nicht zuerst an Benutzerkennung oder Passwort. Trenne eduroam kurz, starte WLAN bzw. das Gerät neu und teste erneut. Wenn es weiter nicht klappt, lösche das eduroam-Profil bzw. gespeicherte eduroam-Zugangsdaten und richte eduroam neu ein. Wenn auch das nicht hilft, kontaktiere den KIM-IT-Service-Desk."
+      },
+      {
+        "type": "set_fact",
+        "fact": "profile_recreation_required",
+        "value": true
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.explain_mfa",
+    "active": true,
+    "module": "dialog_guard",
+    "rule_group": "explanation",
+    "priority": 2,
+    "description": "Erklärt MFA als zeitbasierten Authenticator-Code.",
+    "when": {
+      "all": [
+        {
+          "fact": "explanation_request",
+          "operator": "equals",
+          "value": "mfa"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "MFA/2FA ist die zusätzliche Anmeldung mit einem zweiten Faktor. In diesem Projekt bedeutet das: In der Authenticator-App wird ein zeitbasierter Code angezeigt, der sich etwa alle 30 Sekunden ändert. Diesen aktuellen Code gibst du beim Login ein."
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.mixed_vpn_eduroam_difference",
+    "module": "dialog_guard",
+    "rule_group": "mixed",
+    "priority": 2,
+    "active": true,
+    "description": "Unterschied zwischen VPN und eduroam erklären.",
+    "when": {
+      "all": [
+        {
+          "fact": "explanation_request",
+          "operator": "equals",
+          "value": "vpn_eduroam_difference"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "eduroam ist das WLAN auf dem Campus bzw. bei teilnehmenden Einrichtungen. VPN ist eine geschützte Verbindung ins Hochschulnetz, vor allem wenn du außerhalb des Campus auf interne Dienste wie bestimmte Bibliotheksdatenbanken zugreifen möchtest. Kurz: eduroam verbindet dein Gerät mit dem WLAN; VPN verbindet dich aus einem externen Netz mit internen Uni-Diensten."
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.existing_eduroam_skip_prerequisites",
+    "module": "dialog_guard",
+    "rule_group": "existing_service_troubleshooting",
+    "priority": 3,
+    "active": true,
+    "description": "Wenn eduroam bereits genutzt wurde und nun nicht mehr funktioniert, Basisvoraussetzungen nicht erneut abfragen.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "service_previously_used",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_recently_changed",
+          "operator": "is_unknown"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Du hast eduroam bereits genutzt. Daher gehe ich davon aus, dass Benutzerkonto, Benutzerkennung und Grundprofil grundsätzlich vorhanden sind. Wir prüfen jetzt direkt, was sich seit dem letzten erfolgreichen Zugriff geändert hat."
+      },
+      {
+        "type": "ask",
+        "fact": "password_recently_changed",
+        "text": "Hast du seit dem letzten erfolgreichen eduroam-Zugriff dein Hohenheimer Passwort geändert oder zurückgesetzt?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.existing_mfa_skip_prerequisites",
+    "module": "dialog_guard",
+    "rule_group": "existing_service_troubleshooting",
+    "priority": 3,
+    "active": true,
+    "description": "Wenn MFA bereits genutzt wurde und nun nicht mehr funktioniert, direkt den Code-/Authenticator-Status prüfen.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "service_previously_used",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "mfa_code_status",
+          "operator": "is_unknown"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Du hast MFA bereits genutzt. Daher gehe ich davon aus, dass MFA grundsätzlich eingerichtet ist. Wir prüfen jetzt direkt den aktuellen Authenticator-Code."
+      },
+      {
+        "type": "ask",
+        "fact": "mfa_code_status",
+        "text": "Ist in deiner Authenticator-App ein aktueller 30-Sekunden-Code sichtbar, ist er abgelaufen/ungültig oder fehlt der Eintrag komplett?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.existing_vpn_skip_prerequisites",
+    "module": "dialog_guard",
+    "rule_group": "existing_service_troubleshooting",
+    "priority": 3,
+    "active": true,
+    "description": "Wenn VPN bereits genutzt wurde und nun nicht mehr funktioniert, Account-/Setup-Basisfragen überspringen.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "service_previously_used",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "is_unknown"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Du hast VPN bereits genutzt. Daher gehe ich davon aus, dass Account, VPN-Client, Profil und MFA grundsätzlich eingerichtet sind. Wir prüfen jetzt direkt den aktuellen Verbindungsversuch."
+      },
+      {
+        "type": "ask",
+        "fact": "vpn_auth_status",
+        "text": "Wird der VPN-Login nach Benutzerkennung, Passwort und aktuellem 30-Sekunden-Code akzeptiert oder schlägt er fehl?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.explain_vpn",
+    "active": true,
+    "module": "dialog_guard",
+    "rule_group": "explanation",
+    "priority": 3,
+    "description": "Erklärt VPN.",
+    "when": {
+      "all": [
+        {
+          "fact": "explanation_request",
+          "operator": "equals",
+          "value": "vpn"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "VPN stellt eine geschützte Verbindung ins Hochschulnetz her. Das ist wichtig, wenn du von außerhalb des Campus auf interne Dienste zugreifen möchtest, zum Beispiel bestimmte Bibliotheksdatenbanken oder interne Systeme."
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.mixed_multi_service_setup",
+    "module": "dialog_guard",
+    "rule_group": "mixed",
+    "priority": 3,
+    "active": true,
+    "description": "Mehrere Dienste gleichzeitig einrichten: Reihenfolge erklären statt nur auf eduroam gehen.",
+    "when": {
+      "all": [
+        {
+          "fact": "multi_service_setup",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Du nennst mehrere Dienste gleichzeitig. Sinnvoll ist diese Reihenfolge: zuerst Benutzerkonto und Zugangsdaten prüfen, dann MFA einrichten, danach eduroam oder VPN einrichten. Damit ich dich sauber durchführen kann, wähle bitte aus, womit du anfangen möchtest."
+      },
+      {
+        "type": "ask",
+        "fact": "topic",
+        "text": "Womit möchtest du zuerst starten: MFA, eduroam oder VPN?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.eduroam_not_visible_ask_other_wlans",
+    "module": "dialog_guard",
+    "rule_group": "eduroam_visibility",
+    "priority": 4,
+    "active": true,
+    "description": "eduroam nicht sichtbar: zuerst WLAN-Umgebung prüfen, nicht Accountdaten.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "other_wifi_visible",
+          "operator": "is_unknown"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn eduroam gar nicht in der WLAN-Liste erscheint, ist das zunächst kein Benutzerkonto- oder Passwortproblem. Dann prüfen wir zuerst die WLAN-Umgebung."
+      },
+      {
+        "type": "ask",
+        "fact": "other_wifi_visible",
+        "text": "Werden auf dem Gerät andere WLAN-Netze angezeigt?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.existing_eduroam_password_unchanged_ask_visibility",
+    "module": "dialog_guard",
+    "rule_group": "existing_service_troubleshooting",
+    "priority": 4,
+    "active": true,
+    "description": "Bestehendes eduroam: Nach unverändertem Passwort direkt Sichtbarkeit prüfen, keine WLAN-Hardware-/OS-Fragen.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "service_previously_used",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "password_recently_changed",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "is_unknown"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Da eduroam bei dir bereits funktioniert hat und das Passwort nicht geändert wurde, überspringe ich die Basisvoraussetzungen. Wir prüfen jetzt direkt den aktuellen Verbindungsstatus."
+      },
+      {
+        "type": "ask",
+        "fact": "eduroam_visible",
+        "text": "Wird „eduroam“ aktuell in deiner WLAN-Liste angezeigt?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.library_database_access_requires_vpn",
+    "active": true,
+    "module": "dialog_guard",
+    "rule_group": "information",
+    "priority": 4,
+    "description": "Bibliotheksdatenbanken werden als VPN-/interner Dienst erkannt.",
+    "when": {
+      "all": [
+        {
+          "fact": "user_request",
+          "operator": "equals",
+          "value": "library_database_access"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Für den Zugriff auf viele Bibliotheksdatenbanken von außerhalb des Campus brauchst du in der Regel eine aktive VPN-Verbindung mit deinem Hohenheimer Account. Wenn du auf dem Campus bist, reicht oft das Campusnetz/eduroam. Von zuhause solltest du zuerst VPN verbinden und danach die Datenbank erneut öffnen."
+      },
+      {
+        "type": "ask",
+        "fact": "vpn_connected",
+        "text": "Bist du aktuell bereits per VPN verbunden?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.mfa_code_expired_direct",
+    "module": "dialog_guard",
+    "rule_group": "mfa",
+    "priority": 4,
+    "active": true,
+    "description": "Abgelaufener MFA-Code.",
+    "when": {
+      "all": [
+        {
+          "fact": "mfa_code_status",
+          "operator": "equals",
+          "value": "expired"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Der Code in der Authenticator-App ist zeitbasiert und läuft nach kurzer Zeit ab. Warte auf den nächsten 30-Sekunden-Code und gib ihn direkt ein. Wenn auch ein frischer Code abgelehnt wird, prüfe die automatische Uhrzeit/Zeitzone am Gerät oder kontaktiere den KIM-IT-Service-Desk."
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.mfa_code_problem_direct",
+    "module": "dialog_guard",
+    "rule_group": "mfa",
+    "priority": 4,
+    "active": true,
+    "description": "MFA-Code falsch/OTP/Einmalcode wird nicht akzeptiert.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "mfa_problem_type",
+          "operator": "equals",
+          "value": "code_rejected"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn der MFA-Code abgelehnt wird, nutze den aktuell angezeigten Code aus der Authenticator-App. Der Code ändert sich etwa alle 30 Sekunden. Warte im Zweifel auf den nächsten Code und gib ihn direkt ein. Prüfe außerdem, ob Uhrzeit und Zeitzone auf deinem Gerät automatisch gesetzt sind. Wenn der Code weiterhin abgelehnt wird, muss der KIM-IT-Service-Desk den MFA-Status prüfen."
+      },
+      {
+        "type": "set_fact",
+        "fact": "needs_human_support",
+        "value": true
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.mfa_qr_scan_failed",
+    "module": "dialog_guard",
+    "rule_group": "mfa",
+    "priority": 4,
+    "active": true,
+    "description": "QR-Code kann nicht gescannt werden.",
+    "when": {
+      "all": [
+        {
+          "fact": "mfa_problem_type",
+          "operator": "equals",
+          "value": "qr_scan_failed"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn der QR-Code nicht gescannt werden kann, prüfe Helligkeit, Zoom und ob die Kamera in der Authenticator-App freigegeben ist. Falls ein manueller Einrichtungsschlüssel angezeigt wird, kannst du den Eintrag oft auch manuell übernehmen. Wenn weder Scan noch manuelle Einrichtung klappt, kontaktiere den KIM-IT-Service-Desk."
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.mfa_setup_mobile_context",
+    "module": "dialog_guard",
+    "rule_group": "mfa_setup",
+    "priority": 4,
+    "active": true,
+    "description": "MFA auf Handy einrichten: nicht leer bleiben, sondern Campus/App-Kontext klären.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "mfa"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "setup"
+        },
+        {
+          "fact": "mfa_token_device",
+          "operator": "equals",
+          "value": "smartphone"
+        },
+        {
+          "fact": "campus_network_available",
+          "operator": "is_unknown"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Für die MFA-Einrichtung auf dem Handy wird ein zeitbasierter Code in einer Authenticator-App genutzt, zum Beispiel 2FAS. Die Ersteinrichtung muss im Hohenheimer Netz erfolgen, also am Campus über eduroam oder LAN."
+      },
+      {
+        "type": "ask",
+        "fact": "campus_network_available",
+        "text": "Bist du gerade im Hohenheimer Netz am Campus verbunden?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.mfa_token_lost_direct",
+    "module": "dialog_guard",
+    "rule_group": "mfa",
+    "priority": 4,
+    "active": true,
+    "description": "Kein Zugriff mehr auf MFA/Handy weg.",
+    "when": {
+      "all": [
+        {
+          "fact": "token_lost",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn du keinen Zugriff mehr auf den MFA-Eintrag bzw. das Handy hast, kannst du den Code nicht selbst wiederherstellen. Wende dich an den KIM-IT-Service-Desk, damit der zweite Faktor zurückgesetzt oder neu eingerichtet werden kann."
+      },
+      {
+        "type": "set_fact",
+        "fact": "needs_human_support",
+        "value": true
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.mixed_multi_topic_clarify",
+    "module": "dialog_guard",
+    "rule_group": "mixed",
+    "priority": 4,
+    "active": true,
+    "description": "Gemischte VPN/MFA/eduroam-Anfragen klären, statt einen Dienst willkürlich zu wählen.",
+    "when": {
+      "all": [
+        {
+          "fact": "multi_topic_query",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Du sprichst mehrere Themen an. Ich sollte sie nacheinander bearbeiten, damit nichts durcheinandergerät."
+      },
+      {
+        "type": "ask",
+        "fact": "topic",
+        "text": "Welches Thema ist gerade am wichtigsten: eduroam, VPN, MFA oder Benutzerkonto/Passwort?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.vpn_certificate_warning",
+    "module": "dialog_guard",
+    "rule_group": "security",
+    "priority": 4,
+    "active": true,
+    "description": "VPN-Zertifikatswarnung sicherheitsrelevant behandeln.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "certificate_warning_shown",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Bei einer Zertifikatswarnung im VPN solltest du die Verbindung nicht einfach bestätigen. Brich den Vorgang ab, prüfe, ob du den offiziellen VPN-Client und das richtige Gateway verwendest, und kontaktiere bei weiterhin angezeigter Warnung den KIM-IT-Service-Desk."
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.vpn_client_start_failed",
+    "module": "dialog_guard",
+    "rule_group": "vpn_client",
+    "priority": 4,
+    "active": true,
+    "description": "VPN-Client startet nicht: Clientpfad statt Login-Daten.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_problem_type",
+          "operator": "equals",
+          "value": "client_start_failed"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn der VPN-Client nicht startet oder hängen bleibt, liegt das zunächst nicht an Benutzerkennung oder Passwort. Starte das Gerät neu, öffne den Cisco/Secure-Client erneut und prüfe, ob eine Aktualisierung oder Neuinstallation nötig ist. Wenn der Client weiterhin nicht startet, installiere ihn neu oder kontaktiere den KIM-IT-Service-Desk."
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.vpn_connected_no_internet",
+    "module": "dialog_guard",
+    "rule_group": "vpn_connection",
+    "priority": 4,
+    "active": true,
+    "description": "VPN verbunden, aber kein Internet/interne Dienste.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_connected",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "internet_access_available",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn VPN verbunden ist, aber du nicht auf gewünschte Seiten oder Dienste kommst, prüfe zuerst, ob es um normale Internetseiten oder interne Uni-Dienste geht. Für interne Dienste wie Bibliotheksdatenbanken ist VPN relevant; normale Internetseiten können je nach Netzkonfiguration anders geroutet werden. Trenne VPN kurz, verbinde neu und teste den konkreten internen Dienst erneut. Wenn nur bestimmte Dienste nicht erreichbar sind, kontaktiere den KIM-IT-Service-Desk mit dem Namen des Dienstes."
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.vpn_installer_failed",
+    "module": "dialog_guard",
+    "rule_group": "vpn_client",
+    "priority": 4,
+    "active": true,
+    "description": "VPN-Installer bricht ab.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_problem_type",
+          "operator": "equals",
+          "value": "installer_failed"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn der VPN-Installer abbricht, prüfe zuerst, ob du die passende Installationsdatei für dein Betriebssystem nutzt und ob du lokale Installationsrechte auf dem Gerät hast. Starte die Installation nach einem Neustart erneut. Wenn sie wieder abbricht, notiere die Fehlermeldung und kontaktiere den KIM-IT-Service-Desk."
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.vpn_mfa_code_issue_direct",
+    "module": "dialog_guard",
+    "rule_group": "vpn_mfa",
+    "priority": 4,
+    "active": true,
+    "description": "VPN-Anfragen mit MFA-Code-Problem direkt in MFA/VPN-Fehlersuche führen.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "problem_type",
+          "operator": "in",
+          "value": [
+            "mfa_failed",
+            "mfa_required"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Das klingt nach einem MFA-Problem beim VPN-Login. VPN nutzt hier den aktuellen 30-Sekunden-Code aus der Authenticator-App. Warte auf einen frischen Code, gib ihn direkt beim VPN-Login ein und prüfe, ob Uhrzeit/Zeitzone am Gerät automatisch gesetzt sind."
+      },
+      {
+        "type": "ask",
+        "fact": "vpn_auth_status",
+        "text": "Wird der VPN-Login mit einem frischen aktuellen Code akzeptiert oder weiterhin abgelehnt?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.vpn_password_rejected",
+    "module": "dialog_guard",
+    "rule_group": "vpn_login",
+    "priority": 4,
+    "active": true,
+    "description": "VPN-Passwortproblem verständlich behandeln.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_problem_type",
+          "operator": "equals",
+          "value": "password_rejected"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn das Passwort beim VPN nicht akzeptiert wird, gib es nicht hier im Chat ein. Prüfe zuerst, ob du dich mit demselben Hohenheimer Passwort bei anderen Uni-Diensten anmelden kannst. Falls nicht, setze das Passwort über die Account-Verwaltung/IDM zurück. Falls andere Dienste funktionieren, prüfe im VPN zusätzlich Benutzerkennung, VPN-Gruppe und den aktuellen MFA-Code."
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.vpn_username_rejected",
+    "module": "dialog_guard",
+    "rule_group": "vpn_login",
+    "priority": 4,
+    "active": true,
+    "description": "VPN-Benutzername falsch: Format prüfen, keine konkrete Kennung abfragen.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_problem_type",
+          "operator": "equals",
+          "value": "username_rejected"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Beim VPN wird als Benutzername normalerweise nur dein Hohenheimer Kürzel bzw. deine Benutzerkennung verwendet. Bitte gib die Kennung nicht hier im Chat ein. Prüfe stattdessen, ob du versehentlich die persönliche E-Mail-Adresse oder kuerzel@uni-hohenheim.de verwendet hast. Falls das richtige Format trotzdem abgelehnt wird, sollte der KIM-IT-Service-Desk den Accountstatus prüfen."
+      },
+      {
+        "type": "set_fact",
+        "fact": "needs_human_support",
+        "value": true
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.account_data_lost",
+    "active": true,
+    "module": "dialog_guard",
+    "rule_group": "credentials",
+    "priority": 5,
+    "description": "Zugangsdaten/Kürzel verloren: nicht dieselbe Frage wiederholen, sondern Account-Pfad anbieten.",
+    "when": {
+      "all": [
+        {
+          "fact": "username_known",
+          "operator": "not_equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "account_data_lost",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "help_request",
+          "operator": "equals",
+          "value": "account_data_lost"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Du hast angegeben, dass dir Zugangsdaten bzw. Benutzerkennung/Kürzel fehlen. Dann kann eduroam oder VPN noch nicht sinnvoll eingerichtet werden. Kläre zuerst deine Hohenheimer Benutzerkennung und dein Passwort über die Account-/IDM-Verwaltung oder den KIM-IT-Service-Desk. Danach kannst du mit der Einrichtung fortfahren."
+      },
+      {
+        "type": "set_fact",
+        "fact": "needs_human_support",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "escalation_reason",
+        "value": "account_data_lost"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.eduroam_connected_no_internet_general",
+    "module": "dialog_guard",
+    "rule_group": "eduroam_troubleshooting",
+    "priority": 5,
+    "active": true,
+    "description": "eduroam verbunden/eingerichtet, aber kein Internet: Diagnose statt Accountfragen.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        },
+        {
+          "fact": "internet_access_available",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Du bist offenbar mit eduroam verbunden, hast aber keinen Internetzugriff. Trenne die WLAN-Verbindung kurz, starte WLAN bzw. das Gerät neu und teste erneut. Wenn es weiterhin nicht funktioniert, lösche das eduroam-Profil bzw. gespeicherte eduroam-Zugangsdaten und richte eduroam neu ein. Bleibt das Problem bestehen, sollte der KIM-IT-Service-Desk prüfen, ob ein Geräte-, Profil- oder Netzproblem vorliegt."
+      },
+      {
+        "type": "set_fact",
+        "fact": "profile_recreation_required",
+        "value": true
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.eduroam_not_visible_other_wlans_visible",
+    "module": "dialog_guard",
+    "rule_group": "eduroam_visibility",
+    "priority": 5,
+    "active": true,
+    "description": "Andere WLANs sichtbar, eduroam nicht: Standort/Netzabdeckung prüfen, keine Accountfragen.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": false
+        },
+        {
+          "fact": "other_wifi_visible",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn andere WLANs sichtbar sind, aber eduroam nicht, funktioniert der WLAN-Adapter grundsätzlich. Prüfe zuerst, ob du an einem Ort bist, an dem eduroam ausgestrahlt wird. Aktualisiere die WLAN-Liste, schalte WLAN kurz aus und wieder ein und teste es an einem anderen Standort auf dem Campus. Wenn eduroam weiterhin nicht erscheint, kontaktiere den KIM-IT-Service-Desk. Benutzerkennung oder Passwort sind erst relevant, wenn eduroam sichtbar ist und die Anmeldung scheitert."
+      },
+      {
+        "type": "set_fact",
+        "fact": "needs_human_support",
+        "value": true
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.eduroam_profile_deleted_reinstall",
+    "module": "dialog_guard",
+    "rule_group": "eduroam_setup",
+    "priority": 5,
+    "active": true,
+    "description": "Gelöschtes eduroam-Profil führt zur Neuinstallation statt Sichtbarkeitsproblem.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "profile_recreation_required",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn das eduroam-Profil gelöscht wurde, musst du eduroam auf dem Gerät neu einrichten. Dafür brauche ich erst das passende Betriebssystem bzw. Gerät."
+      },
+      {
+        "type": "ask",
+        "fact": "os",
+        "text": "Welches Gerät bzw. Betriebssystem nutzt du: Windows, macOS, Android, iOS/iPadOS oder Linux?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.existing_eduroam_visible_ask_connection",
+    "module": "dialog_guard",
+    "rule_group": "existing_service_troubleshooting",
+    "priority": 5,
+    "active": true,
+    "description": "Bestehendes eduroam: Wenn das Netz sichtbar ist, zuerst prüfen, ob Verbindung möglich ist. Betriebssystem erst später bei Neuinstallation.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "service_previously_used",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "connection_attempt_status",
+          "operator": "is_unknown"
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "not_tested"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "connection_attempt_status",
+        "text": "Kannst du dich aktuell mit eduroam verbinden, also wird die WLAN-Verbindung als verbunden angezeigt?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.existing_eduroam_connection_failed_account_profile_path",
+    "module": "dialog_guard",
+    "rule_group": "existing_service_troubleshooting",
+    "priority": 6,
+    "active": true,
+    "description": "Bestehendes eduroam: Sichtbar, aber Verbindung scheitert -> eher Account/Zugangsdaten/Profil prüfen statt OS-Abfrage.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "service_previously_used",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "eduroam_visible",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn eduroam sichtbar ist, aber die Verbindung nicht zustande kommt, liegt es häufig an gespeicherten Zugangsdaten, einem alten Profil oder einem Account-/Passwortproblem. Prüfe zuerst, ob du dich mit deinem aktuellen Hohenheimer Benutzerkonto an anderen Diensten anmelden kannst. Wenn das passt, lösche das gespeicherte eduroam-Profil bzw. die gespeicherten Zugangsdaten und richte eduroam anschließend neu ein. Wenn die Verbindung danach weiterhin scheitert, kontaktiere den KIM-IT-Service-Desk."
+      },
+      {
+        "type": "set_fact",
+        "fact": "profile_recreation_required",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "needs_human_support",
+        "value": true
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.username_unknown_blocks_login",
+    "active": true,
+    "module": "dialog_guard",
+    "rule_group": "credentials",
+    "priority": 6,
+    "description": "Benutzerkennung unbekannt blockiert Login-Dienste.",
+    "when": {
+      "all": [
+        {
+          "fact": "username_known",
+          "operator": "equals",
+          "value": false
+        }
+      ],
+      "any": [
+        {
+          "fact": "topic",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa",
+            "user_account"
+          ]
+        },
+        {
+          "fact": "service",
+          "operator": "in",
+          "value": [
+            "eduroam",
+            "vpn",
+            "mfa",
+            "user_account"
+          ]
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Ohne Hohenheimer Kürzel bzw. Benutzerkennung kann der Login nicht fortgesetzt werden. Prüfe zuerst deine Account-Unterlagen oder wende dich an den KIM-IT-Service-Desk. Wenn du die Kennung wieder hast, kannst du mit eduroam, VPN oder MFA fortfahren."
+      },
+      {
+        "type": "set_fact",
+        "fact": "needs_human_support",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "escalation_reason",
+        "value": "username_unknown"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.existing_eduroam_connected_ask_internet",
+    "module": "dialog_guard",
+    "rule_group": "existing_service_troubleshooting",
+    "priority": 7,
+    "active": true,
+    "description": "Bestehendes eduroam: Verbindung besteht, danach Internetzugriff prüfen.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "service_previously_used",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        },
+        {
+          "fact": "internet_access_available",
+          "operator": "is_unknown"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "internet_access_available",
+        "text": "Bist du mit eduroam verbunden und hast danach auch Internetzugriff?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.password_reset_help",
+    "active": true,
+    "module": "dialog_guard",
+    "rule_group": "credentials",
+    "priority": 7,
+    "description": "Passwort-Reset-Fragen beantworten, statt dieselbe Passwortfrage zu wiederholen.",
+    "when": {
+      "all": [
+        {
+          "fact": "password_known",
+          "operator": "not_equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "help_request",
+          "operator": "equals",
+          "value": "password_reset"
+        },
+        {
+          "fact": "intent",
+          "operator": "equals",
+          "value": "password_reset"
+        },
+        {
+          "fact": "password_known",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Wenn du dein Hohenheimer Passwort nicht kennst, musst du zuerst den Passwort-Reset bzw. die Account-/IDM-Verwaltung der Universität Hohenheim nutzen. Prüfe danach, ob du dich mit Benutzerkennung und neuem Passwort bei anderen Uni-Diensten anmelden kannst. Erst dann sollte eduroam oder VPN weiter eingerichtet werden."
+      },
+      {
+        "type": "ask",
+        "fact": "password_known",
+        "text": "Kennst du dein aktuelles Hohenheimer Passwort jetzt bzw. funktioniert es nach dem Reset?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.existing_eduroam_connected_no_internet_reinstall_support",
+    "module": "dialog_guard",
+    "rule_group": "existing_service_troubleshooting",
+    "priority": 8,
+    "active": true,
+    "description": "Bestehendes eduroam: Verbindung ja, Internet nein -> Profil neu einrichten oder KIM kontaktieren.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "service_previously_used",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        },
+        {
+          "fact": "internet_access_available",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Du bist mit eduroam verbunden, hast aber keinen Internetzugriff. Trenne die Verbindung kurz, starte WLAN bzw. das Gerät neu und teste erneut. Wenn es weiterhin nicht funktioniert, lösche das eduroam-Profil bzw. die gespeicherten Zugangsdaten und richte eduroam neu ein. Bleibt das Problem bestehen, sollte der KIM-IT-Service-Desk kontaktiert werden."
+      },
+      {
+        "type": "set_fact",
+        "fact": "profile_recreation_required",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "needs_human_support",
+        "value": true
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.mfa_challenge_not_entered",
+    "active": true,
+    "module": "dialog_guard",
+    "rule_group": "mfa",
+    "priority": 8,
+    "description": "Wenn der VPN-MFA-Code nicht eingegeben werden konnte, gezielt MFA-Code-Status abfragen.",
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "mfa_challenge_approved",
+          "operator": "equals",
+          "value": false
+        }
+      ],
+      "any": [
+        {
+          "fact": "mfa_code_status",
+          "operator": "is_unknown"
+        },
+        {
+          "fact": "mfa_code_status",
+          "operator": "equals",
+          "value": "missing"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Dann prüfen wir zuerst den zweiten Faktor. Für VPN wird kein Push vorausgesetzt, sondern der aktuelle zeitbasierte Code aus der Authenticator-App."
+      },
+      {
+        "type": "ask",
+        "fact": "mfa_code_status",
+        "text": "Kannst du in der Authenticator-App einen aktuellen Code sehen, ist der Code abgelaufen/ungültig oder fehlt er komplett?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.mfa_code_status_unknown_help",
+    "active": true,
+    "module": "dialog_guard",
+    "rule_group": "mfa",
+    "priority": 8,
+    "description": "Unklare MFA-Code-Antwort erklären, statt hängen zu bleiben.",
+    "when": {
+      "all": [
+        {
+          "fact": "mfa_code_status_unknown",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Beim VPN-Login brauchst du den aktuell angezeigten zeitbasierten Code aus deiner Authenticator-App. Der Code ändert sich etwa alle 30 Sekunden. Öffne die App und prüfe, ob ein aktueller Code sichtbar ist."
+      },
+      {
+        "type": "ask",
+        "fact": "mfa_code_status",
+        "text": "Ist der Code in der Authenticator-App verfügbar, abgelaufen oder wird er als ungültig abgelehnt?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.existing_eduroam_connected_internet_ok_finish",
+    "module": "dialog_guard",
+    "rule_group": "existing_service_troubleshooting",
+    "priority": 9,
+    "active": true,
+    "description": "Bestehendes eduroam: Verbindung und Internet funktionieren, Problemabschluss prüfen.",
+    "when": {
+      "all": [
+        {
+          "fact": "service",
+          "operator": "equals",
+          "value": "eduroam"
+        },
+        {
+          "fact": "service_previously_used",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "connection_attempt_status",
+          "operator": "equals",
+          "value": "success"
+        },
+        {
+          "fact": "internet_access_available",
+          "operator": "equals",
+          "value": true
+        }
+      ],
+      "any": [
+        {
+          "fact": "user_problem_resolved",
+          "operator": "is_unknown"
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": false
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "user_problem_resolved",
+        "text": "Funktioniert eduroam damit wieder wie erwartet?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.vpn_auth_failed_after_mfa",
+    "active": true,
+    "module": "dialog_guard",
+    "rule_group": "vpn",
+    "priority": 9,
+    "description": "VPN-Login nach MFA-Code fehlgeschlagen: gezielt Fehlersuche statt Wiederholung.",
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "failed"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Der VPN-Login ist trotz MFA-Code fehlgeschlagen. Prüfe zuerst, ob Benutzerkennung und Passwort korrekt sind und ob der Code wirklich der aktuell angezeigte 30-Sekunden-Code aus der Authenticator-App war. Wenn der Code abläuft, warte auf den nächsten Code und versuche es erneut. Wenn es weiterhin fehlschlägt, sollte der KIM-IT-Service-Desk den Account-/MFA-Status prüfen."
+      },
+      {
+        "type": "set_fact",
+        "fact": "needs_human_support",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "escalation_reason",
+        "value": "vpn_auth_failed_after_mfa"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.mfa_code_available_continue_vpn",
+    "active": true,
+    "module": "dialog_guard",
+    "rule_group": "mfa",
+    "priority": 10,
+    "description": "MFA-Code verfügbar: im VPN-Pfad zum Login/Tunnel weiterführen.",
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "mfa_code_status",
+          "operator": "in",
+          "value": [
+            "available",
+            "valid"
+          ]
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "not_equals",
+          "value": "failed"
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "not_equals",
+          "value": "success"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Nutze den aktuell angezeigten Code aus der Authenticator-App direkt im VPN-Login. Wenn der Login danach akzeptiert wird, sollte der VPN-Tunnel aufgebaut werden. Wenn nichts passiert oder der Login fehlschlägt, prüfe Code, Uhrzeit am Gerät und Benutzerkennung/Passwort erneut."
+      },
+      {
+        "type": "ask",
+        "fact": "vpn_auth_status",
+        "text": "Wurde der VPN-Login nach Eingabe des aktuellen Codes akzeptiert oder ist er fehlgeschlagen?"
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.problem_resolved_finish",
+    "active": true,
+    "module": "dialog_guard",
+    "rule_group": "status",
+    "priority": 10,
+    "description": "Wenn Nutzer sagt, dass es wieder funktioniert, Dialog sauber abschließen.",
+    "when": {
+      "any": [
+        {
+          "fact": "problem_resolved",
+          "operator": "equals",
+          "value": true
+        },
+        {
+          "fact": "user_problem_resolved",
+          "operator": "equals",
+          "value": true
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "answer",
+        "text": "Super, dann ist das Problem aktuell gelöst. Du kannst den Testlauf beenden oder bei einem neuen Problem erneut starten."
+      },
+      {
+        "type": "set_fact",
+        "fact": "user_request_answered",
+        "value": true
+      },
+      {
+        "type": "set_fact",
+        "fact": "problem_unresolved",
+        "value": false
+      }
+    ],
+    "stop_after_match": true
+  },
+  {
+    "id": "dialog.vpn_auth_success_check_tunnel",
+    "active": true,
+    "module": "dialog_guard",
+    "rule_group": "vpn",
+    "priority": 11,
+    "description": "VPN-Login akzeptiert: Tunnelstatus prüfen.",
+    "when": {
+      "all": [
+        {
+          "fact": "topic",
+          "operator": "equals",
+          "value": "vpn"
+        },
+        {
+          "fact": "vpn_auth_status",
+          "operator": "equals",
+          "value": "success"
+        },
+        {
+          "fact": "vpn_connected",
+          "operator": "is_unknown"
+        }
+      ]
+    },
+    "then": [
+      {
+        "type": "ask",
+        "fact": "vpn_connected",
+        "text": "Wurde danach der VPN-Tunnel aufgebaut bzw. zeigt der VPN-Client eine aktive Verbindung an?"
+      }
+    ],
+    "stop_after_match": true
+  }
+]

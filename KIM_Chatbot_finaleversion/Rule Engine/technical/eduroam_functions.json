@@ -1,0 +1,189 @@
+{
+  "source": "Eduroam_Regeln_technische_Sicht.xlsx",
+  "items": [
+    {
+      "Funktion / Step-Package": "eduroam_account_check",
+      "Kategorie": "Account",
+      "Zweck": "Prüfen, ob Nutzer einen Uni-Account besitzt",
+      "Typische Eingangsfacts": "service=eduroam",
+      "Setzt/ändert Facts": "account_exists",
+      "Hinweis": "Ggf. Übergang zum User-Account-Modul"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_username_help",
+      "Kategorie": "Account",
+      "Zweck": "Benutzername und Format erklären",
+      "Typische Eingangsfacts": "account_exists=true",
+      "Setzt/ändert Facts": "username_known",
+      "Hinweis": "Sollte korrektes Format später hochschulspezifisch ergänzen"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_password_reset_help",
+      "Kategorie": "Account",
+      "Zweck": "Passwort-Reset erklären",
+      "Typische Eingangsfacts": "username_known=true",
+      "Setzt/ändert Facts": "password_known; password_recently_changed",
+      "Hinweis": "Nach Reset alte Eduroam-Zugangsdaten prüfen"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_wifi_hardware_check",
+      "Kategorie": "Netzwerk",
+      "Zweck": "Prüfen, ob Gerät WLAN besitzt",
+      "Typische Eingangsfacts": "service=eduroam",
+      "Setzt/ändert Facts": "wifi_available",
+      "Hinweis": "Bei Hardwareproblem Support"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_enable_wifi",
+      "Kategorie": "Netzwerk",
+      "Zweck": "WLAN aktivieren und Liste aktualisieren",
+      "Typische Eingangsfacts": "wifi_available=true",
+      "Setzt/ändert Facts": "wifi_enabled",
+      "Hinweis": "Neustart als mögliche Reparaturoption"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_troubleshoot_not_visible",
+      "Kategorie": "Troubleshooting",
+      "Zweck": "Eduroam wird nicht angezeigt",
+      "Typische Eingangsfacts": "wifi_enabled=true",
+      "Setzt/ändert Facts": "eduroam_visible; needs_human_support",
+      "Hinweis": "Standortwechsel/Störungsmeldung"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_setup_router",
+      "Kategorie": "Setup",
+      "Zweck": "Betriebssystem erkennen/abfragen",
+      "Typische Eingangsfacts": "eduroam_profile_configured=false",
+      "Setzt/ändert Facts": "operating_system",
+      "Hinweis": "Leitet zu OS-spezifischem Setup"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_setup_windows",
+      "Kategorie": "Setup",
+      "Zweck": "Windows-Einrichtung",
+      "Typische Eingangsfacts": "operating_system=windows",
+      "Setzt/ändert Facts": "eduroam_profile_configured; connection_attempt_status",
+      "Hinweis": "Direkt übersetzbar in Step-Package"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_setup_macos",
+      "Kategorie": "Setup",
+      "Zweck": "macOS-Einrichtung",
+      "Typische Eingangsfacts": "operating_system=macos",
+      "Setzt/ändert Facts": "eduroam_profile_configured; connection_attempt_status",
+      "Hinweis": "Direkt übersetzbar in Step-Package"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_setup_ios",
+      "Kategorie": "Setup",
+      "Zweck": "iPhone/iPad-Einrichtung",
+      "Typische Eingangsfacts": "operating_system=ios",
+      "Setzt/ändert Facts": "eduroam_profile_configured; connection_attempt_status",
+      "Hinweis": "iPadOS kann optional separat geführt werden"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_setup_android",
+      "Kategorie": "Setup",
+      "Zweck": "Android-Einrichtung",
+      "Typische Eingangsfacts": "operating_system=android",
+      "Setzt/ändert Facts": "eduroam_profile_configured; connection_attempt_status",
+      "Hinweis": "App/Profile/Manuell je Hochschule"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_setup_linux",
+      "Kategorie": "Setup",
+      "Zweck": "Linux-Einrichtung",
+      "Typische Eingangsfacts": "operating_system=linux",
+      "Setzt/ändert Facts": "eduroam_profile_configured; connection_attempt_status",
+      "Hinweis": "Optional später nach Distribution ausbauen"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_2fa_setup_help",
+      "Kategorie": "2FA",
+      "Zweck": "2FA einrichten, falls erforderlich",
+      "Typische Eingangsfacts": "two_fa_required=true",
+      "Setzt/ändert Facts": "two_fa_ready",
+      "Hinweis": "Nicht grundsätzlich als Eduroam-Pflicht setzen"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_try_connect",
+      "Kategorie": "Verbindungstest",
+      "Zweck": "Verbindung mit Eduroam testen",
+      "Typische Eingangsfacts": "Profil und Zugangsdaten vorhanden",
+      "Setzt/ändert Facts": "connection_attempt_status",
+      "Hinweis": "Zentraler Übergang"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_troubleshoot_cannot_connect",
+      "Kategorie": "Troubleshooting",
+      "Zweck": "Verbindungs-/Authentifizierungsfehler beheben",
+      "Typische Eingangsfacts": "connection_attempt_status=failed",
+      "Setzt/ändert Facts": "credentials_checked; profile_recreation_required",
+      "Hinweis": "Prüft Zugangsdaten und Profil"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_delete_profile_router",
+      "Kategorie": "Reparatur",
+      "Zweck": "Profil löschen und neu einrichten",
+      "Typische Eingangsfacts": "profile_recreation_required=true",
+      "Setzt/ändert Facts": "eduroam_profile_configured=false",
+      "Hinweis": "Zurück zum Setup-Router"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_troubleshoot_no_internet",
+      "Kategorie": "Troubleshooting",
+      "Zweck": "Verbunden, aber kein Internet",
+      "Typische Eingangsfacts": "connection_attempt_status=success",
+      "Setzt/ändert Facts": "internet_access_available",
+      "Hinweis": "Nicht mit Verbindungsfehler vermischen"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_troubleshoot_connection_drops",
+      "Kategorie": "Troubleshooting",
+      "Zweck": "Verbindung bricht ab",
+      "Typische Eingangsfacts": "profile_configured=true",
+      "Setzt/ändert Facts": "connection_attempt_status=not_tested",
+      "Hinweis": "Standort/Neustart/Profil erneuern"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_restart_device",
+      "Kategorie": "Reparatur",
+      "Zweck": "Gerät neu starten",
+      "Typische Eingangsfacts": "vorherige Lösung ohne Erfolg",
+      "Setzt/ändert Facts": "connection_attempt_status=not_tested",
+      "Hinweis": "Als später Reparaturschritt"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_check_solution",
+      "Kategorie": "Abschluss",
+      "Zweck": "Prüfen, ob Verbindung und Internet funktionieren",
+      "Typische Eingangsfacts": "connection_attempt_status=success",
+      "Setzt/ändert Facts": "user_problem_resolved",
+      "Hinweis": "Vor finalem Abschluss"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_escalate_to_support",
+      "Kategorie": "Eskalation",
+      "Zweck": "Supportweg ausgeben",
+      "Typische Eingangsfacts": "mehrere Fehlschläge",
+      "Setzt/ändert Facts": "needs_human_support",
+      "Hinweis": "Erlaubt Abschluss trotz ungelöstem Problem"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_finish_resolved",
+      "Kategorie": "Abschluss",
+      "Zweck": "Anfrage sauber abschließen",
+      "Typische Eingangsfacts": "user_problem_resolved=true",
+      "Setzt/ändert Facts": "user_request_answered=true",
+      "Hinweis": "Finaler Zielzustand"
+    },
+    {
+      "Funktion / Step-Package": "eduroam_clarify_request",
+      "Kategorie": "Fallback",
+      "Zweck": "Fehlende Angaben klären",
+      "Typische Eingangsfacts": "service=eduroam",
+      "Setzt/ändert Facts": "missing_facts",
+      "Hinweis": "Immer niedrigste Priorität"
+    }
+  ]
+}

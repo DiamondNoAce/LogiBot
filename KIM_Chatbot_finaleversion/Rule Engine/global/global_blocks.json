@@ -1,0 +1,856 @@
+{
+  "global_blocks": [
+    {
+      "id": "global_account_check",
+      "name": "Benutzerkonto prüfen",
+      "description": "Dienstübergreifender Baustein für Account, Benutzername und Passwort. Prioritäten orientieren sich an der technischen Eduroam-Regelübersicht.",
+      "active": true,
+      "scope": "global",
+      "priority": 10,
+      "facts": [
+        {
+          "key": "account_exists",
+          "type": "boolean",
+          "priority": 10,
+          "question": "Besitzt du ein aktiviertes Hohenheimer Benutzerkonto?"
+        },
+        {
+          "key": "username_known",
+          "type": "boolean",
+          "priority": 20,
+          "question": "Kennst du dein Hohenheimer Kürzel bzw. deinen Benutzernamen?"
+        },
+        {
+          "key": "password_known",
+          "type": "boolean",
+          "priority": 30,
+          "question": "Kennst du dein aktuelles Hohenheimer Passwort?"
+        },
+        {
+          "key": "username_format_correct",
+          "type": "boolean",
+          "priority": 35,
+          "optional": true,
+          "question": "Verwendest du das für den Dienst geforderte Benutzername-Format?"
+        }
+      ],
+      "rules": [
+        {
+          "id": "global.account.not_activated",
+          "active": true,
+          "description": "Dienst kann erst nach Aktivierung des Benutzerkontos genutzt werden.",
+          "priority": 20,
+          "conditions": {
+            "all": [
+              {
+                "fact": "account_activated",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Aktiviere zuerst dein Hohenheimer Benutzerkonto. Danach kannst du mit der Einrichtung des gewünschten Dienstes fortfahren."
+            },
+            {
+              "type": "redirect_topic",
+              "topic": "user_account",
+              "intent": "setup",
+              "text": "Wechsle zuerst zur Aktivierung des Benutzerkontos."
+            }
+          ],
+          "stop_after_match": true
+        },
+        {
+          "id": "global.username.format_wrong",
+          "active": true,
+          "description": "Falsches Benutzername-Format erkannt.",
+          "priority": 30,
+          "conditions": {
+            "all": [
+              {
+                "fact": "username_format_correct",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Prüfe das Benutzername-Format. Viele Dienste unterscheiden zwischen Kürzel, E-Mail-Adresse und dienstspezifischer Login-ID."
+            }
+          ],
+          "stop_after_match": false
+        }
+      ]
+    },
+    {
+      "id": "global_internet_check",
+      "name": "Internetverbindung prüfen",
+      "description": "Dienstübergreifender Baustein zur Prüfung, ob eine Internetverbindung vorhanden ist.",
+      "active": true,
+      "scope": "global",
+      "priority": 40,
+      "facts": [
+        {
+          "key": "internet_available",
+          "type": "boolean",
+          "priority": 40,
+          "question": "Hast du aktuell eine Internetverbindung?"
+        }
+      ],
+      "rules": [
+        {
+          "id": "global.internet.missing",
+          "active": true,
+          "description": "Ohne Internet kann keine Online-Anleitung bzw. kein Installer geladen werden.",
+          "priority": 10,
+          "conditions": {
+            "all": [
+              {
+                "fact": "internet_available",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Stelle zuerst eine Internetverbindung her, z. B. über LAN, Hotspot oder ein anderes WLAN."
+            },
+            {
+              "type": "set_fact",
+              "fact": "global_blocking_issue",
+              "value": "internet_missing"
+            }
+          ],
+          "stop_after_match": true
+        }
+      ]
+    },
+    {
+      "id": "global_network_preconditions",
+      "name": "Netzwerk-Preconditions prüfen",
+      "description": "Wiederverwendbarer Baustein für Dienste, die WLAN/Campusnetz/VPN-Sichtbarkeit vor der Einrichtung benötigen. Für eduroam werden WLAN-Verfügbarkeit, WLAN-Aktivierung und sichtbares eduroam geprüft. Erweiterung: berücksichtigt den Netzwerk-Kontext aus dem Wissensmodell (Campus, extern, VPN, Firewall/Proxy).",
+      "active": true,
+      "scope": "global",
+      "priority": 15,
+      "facts": [
+        {
+          "key": "wifi_available",
+          "type": "boolean",
+          "priority": 40,
+          "question": "Hat dein Gerät WLAN bzw. einen funktionierenden WLAN-Adapter?"
+        },
+        {
+          "key": "wifi_enabled",
+          "type": "boolean",
+          "priority": 45,
+          "question": "Ist WLAN am Gerät aktiviert?"
+        },
+        {
+          "key": "eduroam_visible",
+          "type": "boolean",
+          "priority": 50,
+          "question": "Wird eduroam in der WLAN-Liste angezeigt?"
+        },
+        {
+          "key": "network_context",
+          "type": "choice",
+          "priority": 24,
+          "optional": true,
+          "question": "In welchem Netzwerk befindest du dich gerade?",
+          "options": [
+            "campus",
+            "home",
+            "external_network",
+            "vpn",
+            "unknown"
+          ]
+        },
+        {
+          "key": "firewall_proxy_relevant",
+          "type": "boolean",
+          "priority": 40,
+          "optional": true,
+          "question": "Bist du in einem Netzwerk mit Firewall oder Proxy, z. B. Firma oder fremde Hochschule?"
+        }
+      ],
+      "rules": [
+        {
+          "id": "global.network.no_wifi_hardware",
+          "active": true,
+          "priority": 40,
+          "description": "Gerät hat kein WLAN.",
+          "conditions": {
+            "all": [
+              {
+                "fact": "wifi_available",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Ohne WLAN-Adapter kann eduroam nicht direkt genutzt werden. Prüfe einen WLAN-Adapter oder kontaktiere den Support."
+            }
+          ],
+          "stop_after_match": true
+        },
+        {
+          "id": "global.network.wifi_disabled",
+          "active": true,
+          "priority": 45,
+          "description": "WLAN ist deaktiviert.",
+          "conditions": {
+            "all": [
+              {
+                "fact": "wifi_enabled",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Aktiviere zuerst WLAN am Gerät und aktualisiere danach die WLAN-Liste."
+            }
+          ],
+          "stop_after_match": true
+        },
+        {
+          "id": "global.network.eduroam_not_visible",
+          "active": true,
+          "priority": 50,
+          "description": "eduroam ist nicht sichtbar.",
+          "conditions": {
+            "all": [
+              {
+                "fact": "eduroam_visible",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Wenn eduroam nicht sichtbar ist, prüfe Standort, WLAN-Aktivierung und ob andere WLANs sichtbar sind. Versuche es an einem anderen Ort oder kontaktiere den Support."
+            }
+          ],
+          "stop_after_match": true
+        },
+        {
+          "id": "global.network.external_vpn_hint",
+          "active": true,
+          "description": "Externe Netzwerke benötigen für interne Ressourcen häufig VPN.",
+          "priority": 32,
+          "conditions": {
+            "all": [
+              {
+                "fact": "network_context",
+                "operator": "in",
+                "value": [
+                  "home",
+                  "external_network"
+                ]
+              },
+              {
+                "fact": "internal_service_access_required",
+                "operator": "equals",
+                "value": true
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "recommend",
+              "text": "Du befindest dich außerhalb des Campus und möchtest vermutlich auf einen internen Dienst zugreifen. Prüfe, ob zuerst VPN verbunden werden muss."
+            }
+          ],
+          "stop_after_match": false
+        },
+        {
+          "id": "global.network.eduroam_not_visible_ask_other_wifi",
+          "active": true,
+          "priority": 45,
+          "description": "eduroam nicht sichtbar: erst prüfen, ob andere WLANs sichtbar sind.",
+          "conditions": {
+            "all": [
+              {
+                "fact": "eduroam_visible",
+                "operator": "equals",
+                "value": false
+              },
+              {
+                "fact": "other_wifi_visible",
+                "operator": "is_unknown"
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Wenn eduroam gar nicht in der WLAN-Liste erscheint, ist das zunächst kein Benutzerkonto- oder Passwortproblem. Wir prüfen zuerst, ob WLAN am Gerät grundsätzlich funktioniert."
+            },
+            {
+              "type": "ask",
+              "fact": "other_wifi_visible",
+              "text": "Werden auf deinem Gerät andere WLAN-Netze angezeigt?"
+            }
+          ],
+          "stop_after_match": true
+        },
+        {
+          "id": "global.network.eduroam_not_visible_other_wifi_visible",
+          "active": true,
+          "priority": 46,
+          "description": "Andere WLANs sichtbar, aber eduroam fehlt.",
+          "conditions": {
+            "all": [
+              {
+                "fact": "eduroam_visible",
+                "operator": "equals",
+                "value": false
+              },
+              {
+                "fact": "other_wifi_visible",
+                "operator": "equals",
+                "value": true
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Wenn andere WLANs sichtbar sind, aber eduroam nicht, funktioniert der WLAN-Adapter grundsätzlich. Prüfe zuerst, ob du an einem Ort bist, an dem eduroam ausgestrahlt wird. Aktualisiere die WLAN-Liste, schalte WLAN kurz aus und wieder ein und teste es an einem anderen Standort auf dem Campus. Wenn eduroam weiterhin nicht erscheint, kontaktiere den KIM-IT-Service-Desk. Benutzerkennung oder Passwort sind erst relevant, wenn eduroam sichtbar ist und die Anmeldung scheitert."
+            },
+            {
+              "type": "set_fact",
+              "fact": "needs_human_support",
+              "value": true
+            }
+          ],
+          "stop_after_match": true
+        }
+      ]
+    },
+    {
+      "id": "global_campus_or_vpn_check",
+      "name": "Campusnetz oder VPN prüfen",
+      "description": "Dienstübergreifender Baustein für Dienste, die Campusnetz oder VPN benötigen.",
+      "active": true,
+      "scope": "global",
+      "priority": 50,
+      "facts": [
+        {
+          "key": "campus_network_available",
+          "type": "boolean",
+          "question": "Bist du im Campusnetz oder per VPN verbunden?"
+        }
+      ],
+      "rules": [
+        {
+          "id": "global.campus_or_vpn.missing",
+          "active": true,
+          "description": "Campusnetz/VPN fehlt.",
+          "priority": 50,
+          "conditions": {
+            "all": [
+              {
+                "fact": "campus_network_available",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Stelle zuerst eine Verbindung zum Campusnetz oder per VPN her, falls der gewünschte Dienst nur intern erreichbar ist."
+            }
+          ],
+          "stop_after_match": true
+        }
+      ]
+    },
+    {
+      "id": "global_os_check",
+      "name": "Betriebssystem erkennen",
+      "description": "Dienstübergreifender Baustein zur Abfrage des Betriebssystems, wenn eine technische Einrichtung durchgeführt wird.",
+      "active": true,
+      "scope": "global",
+      "priority": 60,
+      "facts": [
+        {
+          "key": "operating_system",
+          "type": "choice",
+          "priority": 60,
+          "options": [
+            "windows",
+            "macos",
+            "linux",
+            "android",
+            "ios",
+            "ipados",
+            "chromeos",
+            "unknown"
+          ],
+          "question": "Welches Betriebssystem nutzt du?"
+        }
+      ],
+      "rules": []
+    },
+    {
+      "id": "global_mfa_check",
+      "name": "MFA / 2FA prüfen",
+      "description": "Dienstübergreifender Baustein für Dienste, die Multi-Faktor-Authentisierung voraussetzen. Erweiterung: bildet App/Code/Recovery/Challenge aus dem Wissensmodell ab. Aktualisierung: MFA wird als zeitbasierter Code aus einer Authenticator-App modelliert; es wird keine Push-Benachrichtigung vorausgesetzt.",
+      "active": true,
+      "scope": "global",
+      "priority": 30,
+      "facts": [
+        {
+          "key": "mfa_configured",
+          "type": "boolean",
+          "question": "Ist deine MFA/2FA bereits eingerichtet?"
+        },
+        {
+          "key": "mfa_problem_type",
+          "type": "choice",
+          "priority": 31,
+          "optional": true,
+          "question": "Geht es um eine MFA-Einrichtung, ein verlorenes Gerät, einen Recovery-Code oder eine nicht ankommende Push-Anfrage?",
+          "options": [
+            "setup",
+            "lost_device",
+            "no_push",
+            "no_code",
+            "recovery",
+            "unknown"
+          ]
+        },
+        {
+          "key": "mfa_app_available",
+          "type": "boolean",
+          "priority": 32,
+          "optional": true,
+          "question": "Hast du Zugriff auf deine Authenticator-App?"
+        },
+        {
+          "key": "mfa_recovery_available",
+          "type": "boolean",
+          "priority": 33,
+          "optional": true,
+          "question": "Hast du einen Recovery-Code oder eine alternative 2FA-Methode?"
+        },
+        {
+          "key": "mfa_challenge_approved",
+          "type": "boolean",
+          "priority": 34,
+          "optional": true,
+          "question": "Konntest du die MFA-Anfrage bestätigen bzw. den Code eingeben?"
+        },
+        {
+          "key": "mfa_totp_available",
+          "type": "boolean",
+          "required": false,
+          "question": "Kannst du in deiner Authenticator-App einen aktuellen zeitbasierten Code sehen?"
+        },
+        {
+          "key": "mfa_code_status",
+          "type": "choice",
+          "required": false,
+          "question": "Ist der MFA-Code verfügbar, abgelaufen oder ungültig?",
+          "options": [
+            "available",
+            "expired",
+            "invalid",
+            "missing",
+            "unknown"
+          ]
+        },
+        {
+          "key": "mfa_required_for_vpn_login",
+          "type": "boolean",
+          "required": false,
+          "question": "Wird MFA beim VPN-Login abgefragt?"
+        }
+      ],
+      "rules": [
+        {
+          "id": "global.mfa.missing",
+          "active": true,
+          "description": "MFA fehlt für Dienst mit MFA-Pflicht.",
+          "priority": 40,
+          "conditions": {
+            "all": [
+              {
+                "fact": "mfa_configured",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Richte zuerst MFA/2FA ein. Danach kannst du mit dem gewünschten Dienst fortfahren."
+            },
+            {
+              "type": "redirect_topic",
+              "topic": "mfa",
+              "intent": "setup",
+              "text": "Starte mit der MFA-Einrichtung."
+            }
+          ],
+          "stop_after_match": true
+        },
+        {
+          "id": "global.mfa.lost_device",
+          "active": true,
+          "description": "MFA-Gerät verloren oder kein Zugriff auf App.",
+          "priority": 25,
+          "conditions": {
+            "any": [
+              {
+                "fact": "mfa_problem_type",
+                "operator": "equals",
+                "value": "lost_device"
+              },
+              {
+                "fact": "mfa_app_available",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "recommend",
+              "text": "Wenn du keinen Zugriff mehr auf deine MFA-App hast, prüfe zuerst Recovery-Code oder alternative 2FA-Methode. Falls beides fehlt, ist eine Neuregistrierung bzw. Support nötig."
+            },
+            {
+              "type": "set_fact",
+              "fact": "needs_human_support",
+              "value": true
+            }
+          ],
+          "stop_after_match": false
+        }
+      ]
+    },
+    {
+      "id": "global_shared_knowledge_core",
+      "name": "Gemeinsamer Wissenskern",
+      "description": "Aus dem Wissensmodell abgeleitete dienstübergreifende Fakten. Dieser Block bündelt Account, Gerät, Netzwerk, Journey, Authentifizierung und Eskalation, damit eduroam, VPN, MFA und Drucker dieselben Basisinformationen wiederverwenden können.",
+      "active": true,
+      "scope": "global",
+      "priority": 5,
+      "facts": [
+        {
+          "key": "source_type",
+          "type": "choice",
+          "priority": 5,
+          "optional": true,
+          "question": "Kommst du gerade aus einer Anleitung, einer Einrichtung oder einer Problemlösung?",
+          "options": [
+            "setup",
+            "troubleshooting",
+            "information",
+            "unknown"
+          ]
+        },
+        {
+          "key": "journey_type",
+          "type": "choice",
+          "priority": 6,
+          "optional": true,
+          "question": "Möchtest du etwas neu einrichten, einen Login lösen oder ein Verbindungsproblem beheben?",
+          "options": [
+            "setup",
+            "login",
+            "connection",
+            "troubleshooting",
+            "unknown"
+          ]
+        },
+        {
+          "key": "account_status",
+          "type": "choice",
+          "priority": 7,
+          "optional": true,
+          "question": "Ist dein Hohenheimer Account aktiv, gesperrt oder unklar?",
+          "options": [
+            "active",
+            "locked",
+            "not_activated",
+            "unknown"
+          ]
+        },
+        {
+          "key": "credentials_valid",
+          "type": "boolean",
+          "priority": 15,
+          "optional": true,
+          "question": "Funktionieren Benutzername und Passwort bei anderen Uni-Diensten?"
+        },
+        {
+          "key": "network_context",
+          "type": "choice",
+          "priority": 25,
+          "optional": true,
+          "question": "Bist du am Campus, zuhause, in einem fremden Netzwerk oder bereits per VPN verbunden?",
+          "options": [
+            "campus",
+            "home",
+            "external_network",
+            "vpn",
+            "unknown"
+          ]
+        },
+        {
+          "key": "auth_status",
+          "type": "choice",
+          "priority": 35,
+          "optional": true,
+          "question": "Wird der Login akzeptiert, abgelehnt oder erscheint gar kein Login?",
+          "options": [
+            "accepted",
+            "rejected",
+            "not_requested",
+            "unknown"
+          ]
+        },
+        {
+          "key": "needs_human_support",
+          "type": "boolean",
+          "priority": 90,
+          "optional": true,
+          "question": "Soll ein Mensch vom Support eingeschaltet werden?"
+        }
+      ],
+      "rules": [
+        {
+          "id": "global.shared.account_locked",
+          "active": true,
+          "description": "Ein gesperrter Account blockiert alle Dienstpfade.",
+          "priority": 1,
+          "conditions": {
+            "any": [
+              {
+                "fact": "account_status",
+                "operator": "equals",
+                "value": "locked"
+              },
+              {
+                "fact": "account_locked",
+                "operator": "equals",
+                "value": true
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Dein Account wirkt gesperrt oder blockiert. Bevor eduroam, VPN, MFA oder Drucker weiter eingerichtet werden können, sollte der Account-Status über den KIM-IT-Service-Desk geklärt werden."
+            },
+            {
+              "type": "set_fact",
+              "fact": "needs_human_support",
+              "value": true
+            }
+          ],
+          "stop_after_match": true
+        },
+        {
+          "id": "global.shared.credentials_invalid",
+          "active": true,
+          "description": "Zugangsdaten funktionieren nicht; Login-Probleme werden vor Dienstdetails behandelt.",
+          "priority": 12,
+          "conditions": {
+            "all": [
+              {
+                "fact": "credentials_valid",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "ask",
+              "fact": "password_known",
+              "text": "Funktioniert dein aktuelles Hohenheimer Passwort bei anderen Diensten wie Webmail, ILIAS oder VPN?"
+            },
+            {
+              "type": "recommend",
+              "text": "Prüfe zuerst Benutzername und Passwort. Viele Folgeprobleme bei eduroam, VPN und MFA entstehen durch falsche oder veraltete Zugangsdaten."
+            }
+          ],
+          "stop_after_match": true
+        },
+        {
+          "id": "global.shared.no_network",
+          "active": true,
+          "description": "Ohne Netzwerkzugang können Setup- und Login-Flows nicht fortgesetzt werden.",
+          "priority": 18,
+          "conditions": {
+            "all": [
+              {
+                "fact": "internet_available",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "result": [
+            {
+              "type": "answer",
+              "text": "Stelle zuerst eine Internetverbindung her. Nutze am Campus ein verfügbares WLAN, LAN oder vorübergehend einen Hotspot. Danach kann der jeweilige Dienstpfad weiterlaufen."
+            }
+          ],
+          "stop_after_match": true
+        }
+      ]
+    },
+    {
+      "id": "global_source_journey_check",
+      "name": "Quelle, Ziel und Journey klären",
+      "description": "Dienstübergreifender Baustein aus dem aktualisierten Wissensmodell. Er fragt ab, ob es um Einrichtung, Login, Passwortänderung, Troubleshooting oder allgemeine Information geht.",
+      "active": true,
+      "priority": 8,
+      "scope": "global",
+      "required_by_default": false,
+      "facts": [
+        {
+          "key": "source_type",
+          "type": "choice",
+          "required": false,
+          "question": "Geht es um eine Einrichtung, eine Problemlösung oder eine allgemeine Information?",
+          "options": [
+            "setup",
+            "troubleshooting",
+            "information",
+            "unknown"
+          ]
+        },
+        {
+          "key": "intent",
+          "type": "choice",
+          "required": true,
+          "question": "Möchtest du etwas einrichten, ein Login-Problem lösen, dein Passwort ändern/zurücksetzen oder nur eine allgemeine Information?",
+          "options": [
+            "setup",
+            "login",
+            "troubleshooting",
+            "change_password",
+            "reset_password",
+            "information",
+            "unknown"
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "id": "global.source.intent_unknown",
+          "active": true,
+          "scope": "global",
+          "global_block_id": "global_source_journey_check",
+          "priority": 8,
+          "when": {
+            "any": [
+              {
+                "fact": "intent",
+                "operator": "is_unknown"
+              },
+              {
+                "fact": "intent",
+                "operator": "equals",
+                "value": "unknown"
+              }
+            ]
+          },
+          "then": [
+            {
+              "type": "ask",
+              "fact": "intent",
+              "text": "Möchtest du etwas einrichten, ein Login-Problem lösen, dein Passwort ändern/zurücksetzen oder nur eine allgemeine Information?"
+            }
+          ],
+          "stop_after_match": false
+        }
+      ]
+    },
+    {
+      "id": "global_status_goal_check",
+      "name": "Zielstatus und Abschluss prüfen",
+      "description": "Dienstübergreifender Baustein für den Zielzustand: Verbindung erfolgreich, Problem gelöst, Anfrage beantwortet oder Support notwendig.",
+      "active": true,
+      "priority": 90,
+      "scope": "global",
+      "required_by_default": false,
+      "facts": [
+        {
+          "key": "connection_successful",
+          "type": "boolean",
+          "required": false,
+          "question": "Hat die Verbindung jetzt funktioniert?"
+        },
+        {
+          "key": "user_problem_resolved",
+          "type": "boolean",
+          "required": false,
+          "question": "Ist dein Problem damit gelöst?"
+        },
+        {
+          "key": "needs_human_support",
+          "type": "boolean",
+          "required": false,
+          "question": "Soll der Fall an den IT-Support eskaliert werden?"
+        }
+      ],
+      "rules": [
+        {
+          "id": "global.status.unresolved_needs_support",
+          "active": true,
+          "scope": "global",
+          "global_block_id": "global_status_goal_check",
+          "priority": 95,
+          "when": {
+            "any": [
+              {
+                "fact": "problem_unresolved",
+                "operator": "equals",
+                "value": true
+              },
+              {
+                "fact": "user_problem_resolved",
+                "operator": "equals",
+                "value": false
+              }
+            ]
+          },
+          "then": [
+            {
+              "type": "set_fact",
+              "fact": "needs_human_support",
+              "value": true
+            },
+            {
+              "type": "recommend",
+              "text": "Wenn der Status nach den empfohlenen Schritten weiterhin ungelöst bleibt, sollte der KIM-IT-Service-Desk kontaktiert werden."
+            }
+          ],
+          "stop_after_match": false
+        }
+      ]
+    }
+  ]
+}
